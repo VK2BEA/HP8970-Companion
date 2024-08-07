@@ -17,14 +17,15 @@ Program to augment functionality of the HP 8970 Noise Figure Meter:
 
 Fedora RPM package are available, install the program and GPIB driver, GPIB utilities and firmware by:
 ------------------------------------------------------------------------------------------------------
-`sudo dnf copr enable vk2bea/GPIB`
-`sudo dnf copr enable vk2bea/HP8970`
+`sudo dnf copr enable vk2bea/GPIB`  
+`sudo dnf copr enable vk2bea/HP8970`  
 `sudo dnf install dkms-linux-gpib linux-gpib linux-gpib-devel linux-gpib-firmware hp8970`
 
 To build & install using Linux autotools, install the following required packages & tools:
 ----------------------------------------------------------------------
 * `automake`, `autoconf` and `libtool`  
-* To build on Raspberri Pi / Debian: 	`libgs-dev, libglib2.0-dev, libgtk-4-dev, librsvg2-dev, https://linux-gpib.sourceforge.io/, yelp-tools`  
+* To build on Raspberri Pi / Debian: 	`libgs-dev, libglib2.0-dev, libgtk-4-dev, librsvg2-dev, yelp-tools,`  
+                `https://linux-gpib.sourceforge.io/`  
 * To run on Raspberry Pi / Debian :	`libglib-2, libgtk-4, librsvg2-2, libgpib`
 
 Install the GPIB driver: 
@@ -41,7 +42,7 @@ Once the prerequisites (as listed above) are installed, install the 'HP8753 Comp
         $ sudo make install
 To run:
         
-        $ /usr/local/bin/hp8970
+        $ /usr/local/bin/hp8970 
 
 To uninstall:
         
