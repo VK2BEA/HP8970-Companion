@@ -12,6 +12,8 @@ Program to augment functionality of the HP 8970 Noise Figure Meter:
 4. Save measured data as CSV for further processing or as a JSON file to be retrieved at a later time.
 5. Print traces to connected printer
 
+![image](https://github.com/user-attachments/assets/8d9f8904-dc88-4985-8f57-75a039eb17c0)
+
 
 Fedora RPM package are available, install the program and GPIB driver, GPIB utilities and firmware by:
 ------------------------------------------------------------------------------------------------------
