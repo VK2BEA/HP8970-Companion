@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=HP8970 Companion
+Comment=Capture trace data and control the HP8970 Noise Figure Meter
+Exec=hp8970
+Icon=hp8970
+Categories=Application;Electronics;
+Terminal=false
+Type=Application
+Encoding=UTF-8
+X-Desktop-File-Install-Version=0.21

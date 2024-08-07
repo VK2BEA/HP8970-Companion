@@ -1,0 +1,38 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic" style="guide"
+      id="options">
+
+  <info>
+    <link type="guide" xref="index#setup"/>
+    <revision pkgversion="1.00.1" date="2024-07-25" status="candidate" />
+
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email>michaelk@IEEE.org</email>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Available option settings</desc>
+  </info>
+  
+  <title>Options</title>
+  <section>
+  <title>General</title>
+  <media type="image" style="floatright"  mime="image/png" src="media/optionsPage.png" />
+  <list>
+    <item><p>The <gui>Logo</gui> checkbox will enable or disable the display of the HP logo on the plot.</p></item>
+    <item><p>The <gui>Time</gui> checkbox will enable or disable the display of the time and date on the plot.</p></item>
+    <item><p>The <gui>8970A</gui> and <gui>8970B</gui> radio buttons change the behaviour of the program to match the device being controlled.</p></item>
+  </list>
+  </section>
+  <section>
+  <title>PDF/SVG Page Size</title>
+  <p>The radio buttons select the PDF and SVG page size for images saved in those formats.</p>
+  <note style="tip">
+  <p>The size of the printed page is selectable from the printer dialog at the time of printing. The selection is saved.</p>
+  </note>
+  </section>
+
+
+</page>

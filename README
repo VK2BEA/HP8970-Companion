@@ -1,0 +1,46 @@
+HP8970 Companion
+================
+
+Author: Michael G. Katzmann (NV3Z/VK2BEA/G4NYV) 
+------------------------------------------------------------------
+
+Program to augment functionality of the HP 8970 Noise Figure Meter.
+    1. Control the 8970 vis GPIB to take measurements of noise figure and gain over a frequency sweep or over time.
+    2. Plot the noise figure/temperature and gain vs frequency
+       Use mouse to examine the trace (interrogate plot to see measurements and interpolated values)
+    3. Save traces as an image file (PNG) or PDF.
+    4. Save measured data as CSV for further processing or as a JSON file to be retrieved at a later time.
+    4. Print traces to connected printer
+
+Requirements
+------------
+
+Fedora RPM package are available, install the program and GPIB driver, GPIB utilities and firmware by:
+  sudo dnf copr enable vk2bea/GPIB
+  sudo dnf copr enable vk2bea/HP8970
+  sudo dnf install dkms-linux-gpib linux-gpib linux-gpib-devel linux-gpib-firmware hp8970
+
+
+For an autotools build, install the following packages & tools:
+---------------------------------------
+* Automake
+* Autoconf
+* Libtool
+
+* To run on Debian or Raspberry Pi: libglib-2, libgtk-4, librsvg2-2, libgpib
+* To run on Fedora: glib2, gtk4, librsvg2, libgpib
+
+* To build on Debian (RPi) : libgs-dev, libglib2.0-dev, libgtk-4-dev, librsvg2-dev, https://linux-gpib.sourceforge.io/, yelp-tools
+* To build on Fedora/Redhat: gtk4-devel, glib2-devel, librsvg2-devel https://linux-gpib.sourceforge.io/, yelp-tools
+
+To build and install using autotools:
+        $ ./autogen.sh
+        $ cd build
+        $ ../configure
+        $ make
+        $ sudo make check
+        $ sudo make install
+        $ /usr/local/bin/hp8970
+To uninstall
+        $ sudo make uninstall
+

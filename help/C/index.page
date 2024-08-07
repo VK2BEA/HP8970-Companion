@@ -1,0 +1,40 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      xmlns:e="http://projectmallard.org/experimental/"
+      type="guide" style="task"
+      id="index">
+
+  <info>
+    <revision pkgversion="1.00.1" date="2024-07-26" status="review"/>
+    <title type="text">HP8970 Companion</title>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <credit type="author">
+      <name>Michael G. Katzmann (NV3Z / VK2BEA / G4NYV)</name>
+    </credit>
+
+    <desc><app>HP8970 Companion</app>, a program to make and plot measurements from the Hewlett Packard 8970 Noise Figure Meter.</desc>
+
+  </info>
+
+  <title>
+    <media its:translate="no" style="floatstart center" type="image" mime="image/svg" src="media/hp8970.svg" width="100"/>
+    HP8970 Companion
+  </title>
+  <p><app>HP8970 Companion</app> is a program for Linux to enhance and extend the capabilities of the Hewlett Packard 8970 Noise Figure Meter.</p>
+  <p>The program communicates with the network analyzer over the GPIB (aka HPIB and IEEE-488) bus.</p>
+  <media its:translate="no" style = "floatend center" type="image" mime="image/svg" src="media/hp8970.svg" width="400"/>
+  <p>With this program, the user controls the noise figure meter using a graphical user interface and the measurements made on the device under test (DUT) are retrieved and plotted on the on the computer display. The data, displayed as a plot, may be printed or saved as an image in several formats. The data may also be saved as a CSV file for further processing and analysis.</p>
+  <p>The traces, when plotted on the screen, can be interrogated using the mouse to position a 'live marker', displaying the measured and interpolated values at the cursor position.</p>
+  <p>Calibration tables for up to 5 noise sources can be entered, edited, stored and, when needed, uploaded to the 8970.</p>
+  <p>When the 8970 is configured for modes using external frequency translators, the HP8970 Companion will control the external local oscillator (over HPIB) to set its frequency based on the sweep settings.</p>
+  
+  <section id="setup" style="2column">
+    <title>Setup and Options</title>
+  </section>
+
+  <section id="operations" style="2column">
+    <title>Operation</title>
+  </section>
+
+</page>

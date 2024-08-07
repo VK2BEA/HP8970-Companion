@@ -1,0 +1,1604 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.91.1 -->
+<interface>
+  <!-- interface-name hp8970.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <object class="GtkApplicationWindow" id="WID_HP8970_application">
+    <property name="default-height">1</property>
+    <property name="default-width">1</property>
+    <property name="focusable">True</property>
+    <property name="has-tooltip">True</property>
+    <property name="title">HP8970 Noise Figure Meter</property>
+    <child>
+      <object class="GtkBox" id="WID_box_Main">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkBox">
+            <property name="margin-bottom">4</property>
+            <property name="margin-end">4</property>
+            <property name="margin-start">4</property>
+            <property name="margin-top">4</property>
+            <property name="spacing">40</property>
+            <child>
+              <object class="GtkBox">
+                <property name="halign">start</property>
+                <property name="homogeneous">True</property>
+                <property name="spacing">4</property>
+                <child>
+                  <object class="GtkButton" id="WID_btn_Sweep">
+                    <property name="label">Sweep</property>
+                    <property name="margin-top">4</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkToggleButton" id="WID_tgl_Spot">
+                    <property name="label">Spot</property>
+                    <property name="margin-top">4</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="WID_btn_Calibrate">
+                    <property name="label">Calibrate</property>
+                    <property name="margin-top">4</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="WID_chk_Correction">
+                    <property name="has-tooltip">True</property>
+                    <property name="label">Correction</property>
+                    <property name="margin-bottom">4</property>
+                    <property name="margin-start">4</property>
+                    <property name="margin-top">6</property>
+                    <property name="tooltip-markup">Enable 2nd stage noise correction. 
+&lt;i&gt;Calibration&lt;/i&gt; must be performed prior to using correction.</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="homogeneous">True</property>
+                <property name="spacing">4</property>
+                <child>
+                  <object class="GtkButton" id="WID_btn_Print">
+                    <property name="icon-name">document-print</property>
+                    <property name="margin-top">4</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="WID_btn_PDF">
+                    <property name="label">PDF</property>
+                    <property name="margin-top">4</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="WID_btn_SVG">
+                    <property name="label">SVG</property>
+                    <property name="margin-top">4</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="WID_btn_PNG">
+                    <property name="label">PNG</property>
+                    <property name="margin-top">4</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="WID_btn_CSV">
+                    <property name="label">CSV</property>
+                    <property name="margin-top">4</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="WID_btn_SaveJSON">
+                    <property name="icon-name">document-save</property>
+                    <property name="margin-top">4</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="WID_btn_RestoreJSON">
+                    <property name="icon-name">document-open</property>
+                    <property name="margin-top">4</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">4</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Title:</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="WID_entry_Title">
+                    <property name="input-hints">no-emoji</property>
+                    <property name="max-width-chars">40</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="WID_box_Plot">
+            <property name="hexpand">True</property>
+            <child>
+              <object class="GtkBox" id="WID_Controls">
+                <property name="halign">start</property>
+                <property name="margin-bottom">4</property>
+                <property name="margin-end">2</property>
+                <property name="margin-start">4</property>
+                <property name="margin-top">4</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">4</property>
+                <property name="vexpand">True</property>
+                <property name="width-request">320</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="homogeneous">True</property>
+                    <child>
+                      <object class="GtkFrame">
+                        <property name="css-classes">square</property>
+                        <property name="label">Spot Frequency (MHz)</property>
+                        <property name="margin-end">2</property>
+                        <child>
+                          <object class="GtkSpinButton" id="WID_spin_Frequency">
+                            <property name="adjustment">
+                              <object class="GtkAdjustment">
+                                <property name="lower">10.0</property>
+                                <property name="page-increment">20.0</property>
+                                <property name="step-increment">1.0</property>
+                                <property name="upper">1500.0</property>
+                                <property name="value">30.0</property>
+                              </object>
+                            </property>
+                            <property name="margin-end">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="valign">start</property>
+                            <property name="xalign">1.0</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFrame">
+                        <property name="css-classes">square</property>
+                        <property name="label">Smoothing</property>
+                        <property name="margin-start">2</property>
+                        <child>
+                          <object class="GtkComboBoxText" id="WID_combo_Smoothing">
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-end">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="valign">start</property>
+                            <signal name="changed" handler="CB_combo_Smoothing"/>
+                            <items>
+                              <item id="0">1</item>
+                              <item id="1">2</item>
+                              <item id="2">4</item>
+                              <item id="3">8</item>
+                              <item id="4">16</item>
+                              <item id="5">32</item>
+                              <item id="6">64</item>
+                              <item id="7">128</item>
+                              <item id="8">256</item>
+                              <item id="9">512</item>
+                            </items>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkFrame">
+                    <property name="css-classes">square</property>
+                    <property name="label">Sweep (MHz)</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="homogeneous">True</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="homogeneous">True</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">noborder</property>
+                                <property name="label">Start Frequency</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_spin_FrStart">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment">
+                                        <property name="lower">10.0</property>
+                                        <property name="page-increment">50.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">1500.0</property>
+                                        <property name="value">10.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="xalign">1.0</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">noborder</property>
+                                <property name="label">Step Freq. (sweep)</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_spin_FrStep_Sweep">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment" id="WID_adj_FrStep_Sweep">
+                                        <property name="lower">1.0</property>
+                                        <property name="page-increment">5.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">1500.0</property>
+                                        <property name="value">20.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="numeric">True</property>
+                                    <property name="tooltip-text">The step size (in MHz) for use when taking sweep measurements.
+The resolution may be smaller than is possible when calibrating (as this is limited to 81 point (8970A) or 181 points (8970B).</property>
+                                    <property name="valign">start</property>
+                                    <property name="xalign">1.0</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="homogeneous">True</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">noborder</property>
+                                <property name="label">Stop Frequency</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_spin_FrStop">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment" id="WID_adj_FrStop">
+                                        <property name="lower">1.0</property>
+                                        <property name="page-increment">20.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">1500.0</property>
+                                        <property name="value">1500.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="numeric">True</property>
+                                    <property name="update-policy">if-valid</property>
+                                    <property name="valign">start</property>
+                                    <property name="xalign">1.0</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">noborder</property>
+                                <property name="label">Step Freq. (calibrate)</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_spin_FrStep_Cal">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment" id="WID_adj_FrStep_Cal">
+                                        <property name="lower">1.0</property>
+                                        <property name="page-increment">5.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">1500.0</property>
+                                        <property name="value">20.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="numeric">True</property>
+                                    <property name="tooltip-text">The step (in MHz) between start and stop frequencies during calibration.
+There are a maximum of 81 points (8970A) or 181 (8970B).
+If you choose a step too small to cover the range from start to stop the color will change to red as a warning.</property>
+                                    <property name="valign">start</property>
+                                    <property name="xalign">1.0</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkFrame">
+                    <property name="css-classes">square</property>
+                    <property name="label">Mode</property>
+                    <child>
+                      <object class="GtkComboBoxText" id="WID_combo_Mode">
+                        <property name="active">0</property>
+                        <property name="margin-bottom">4</property>
+                        <property name="margin-end">4</property>
+                        <property name="margin-start">4</property>
+                        <property name="valign">start</property>
+                        <items>
+                          <item id="0">1.0 ⇨ 1 to 1500 MHz</item>
+                          <item id="1">1.1  ⇨ ⚓ IF / ↻ ext. LO (DUT ▷)</item>
+                          <item id="2">1.2  ⇨ ↻ IF / ⚓ ext. LO SSB (DUT ▷)</item>
+                          <item id="3">1.3  ⇨ ⚓ IF / ↻ ext. LO (DUT Ⓧ)</item>
+                          <item id="4">1.4  ⇨ ↻ IF / ⚓ ext. LO (DUT Ⓧ)</item>
+                        </items>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="homogeneous">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkNotebook" id="WID_note_Controls">
+                    <property name="enable-popup">True</property>
+                    <property name="page">1</property>
+                    <property name="scrollable">True</property>
+                    <property name="vexpand">True</property>
+                    <child>
+                      <object class="GtkBox" id="WID_page_GPIB">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="homogeneous">True</property>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">noborder
+</property>
+                                <property name="label">Controller GPIB Index</property>
+                                <property name="label-xalign">0.1</property>
+                                <property name="valign">start</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_spin_opt_ControllerIdx">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment">
+                                        <property name="page-increment">1.0</property>
+                                        <property name="page-size">1.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">16.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">6</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">square
+leftBorderOnly
+</property>
+                                <property name="label">HP8970 GPIB PID</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_spin_opt_GPIB_PID">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment">
+                                        <property name="page-increment">1.0</property>
+                                        <property name="page-size">1.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">32.0</property>
+                                        <property name="value">8.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">6</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="valign">start</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkFrame">
+                            <property name="css-classes">square
+noSideBorder</property>
+                            <property name="label">HP8970 GPIB Name</property>
+                            <property name="label-xalign">0.01</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="valign">start</property>
+                                <child>
+                                  <object class="GtkCheckButton" id="WID_chk_useGPIBdeviceName">
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkEntry" id="WID_entry_opt_GPIB_name">
+                                    <property name="hexpand">True</property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="homogeneous">True</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="lines">2</property>
+                                <property name="xalign">0.0</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">leftBorderOnly
+square
+
+</property>
+                                <property name="label">Ext. L.O. GPIB PID</property>
+                                <property name="margin-start">2</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_spin_opt_GPIB_PID_LO">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment">
+                                        <property name="lower">1.0</property>
+                                        <property name="page-increment">4.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">32.0</property>
+                                        <property name="value">16.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">6</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="valign">start</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkFrame">
+                            <property name="css-classes">square
+noSideBorder</property>
+                            <property name="label">External L.O. GPIB Name</property>
+                            <property name="label-xalign">0.01</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="valign">start</property>
+                                <child>
+                                  <object class="GtkCheckButton" id="WID_chk_use_LO_GPIBdeviceName">
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkEntry" id="WID_entry_opt_LO_GPIB_name">
+                                    <property name="hexpand">True</property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel">
+                        <property name="label">GPIB</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow" id="WID_page_Settings">
+                        <child>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">square
+noborder
+</property>
+                                <property name="label">Show / Hide</property>
+                                <child>
+                                  <object class="GtkFrame"/>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="homogeneous">True</property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-top">4</property>
+                                    <property name="valign">start</property>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_SettingsHPlogo">
+                                        <property name="active">True</property>
+                                        <property name="label">Instrument</property>
+                                        <property name="valign">start</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_SettingsTime">
+                                        <property name="active">True</property>
+                                        <property name="label">Date &amp; Time</property>
+                                        <property name="valign">start</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel"/>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">square
+noSideBorder</property>
+                                <property name="label">Instrument Variant</property>
+                                <property name="margin-top">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="homogeneous">True</property>
+                                    <property name="valign">start</property>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_Settings8970A">
+                                        <property name="active">True</property>
+                                        <property name="group">
+                                          <object class="GtkCheckButton" id="WID_grp_Variant"/>
+                                        </property>
+                                        <property name="label">8970A</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_Settings8970B">
+                                        <property name="group">WID_grp_Variant</property>
+                                        <property name="label">8970B</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_Settings8970Bopt20">
+                                        <property name="group">WID_grp_Variant</property>
+                                        <property name="label">8970B / 20</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">square
+bottomBorderOnly
+</property>
+                                <property name="label">PDF/SVG Page Stze</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="homogeneous">True</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="homogeneous">True</property>
+                                        <property name="orientation">vertical</property>
+                                        <child>
+                                          <object class="GtkCheckButton" id="WID_chk_SettingsA4">
+                                            <property name="active">True</property>
+                                            <property name="group">
+                                              <object class="GtkCheckButton" id="WID_grp_PaperType"/>
+                                            </property>
+                                            <property name="label">A4 (210 × 297mm)</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkCheckButton" id="WID_chk_SettingsLetter">
+                                            <property name="group">WID_grp_PaperType</property>
+                                            <property name="label">Letter (8½″ × 11″)</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="homogeneous">True</property>
+                                        <property name="orientation">vertical</property>
+                                        <child>
+                                          <object class="GtkCheckButton" id="WID_chk_SettingsA3">
+                                            <property name="group">WID_grp_PaperType</property>
+                                            <property name="label">A3 (297 × 420mm)</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkCheckButton" id="WID_chk_SettingsTabloid">
+                                            <property name="group">WID_grp_PaperType</property>
+                                            <property name="label">Tabloid (11″ × 17″)</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel">
+                        <property name="label">Options</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="WID_page_Source">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkScrolledWindow" id="WID_scroll_NoiseSource">
+                            <property name="vexpand">True</property>
+                            <child>
+                              <object class="GtkColumnView" id="WID_CV_NoiseSource">
+                                <property name="css-classes">table</property>
+                                <property name="hexpand">True</property>
+                                <property name="margin-bottom">2</property>
+                                <property name="show-column-separators">True</property>
+                                <property name="show-row-separators">True</property>
+                                <property name="tab-behavior">item</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="halign">end</property>
+                            <property name="homogeneous">True</property>
+                            <property name="valign">center</property>
+                            <child>
+                              <object class="GtkButton" id="WID_NS_btn_Delete">
+                                <property name="label">Delete</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="WID_NS_btn_Add">
+                                <property name="label">Add</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="WID_NS_btn_Save">
+                                <property name="label">Save</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                                <property name="sensitive">False</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkComboBoxText" id="WID_NS_combo_Source">
+                                <property name="has-entry">True</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="WID_NS_btn_Upload">
+                                <property name="label">Upload</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel">
+                        <property name="label">Source</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="WID_page_SigGen">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkFrame">
+                            <property name="css-classes">bottomBorderOnly
+square
+
+</property>
+                            <property name="label">Preliminary Setup command</property>
+                            <child>
+                              <object class="GtkEntry" id="WID_LO_entry_LO_Setup">
+                                <property name="css-classes">monofont</property>
+                                <property name="input-hints">no-emoji</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="tooltip-text">GPIB commands to send to the L.O. when sweep starts</property>
+                                <property name="valign">start</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkFrame">
+                            <property name="css-classes">noborder
+
+</property>
+                            <property name="label">Set Frequency format</property>
+                            <child>
+                              <object class="GtkEntry" id="WID_LO_entry_LO_Freq">
+                                <property name="css-classes">monofont</property>
+                                <property name="input-hints">no-emoji</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="placeholder-text">No external LO control</property>
+                                <property name="tooltip-text">printf like format string to set the frequency of an external signal generator (in MHz).
+"%.0lf" is the formatting code for a long double with no decimal digits.
+
+Leave blank to disable control of external LO (e.g. if a block oscillator is used)</property>
+                                <property name="valign">start</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="homogeneous">True</property>
+                            <child>
+                              <object class="GtkFrame" id="WID_LO_frm_FixedIF_Freq">
+                                <property name="css-classes">square
+GPIBframeRight
+</property>
+                                <property name="label">IF Frequency (MHz)</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_LO_spin_FixedIF_Freq">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment">
+                                        <property name="lower">10.0</property>
+                                        <property name="page-increment">10.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">1500.0</property>
+                                        <property name="value">20.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="tooltip-text">Fixed IF, modes 1.1 &amp; 1.3</property>
+                                    <property name="valign">start</property>
+                                    <property name="xalign">1.0</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFrame" id="WID_LO_frm_FixedLO_Freq">
+                                <property name="css-classes">square
+noSideBorder</property>
+                                <property name="label">LO Frequency (MHz)</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_LO_spin_FixedLO_Freq">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment">
+                                        <property name="lower">1.0</property>
+                                        <property name="page-increment">100.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">60000.0</property>
+                                        <property name="value">2000.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="tooltip-text">Fixed LO, modes 1.2 &amp; 1.4</property>
+                                    <property name="valign">start</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="css-classes">square</property>
+                            <property name="homogeneous">True</property>
+                            <child>
+                              <object class="GtkFrame" id="WID_LO_frm_SettlingTime">
+                                <property name="css-classes">square
+
+Lborder
+
+</property>
+                                <property name="label">Settling Time (ms)</property>
+                                <property name="valign">start</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_LO_spin_SettlingTime">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment">
+                                        <property name="page-increment">10.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">2000.0</property>
+                                        <property name="value">40.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="tooltip-text">Settling time when changing frequency of LO</property>
+                                    <property name="xalign">1.0</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFrame" id="WID_LO_frm_sideband">
+                                <property name="css-classes">square
+bottomBorderOnly</property>
+                                <property name="label">Sideband Offset</property>
+                                <property name="valign">start</property>
+                                <child>
+                                  <object class="GtkComboBoxText" id="WID_LO_combo_sideband">
+                                    <property name="active">0</property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="tooltip-text">Sideband for converted noise</property>
+                                    <items>
+                                      <item id="0">DSB (no offset)</item>
+                                      <item id="1">LSB (F.S &lt; F.LO)</item>
+                                      <item id="2">USB (F.S &gt; F.LO)</item>
+                                    </items>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="WID_lbl_LOnotice">
+                            <property name="css-classes">
+</property>
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-end">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="margin-top">4</property>
+                            <property name="use-markup">True</property>
+                            <property name="xalign">0.0</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel">
+                        <property name="label">Ext. L.O.</property>
+                        <property name="tooltip-text">Used with modes 1.1, 1.3 (swept L.O. / fixed I.F.) and  1.2, 1.4 (fixed L.O. / swept I.F.)</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow" id="WID_page_Notes">
+                        <child>
+                          <object class="GtkTextView" id="WID_textView_Notes">
+                            <property name="buffer">
+                              <object class="GtkTextBuffer"/>
+                            </property>
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-end">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="margin-top">4</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel">
+                        <property name="label">Notes</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="WID_page_Options">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkFrame">
+                            <property name="css-classes">square
+bottomBorderOnly
+
+</property>
+                            <property name="label">Noise Units</property>
+                            <property name="tooltip-text">Noise units for newly acquired data</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="homogeneous">True</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="orientation">vertical</property>
+                                <property name="valign">center</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="homogeneous">True</property>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_FdB">
+                                        <property name="group">
+                                          <object class="GtkCheckButton" id="WID_grp_NoiseUnit"/>
+                                        </property>
+                                        <property name="label">F dB</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_F">
+                                        <property name="group">WID_grp_NoiseUnit</property>
+                                        <property name="label">F</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_YdB">
+                                        <property name="group">WID_grp_NoiseUnit</property>
+                                        <property name="label">Y dB</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_Y">
+                                        <property name="group">WID_grp_NoiseUnit</property>
+                                        <property name="label">Y</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="homogeneous">True</property>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_TeK">
+                                        <property name="group">WID_chk_NoiseUnit_FdB</property>
+                                        <property name="label">Tₑ K</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel"/>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel"/>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel"/>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="homogeneous">True</property>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">noborder
+
+</property>
+                                <property name="label">T Cold (K)</property>
+                                <property name="margin-end">2</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="WID_spin_ColdT">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment">
+                                        <property name="page-increment">10.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">10000.0</property>
+                                        <property name="value">296.5</property>
+                                      </object>
+                                    </property>
+                                    <property name="digits">1</property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="numeric">True</property>
+                                    <property name="valign">start</property>
+                                    <property name="xalign">1.0</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel"/>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkFrame">
+                            <property name="css-classes">square
+noSideBorder</property>
+                            <property name="label">Loss Compensation</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="homogeneous">True</property>
+                                    <child>
+                                      <object class="GtkCheckButton" id="WID_chk_LossOn">
+                                        <property name="label">On</property>
+                                        <property name="valign">start</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder</property>
+                                        <property name="label">T of losses (K)</property>
+                                        <child>
+                                          <object class="GtkSpinButton" id="WID_spin_LossT">
+                                            <property name="adjustment">
+                                              <object class="GtkAdjustment">
+                                                <property name="page-increment">10.0</property>
+                                                <property name="step-increment">1.0</property>
+                                                <property name="upper">9999.0</property>
+                                                <property name="value">273.0</property>
+                                              </object>
+                                            </property>
+                                            <property name="digits">1</property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                            <property name="numeric">True</property>
+                                            <property name="valign">start</property>
+                                            <property name="xalign">1.0</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="homogeneous">True</property>
+                                    <child>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder</property>
+                                        <property name="label">Loss before DUT (dB)</property>
+                                        <child>
+                                          <object class="GtkSpinButton" id="WID_spin_LossBefore">
+                                            <property name="adjustment">
+                                              <object class="GtkAdjustment">
+                                                <property name="lower">-100.0</property>
+                                                <property name="page-increment">10.0</property>
+                                                <property name="step-increment">1.0</property>
+                                                <property name="upper">100.0</property>
+                                              </object>
+                                            </property>
+                                            <property name="digits">2</property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                            <property name="numeric">True</property>
+                                            <property name="valign">start</property>
+                                            <property name="xalign">1.0</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder</property>
+                                        <property name="label">Loss after DUT (dB)</property>
+                                        <child>
+                                          <object class="GtkSpinButton" id="WID_spin_LossAfter">
+                                            <property name="adjustment">
+                                              <object class="GtkAdjustment">
+                                                <property name="lower">-100.0</property>
+                                                <property name="page-increment">10.0</property>
+                                                <property name="step-increment">1.0</property>
+                                                <property name="upper">100.0</property>
+                                              </object>
+                                            </property>
+                                            <property name="digits">2</property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                            <property name="numeric">True</property>
+                                            <property name="valign">start</property>
+                                            <property name="xalign">1.0</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel">
+                        <property name="label">Special Fns.</property>
+                        <property name="tooltip-text">Additional settings for the HP8970</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="WID_page_Plot">
+                        <property name="orientation">vertical</property>
+                        <property name="valign">start</property>
+                        <child>
+                          <object class="GtkFrame" id="WID_frame_NoiseRange">
+                            <property name="css-classes">noborder
+</property>
+                            <property name="label">Noise</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="homogeneous">True</property>
+                                <child>
+                                  <object class="GtkFrame">
+                                    <property name="css-classes">noborder</property>
+                                    <property name="label">Minimum</property>
+                                    <child>
+                                      <object class="GtkSpinButton" id="WID_spin_NoiseMin">
+                                        <property name="adjustment">
+                                          <object class="GtkAdjustment">
+                                            <property name="lower">-5.0</property>
+                                            <property name="page-increment">1.0</property>
+                                            <property name="step-increment">0.1</property>
+                                            <property name="upper">20.0</property>
+                                          </object>
+                                        </property>
+                                        <property name="digits">1</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">4</property>
+                                        <property name="margin-start">4</property>
+                                        <property name="xalign">1.0</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkFrame">
+                                    <property name="css-classes">noborder</property>
+                                    <property name="label">Maximum</property>
+                                    <child>
+                                      <object class="GtkSpinButton" id="WID_spin_NoiseMax">
+                                        <property name="adjustment">
+                                          <object class="GtkAdjustment">
+                                            <property name="page-increment">1.0</property>
+                                            <property name="step-increment">0.1</property>
+                                            <property name="upper">10.0</property>
+                                            <property name="value">6.0</property>
+                                          </object>
+                                        </property>
+                                        <property name="digits">1</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">4</property>
+                                        <property name="margin-start">4</property>
+                                        <property name="xalign">1.0</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkFrame">
+                            <property name="css-classes">square
+noSideBorder
+</property>
+                            <property name="label">Gain (dB)</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="homogeneous">True</property>
+                                <child>
+                                  <object class="GtkFrame">
+                                    <property name="css-classes">noborder</property>
+                                    <property name="label">Minimum</property>
+                                    <child>
+                                      <object class="GtkSpinButton" id="WID_spin_GainMin">
+                                        <property name="adjustment">
+                                          <object class="GtkAdjustment">
+                                            <property name="lower">-20.0</property>
+                                            <property name="page-increment">1.0</property>
+                                            <property name="step-increment">0.1</property>
+                                            <property name="upper">60.0</property>
+                                          </object>
+                                        </property>
+                                        <property name="digits">1</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">4</property>
+                                        <property name="margin-start">4</property>
+                                        <property name="xalign">1.0</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkFrame">
+                                    <property name="css-classes">noborder</property>
+                                    <property name="label">Maximum</property>
+                                    <child>
+                                      <object class="GtkSpinButton" id="WID_spin_GainMax">
+                                        <property name="adjustment">
+                                          <object class="GtkAdjustment">
+                                            <property name="lower">-20.0</property>
+                                            <property name="page-increment">10.0</property>
+                                            <property name="step-increment">1.0</property>
+                                            <property name="upper">60.0</property>
+                                            <property name="value">30.0</property>
+                                          </object>
+                                        </property>
+                                        <property name="digits">1</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">4</property>
+                                        <property name="margin-start">4</property>
+                                        <property name="xalign">1.0</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkCheckButton" id="WID_chk_AutoScale">
+                                <property name="label">Auto Scaling</property>
+                                <property name="margin-bottom">3</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">3</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkFrame">
+                            <property name="css-classes">square
+noSideBorder
+</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="homogeneous">True</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="orientation">vertical</property>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="halign">start</property>
+                                            <property name="label">Color</property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-start">4</property>
+                                            <property name="margin-top">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="WID_btn_ColorReset">
+                                            <property name="label">Reset</property>
+                                            <property name="margin-start">8</property>
+                                            <property name="valign">end</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel"/>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder</property>
+                                        <property name="label">Grid</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">2</property>
+                                        <property name="margin-start">4</property>
+                                        <child>
+                                          <object class="GtkColorDialogButton" id="WID_color_Grid">
+                                            <property name="dialog">
+                                              <object class="GtkColorDialog">
+                                                <property name="title">Grid color</property>
+                                              </object>
+                                            </property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder</property>
+                                        <property name="label">Grid (Gain)</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">4</property>
+                                        <property name="margin-start">4</property>
+                                        <child>
+                                          <object class="GtkColorDialogButton" id="WID_color_GridGain">
+                                            <property name="dialog">
+                                              <object class="GtkColorDialog">
+                                                <property name="title">Grid color</property>
+                                              </object>
+                                            </property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="homogeneous">True</property>
+                                    <child>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder</property>
+                                        <property name="label">Frequency</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">2</property>
+                                        <property name="margin-start">4</property>
+                                        <child>
+                                          <object class="GtkColorDialogButton" id="WID_color_Freq">
+                                            <property name="dialog">
+                                              <object class="GtkColorDialog">
+                                                <property name="title">Grid color</property>
+                                              </object>
+                                            </property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder</property>
+                                        <property name="label">Noise</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">2</property>
+                                        <property name="margin-start">2</property>
+                                        <child>
+                                          <object class="GtkColorDialogButton" id="WID_color_Noise">
+                                            <property name="dialog">
+                                              <object class="GtkColorDialog">
+                                                <property name="title">Grid color</property>
+                                              </object>
+                                            </property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder</property>
+                                        <property name="label">Gain</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">2</property>
+                                        <property name="margin-start">2</property>
+                                        <child>
+                                          <object class="GtkColorDialogButton" id="WID_color_Gain">
+                                            <property name="dialog">
+                                              <object class="GtkColorDialog">
+                                                <property name="title">Grid color</property>
+                                              </object>
+                                            </property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder</property>
+                                        <property name="label">Title</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">4</property>
+                                        <property name="margin-start">2</property>
+                                        <child>
+                                          <object class="GtkColorDialogButton" id="WID_color_Title">
+                                            <property name="dialog">
+                                              <object class="GtkColorDialog">
+                                                <property name="title">Grid color</property>
+                                              </object>
+                                            </property>
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel">
+                        <property name="label">Plot</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkAspectFrame" id="WID_aspect_Plot">
+                <property name="hexpand">True</property>
+                <property name="margin-bottom">4</property>
+                <property name="margin-end">4</property>
+                <property name="margin-start">4</property>
+                <property name="margin-top">4</property>
+                <property name="obey-child">False</property>
+                <property name="ratio">1.414</property>
+                <property name="vexpand">True</property>
+                <child>
+                  <object class="GtkDrawingArea" id="WID_drawing_Plot">
+                    <property name="content-height">707</property>
+                    <property name="content-width">1000</property>
+                    <property name="css-classes">plot</property>
+                    <property name="hexpand">True</property>
+                    <property name="hexpand-set">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="vexpand-set">True</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="homogeneous">True</property>
+            <property name="spacing">30</property>
+            <child>
+              <object class="GtkLabel" id="WID_lbl_Status">
+                <property name="css-classes">status</property>
+                <property name="hexpand">True</property>
+                <property name="label">Connecting to HP8970</property>
+                <property name="margin-bottom">4</property>
+                <property name="margin-end">4</property>
+                <property name="margin-start">4</property>
+                <property name="margin-top">4</property>
+                <property name="valign">end</property>
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="WID_lbl_Status_LO">
+                <property name="css-classes">status</property>
+                <property name="hexpand">True</property>
+                <property name="margin-bottom">4</property>
+                <property name="margin-end">4</property>
+                <property name="margin-start">4</property>
+                <property name="margin-top">4</property>
+                <property name="valign">end</property>
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="WID_Splash">
+    <property name="decorated">False</property>
+    <property name="transient-for">WID_HP8970_application</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="css-classes">splash_name</property>
+            <property name="label">HP8970 Companion</property>
+            <property name="margin-bottom">15</property>
+            <property name="margin-top">15</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator"/>
+        </child>
+        <child>
+          <object class="GtkLabel" id="WID_lbl_version">
+            <property name="label">June 2024</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="css-classes">license</property>
+            <property name="label">Copyright © 2024  Michael G. Katzmann
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+express or implied.
+
+See the License for the specific language governing permissions and
+limitations under the License</property>
+            <property name="margin-bottom">15</property>
+            <property name="margin-end">15</property>
+            <property name="margin-start">15</property>
+            <property name="margin-top">15</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

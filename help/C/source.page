@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="guide" id="source">
+  <info>
+    <link type="guide" xref="index#operations"/>
+    <revision pkgversion="1.00.1" date="2024-07-25" status="candidate"/>
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email>michaelk@IEEE.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+    <desc>Noise Source</desc>
+  </info>
+  <title>Noise Source Calibration Tables</title>
+  <media type="image" style="floatstart end" mime="image/png" src="media/sourcePage.png"/>
+  <p>Characterized solid state noise sources are used to provide the 'hot' and 'cold' temperature input signals for measuring the 
+  added noise contribution of the device under test.</p>
+  <p>The 8970 uses the known noise contributions of the source at specified frequencies and the interpolated values between the to determine
+  the added noise of the DUT. The 8970A itself can store one set and the 8970B four sets of tables.</p>
+  <p>The <app>HP8970 Companion</app> can store up to five tables which can be sent to the 8970 to match the noise source being used.</p> 
+  <section id="noise_table">
+    <title>Selecting Noise Source</title>
+    <p>Select the noise source to edit or to upload using the drop-down list on the <key>Source</key> page of the notebook widget.</p>
+    <p>Edit the name in the entry widget of the drop down list to customize the name of your noise source. If you do edit the name,
+    the 'Save' button becomes active, allowing you to save the name change.</p>
+    <p>The 'name' field is only used for identifying the noise source in the <app>HP8970 Companion</app> and is not sent
+    to the 8970 itself.</p>
+  </section>
+  <section id="noise_table_edit">
+    <title>Editing the Noise Source Characterization Table</title>
+    <p>Each line of the table may be edited. Use mouse pointer and scroll wheel to highlight the cell containing the value (frequency of ENR) to edit.
+    Type in the revised value with the keyboard (either frequency or ENR).If you do edit an entry of the table, the 'Save' button becomes active, 
+    allowing you to save the change. If you do not save the edited table, any changes will be lost if anoither table is selected or
+    if the program ends; however, unsaved changes may be uploaded to the 8970 which will remain in the instrumnent until overwritten.</p>
+    <p>If the frequency value is edited, the table is sorted after the cell looses focus.</p>
+    <p>To delete a row, use the cursor to highlight a cell in the row and press the <key>Delete</key> button.</p>
+    <p>To add a row, press the <key>Add</key> button. A new row will appear at the head of the table with a frequency of 0. 
+    When the actual frequency is enterered for the new characterization point, the row will be re-ordered in ascending frequency order.</p>
+  </section>
+  <section id="noise_table_upload">
+    <title>Uploading Table to 8970</title>
+    <p>The setected table is transferred to the 8970 using the <key>Upload</key> button.</p>
+    <p>The table is transferred to store 0 in the 8970B and to the sole store on the 8970A.</p>
+  </section>
+</page>

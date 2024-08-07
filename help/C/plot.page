@@ -1,0 +1,49 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic" style="guide"
+      id="colors">
+
+  <info>
+    <link type="guide" xref="index#operations"/>
+    <revision pkgversion="2.00.1" date="2024-07-25" status="candidate" />
+
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email>michaelk@IEEE.org</email>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Customizing the plot elements</desc>
+  </info>
+  
+  <title>Plot Ranges &amp; Customization</title>
+  <p><media type="image" width="300" mime="image/png" src="media/plotPage.png" /></p>
+  <p>The plot of frequency/time verses noise figure/temperature and gain may be auto-scaled or may have the ordinate ranges defined explicitly by the user.</p> 
+  <p>The colors of the plot elements (grid, trace and title) may be altered by the user.</p>
+  <p>These customizations of the plot display are be made from the <key>Plot</key> notebook page.</p>
+  <section id="range-setting">
+    <title>Setting the Ordinate Ranges</title>
+    <p>Auto-scaling of the ordinate ranges, based on the data, is enabled by checking the <key>Auto Scaling</key> check-box. This ensures that all the datapoints are plotted within the maximum and minimum extremes of the grid.</p><p>Explicity setting the maximum and minimum extremes of the grid, for both the noise and gain traces, are enabled when <key>Auto Scaling</key> is not checked.</p><p>The maximum and minimum settings of the noise trace may be in dB, ratio or temperature depending on the seting of the noise units when the data was captured. Set the noise units on the <link xref="hp8970#infrequent">HP8970</link> notebook page prior to making the measurements.</p><p>The grid range settings selected are stored with the plot when it is saved in JSON format, and restored when the plot is recalled.</p>
+  </section>
+  <section id="pen-colors">
+    <title>Pen Colors</title>
+    <p>When altered, the selected colors will apply to the currently displayed and all subsequent plots. The color settings and are not saved and recalled  with the plot but are preserved when the program is restarted.</p>
+    <p>Select the plot element to customize from the <em>Color</em> group on the <key>Plot</key> page of the notebook.</p>
+    <p>The elements that can be customized are:</p>
+    <list>
+      <item><p><em>Grid</em> - Grid for noise figure (or temperature) and the border of the grid area.</p></item>
+      <item><p><em>Grid (Gain)</em> - Grid for the gain (when shown) and when different than the noise grid. Typically, when autoscaled, the two grids are the same (10 divisions, with the maximum and minimum on division boundaries). When manually setting the ranges, this may not be the case.</p></item>
+      <item><p><em>Frequency</em> - Frequency or time ordinate annotations.</p></item>
+      <item><p><em>Noise</em> - Noise trace and annotations.</p></item>
+      <item><p><em>Gain</em> - Gain trace and annotations</p></item>
+      <item><p><em>Title</em> - Title and date annotation.</p></item>
+    </list>
+   
+  </section>
+
+  <section id="color-reset">
+    <title>Reset Colors</title>
+    <p>Colors can be reset to the default valuse by pressing the <key>Reset</key> button.</p>
+  </section>
+<note style="information"><p>Colors may be defined with RGBA values. That is to say, the transparancy of the pen may also be specified.</p></note>
+</page>

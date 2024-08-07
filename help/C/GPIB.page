@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="guide" id="starting">
+  <info>
+    <link type="guide" xref="index#setup"/>
+    <revision pkgversion="7.10.1" date="2018-06-17" status="candidate"/>
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email>michaelk@IEEE.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+    <desc>Using HP8970 Companion for the first time</desc>
+  </info>
+  <title>GPIB connection to the HP8970</title>
+  <p>The first and most important setup task is to establish communication with the HP8970 Noise Figure Meter over the HPIB (GPIB).</p>
+  <p>When you start <app>HP8970 Companion</app> for the first time, there will be no saved noise source calibration tables nor will there be any saved traces.</p>
+  <p>A necessary prerequisite for for the program to communicate with the HP8970 is the installation of the Linux GPIB driver and libraries.</p>
+  <p>For details on installing the Linux GPIB driver refer to the site, <link href="https://linux-gpib.sourceforge.io/">https://linux-gpib.sourceforge.io/</link> 
+  or to install RPMs on a Fedora distribution, see <link href="https://copr.fedorainfracloud.org/coprs/vk2bea/GPIB/">https://copr.fedorainfracloud.org/coprs/vk2bea/GPIB/</link></p>
+  <section>
+    <title>Establishing a GPIB connection to the HP8970</title>
+    <media type="image" width="300" style="floatend center" mime="image/png" src="media/GPIBpage.png"/>
+    <steps>
+      <item>
+        <p>Select the GPIB page of the notebook widget.</p>
+      </item>
+      <item>
+        <p>Either the index of the GPIB controller card and the device PID may be used directly, or the device name as defined in the <code>/etc/gpib.conf</code> file may be used. </p>
+        <code mime="application/xml"><![CDATA[device {
+        minor    = 0            /* minor number for interface     */
+        name     = "HP8970A"    /* device mnemonic for N.F. meter */
+        pad      = 8            /* The Primary Address            */
+        sad      = 0            /* Secondary Address              */
+        eos      = 0xa          /* EOS Byte                       */
+        set-reos = no           /* Terminate read if EOS          */
+        set-xeos = no           /* Assert EOI line when eos sent  */ 
+        set-bin  = no           /* Compare EOS 8-bit              */
+        timeout  = T30s         /* default timeout for commands   */
+    }]]></code>
+      </item>
+      <item>
+        <p>Either check the box and set the HP8970 name used in the GPIB configuration file (<code>/etc/gpib.conf</code> or <code>/usr/local/etc/gpib.conf</code>), or uncheck the box set the GPIB card index (minor device number) and the GPIB PID of the 8970. (default 8)</p>
+      </item>
+      <item>
+        <p>Observe the status line to ensure that communications has been established</p>
+      </item>
+    </steps>
+  </section>
+  <section>
+    <title>Establishing a GPIB connection to a Local Oscillator</title>
+    <media type="image" width="300" style="floatend center" mime="image/png" src="media/GPIBpage.png"/>
+    <p>When the 8970 is set to any mode except 1.0, an external signal generator is used to create a local oscillator to down convert the DUT signal to an intermediate frequency within the range of the 8970.</p>
+    <p>The frequency of the local oscillator is either swept or fixed depending upon the mode. The <app>HP8970 Companion</app> controls this signal generator over GPIB. The address of the local oscillator on the GPIB is also set on the <key>GPIB</key> page of the notebook widget.</p>
+    <steps>
+      <item>
+        <p>Select the GPIB page</p>
+      </item>
+      <item>
+        <p>Either the device PID may be used directly <em>(the controller is assumed to be the same as that defined for the 8970)</em> or, if the box next to the <em>"External L.O. GPIB Name"</em> is checked, the device name defined in the <code>/etc/gpib.conf</code> file is used. </p>
+        <code mime="application/xml"><![CDATA[device {
+        minor    = 0            
+        name     = "HP8665A"    /* 4.2 GHz signal generator */
+        pad      = 16            
+        sad      = 0            
+        eos      = 0xa          
+        set-reos = no
+        set-xeos = no           
+        set-bin  = no           
+        timeout  = T30s         
+    }]]></code>
+      </item>
+      <item>
+        <p>Either check the box and set the name of the signal generator defined in the GPIB configuration file (<code>/etc/gpib.conf</code> or <code>/usr/local/etc/gpib.conf</code>), or uncheck the box set the GPIB PID of the signal generator</p>
+      </item>
+      <item>
+        <p>Observe the status line to ensure that communications has been established</p>
+      </item>
+    </steps>
+  </section>
+</page>

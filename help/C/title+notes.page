@@ -1,0 +1,29 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic" style="guide"
+      id="notes">
+
+  <info>
+    <link type="guide" xref="index#operations"/>
+    <revision pkgversion="2.00.1" date="2024-07-25" status="candidate" />
+
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email>michaelk@IEEE.org</email>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Title and Notes</desc>
+  </info>
+  
+  <title>Title &amp; Notes</title>
+  <media type="image" mime="image/png" src="media/title.png" />
+
+  <p>A title may be entered which will be displayed on the plot.</p>
+  <section>
+  <media type="image" style="floatright"  mime="image/png" src="media/notesPage.png" />
+  <p>Notes regarding the measurement (or anything else) may be entered to accompany the plot and data.</p>
+  <p>Notes are entered on the <gui>Notes</gui> page of the notebook widget.</p>
+  <note style="tip" ><p>The title and notes will be saved and recalled with the plot data if saved as a JSON file.</p></note>
+  </section>
+</page>

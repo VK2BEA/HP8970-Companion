@@ -1,0 +1,102 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="guide"
+      id="hp8970">
+
+  <info>
+    <link type="guide" xref="index#operations"/>
+    <revision pkgversion="1.00.1" date="2024-07-25" status="candidate" />
+
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email its:translate="no">michaelk@IEEE.org</email>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>HP8970 Settings</desc>
+  </info>
+
+  <title>HP8970 Settings</title>
+    <media its:translate="no" style = "floatstart center" type="image" mime="image/svg" src="media/mainPage.png" width="400"/>
+  <p>The HP8970 may be configured for measurement using the <app>HP8970 Companion</app> graphical user interface. The range of frequencies to sweep, the spacing between freqency steps and the number of measurements to make at each frequency are the most important settings.</p>
+  <p>The frequency range of the measurements for the device under test (DUT) will require that a particular mode is used.</p>
+  <p>The settings in the GUI are transmitted to the HP8970 when changed, and again immediatly prior to a sweep or spot measurement. This ensures the 8970 is set as indicated even if the meter has been reset to its preset values with the local <key>Preset</key> button or by a power interruption.</p>
+
+  <section id="sweep" style="2column">
+    <title>Sweep Frequency Settings</title>
+    <p>The <gui>Start Frequency</gui>, <gui>Stop Frequency</gui> and <gui>Step Frequency</gui> must be set appropriate to the sweep
+    measurement to be made.</p>
+    <p>The limits of the values that can be entered reflect the mode selected and the 8970 model. There are two sets of frequencies, one for modes 1.0
+    and 1.4 and one for modes 1.1, 1.2 and 1.3. These are saved and recalled when the mode is changed.</p>
+  </section>
+  <section id="spot" style="2column">
+    <title>Spot Frequency</title>
+    <p>The <gui>Spot Frequency</gui> is the frequency at which repeated measurements are made at a single frequency.</p>
+    <p>There are two frequencies, one for modes 1.0 and 1.4 and one for modes 1.1, 1.2 and 1.3. These are saved and recalled
+     when the mode is changed.</p>
+  </section>
+  <section id="smoothing" style="2column">
+    <title>Smoothing</title>
+    <p>A swept frequency measurement takes an arithmetic average of n readings and displays that average. The allowed values of n can range fro m 1 to 512 in steps that are multiples of two.</p>
+    <p>The time taken to make a measurement is proportional to the number of readings averaged.</p>
+  </section>
+    
+  <section id="resolution" style="2column">
+    <title>Resolution</title>
+    <p>The 8970 will sweep from the frequency specified as the <em>Start Frequency</em> to the <em>Stop Frequency</em> at the <em>Step Frequency</em>.</p>
+    <p>The smallest step is 1 MHz and the maximum number of calibration and measurement measurements is 81 (for the 8970A, 181 for the 8970B).</p>
+    <p>By stepping the spot frequency, more measurement points may be accumulated. The <key>Resolution</key> selection can be used to select up to an additional 200 or 500 frequencies to be measured. (The number of calibration points is not changed).</p>
+    <p>The maximum number of measurement points in a sweep is (Fstop - Fstart) in MHz plus 1.</p>
+    <note><p>e.g. if the start frequency is is 420 MHz and the stop frequency is 460 MHz, the largest number of calibration and measurement frequencies is 460-420+1 = 41</p></note> 
+  </section>
+  
+  <section id="mode" style="2column">
+    <title>Mode</title>
+    <p>There are five measurement modes available using the 8970. More modes are available with the 8970B but these require additional test sets and are not handled by this program.</p>
+    <p>These may be grouped in three catagories:</p>
+      <steps>
+        <item><p>The first group is a single mode, mode 1.0 (1.0 SP).</p>
+              <p>This is the 8970 stand-alone mode with no external mixer or LO, for frequencies in the range of 10 to 1500 MHz (1600 MHz 8970B &amp; 2047 MHz with option 20)</p>
+       </item>
+       <item><p>The second group consists of mode 1.1 (1.1 SP) and mode 1.3 (1.3 SP).</p>
+             <p>Both of these modes use down conversion in to the range of the 8970. Both have a variable frequency external LO and a fixed IF.</p>
+             <p>Mode 1.1 measures a DUT with no frequency conversion (an example is an amplifier or transis­tor) while mode 1.3 measures a DUT with frequency con­version (such as a mixer or receiver).</p>
+       </item>
+       <item><p>The third group, mode 1.2 (1 .2 SP) and mode 1.4 (1.4 SP) uses a fixed frequency external LO and a variable IF.</p>
+             <p> Mode 1.2 is for measure­ments with frequency conversion in the system but not in the DUT, and mode 1.4 is for measurements with frequency conversion in the DUT.</p>
+             <p> Mode 1.2 must be a single sideband measurement; either LSB (2.1 SP) or USB (2.2 SP) must be selected and external filtering of the undesired sideband provided. Unless LSB or USB is selected, the display will show error mes­sage E34 ( Double sideband not allowed ).</p>
+       </item>
+    </steps>
+  </section>
+  <section id="infrequent" style="2column">
+    <title>HP8970 Special Functions</title>
+    <media its:translate="no" style = "floatstart center" type="image" mime="image/svg" src="media/specialPage.png" width="400"/>
+    <p>The units used to measure noise and other infrequently used settings can be changed on the <key>HP8970</key> page of the notebook.</p>
+    <section id="noise_units" stype="2column">
+      <title>Noise Units</title>
+      <p>Measurements of noise can be made by the 8970 in several units. This control instructs the 8970 to report the noise measurement 
+      in the selected unit. The data received from the 8970 and the plot displayed will be in the units set when the sweep is made.</p>
+      <p>Altering this setting will not change the plot of measurements already taken, only subsequent measurements.</p>
+    </section>
+    <section id="cold_temp" stype="2column">
+      <title>Cold Temperature</title>
+      <p>This widget sets the 8970 entry Tcold (Tc) in K.</p>
+      <p><gui>PRESET</gui> sets Tc to 296.5 K but the <app>HP8970 Companion</app> will set Tcold to the value set in the widger prior
+      to all measurements.</p>
+    </section>
+    <section id="loss_comp" stype="2column">
+      <title>Loss Compensation</title>
+      <p>Loss compensation allows the 8970A to automatically correct for loss at the input a nd output of the DUT, taking into account the temperature of the two losses.</p>
+      <p>This is important in several cases such as for:</p>
+      <list>
+        <item><p>Amplifiers with waveguide input, where a waveguide-to-coax adapter is needed.</p></item>
+        <item><p>Transistors, where input and output tuners are required.</p></item>
+        <item><p>Non-50Ω converters (such as TV tuners and amplifiers) where matching pads or transformers are required.</p></item>
+        <item><p>Compensation for fixed attenuators used to improve SWR.</p></item>
+        <item><p>Double sideband measurement modification to obtain approximate single sideband results.</p></item>
+      </list>
+    </section>
+  </section>
+  
+</page>

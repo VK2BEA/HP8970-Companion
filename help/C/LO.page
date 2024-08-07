@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="guide" id="external_lo">
+  <info>
+    <link type="guide" xref="index#operations"/>
+    <revision pkgversion="1.00.1" date="2024-07-25" status="candidate"/>
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email>michaelk@IEEE.org</email>
+    </credit>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+    <desc>External Local Oscilator</desc>
+  </info>
+  <title>External Local Oscilator</title>
+  <p>Measurement of the device under test beyond the frequency range of the 8970 is possible using an external mixer/down converter
+   and local oscillator. The external local oscillator is a separate signal generator controlled by the <app>HP8970 Companion</app> over GPIB.</p>
+  <p>The form of the GPIB commands are defined in the <gui>Ext. L.O.</gui> page of the notebook widget.</p>
+  <section id="range-setting">
+    <title>GPIB Commands for the Local Oscillator</title>
+    <media type="image" style="floatstart end" mime="image/png" src="media/extLOpage.png"/>
+    <section id="LOsetup">
+      <title>GPIB Setup Command</title>
+      <p>To ensure the external local oscillator is configured correctly, initial setup of the local oscillator should be defined 
+      in the <gui>Preliminary Setup command</gui> entry widget.</p>
+      <p>The GPIB commands to set the appropriate output power, enable output and to set the signal generator to output an 
+      unmodulated CW signal can be defined here.</p>
+      <note style="tip">
+        <p>Consult the operation manual for the particular signal generator you are using to determine the correct form of the 
+        setup commands.</p>
+      </note>
+      <note style="info">
+        <p>e.g. The HP 8665A GPIB commands <code>AMPL:SOUR 10DBM;STAT ON;:FREQ:MODE CW;:FM:STAT OFF;:AM:STAT OFF;</code> will:</p>
+        <list>
+          <item>
+            <p><code>AMPL:SOUR 10DBM;</code> &#x27F9; set amplitude to 10dBm</p>
+          </item>
+          <item>
+            <p><code>STAT ON;</code> &#x27F9; turn on RF output <em>(still refering to the amplitude sub system)</em></p>
+          </item>
+          <item>
+            <p><code>:FREQ:MODE CW;</code> &#x27F9; CW output</p>
+          </item>
+          <item>
+            <p><code>:FM:STAT OFF;</code> &#x27F9; turn off frequency modulation</p>
+          </item>
+          <item>
+            <p><code>:AM:STAT OFF</code> &#x27F9; turn off amplitude modulation</p>
+          </item>
+        </list>
+      </note>
+    </section>
+    <section id="LOfrequency">
+      <title>GPIB Frequency Command</title>
+      <p>When setting the frequency of the external local oscillator, the GPIB string appropriate to the particular signal generator 
+      must be sent. This is defined in the <gui>Set Frequency format</gui> entry widget.</p>
+      <p>The GPIB command to set the frequency in megahertz is defined with the frequency value (in MHz) replaced by
+      <code>%.0lf</code>, the C language <code>printf</code> string for a <code>double</code> precision floating point number 
+      (with no digits after the decimal point).</p>
+      <note style="info">
+        <p>e.g. The HP 8665A Synthesized Signal Generator HP-SL command to set the frequency of the signal generator to 2050 MHz is <code>FREQ:CW 2050MHZ;</code>. 
+        Therfore, the appropriate string will be <code>FREQ:CW %.0lfMHZ;</code></p>
+      </note>
+    </section>
+    <section id="IFfrequency">
+      <title>IF Frequency</title>
+      <p>In modes where the external local oscillator is swept <em>(modes 1.1 and 1.3)</em>, the 8970 measures at a fixed IF frequency
+      and the external local oscillator's frequency is offset by the IF frequency.
+      The direction of offset is governed by the <gui>Sideband Offset</gui> setting.</p>
+      <note style="info">
+      <p>This setting is ignored in modes 1.0, 1.2 and 1.4</p>
+      <p>e.g. In mode 1.1, if the IF is set at 1000 MHz and the sideband off set to lower, and, if we tell the 8970 to sweep from 2000 MHz to 2500 MHz,
+      the 8970 will measure at the fixed IF frequency of 1000 MHz, applying the noise source calibration from 2000 MHz to 2500 MHz.
+      The <app>HP8970 Companion</app> will sweep the external L.O. from 3000 MHz to 3500 MHz. </p>
+      </note>
+    </section>
+    <section id="LOfrequency">
+      <title>LO Frequency</title>
+      <p>In modes where the IF (8970) is swept <em>(modes 1.2 and 1.4)</em>, the local oscillator is set to a fixed frequency.
+      The direction from the L.O. of the test frequency of the device under test is governed by the <gui>Sideband Offset</gui> setting.</p>
+      <p>If the <gui>Sideband Offset</gui> is set to lower, the measurement frequency is the IF frequency below the LO frequency.</p>
+      <note style="info">
+      <p>This setting is ignored in modes 1.0, 1.1 and 1.3</p>
+      <p>e.g. In mode 1.2, if the LO is set at 3000 MHz and the sideband off set to lower, and, if we tell the 8970 to sweep from 2000 MHz to 2500 MHz,
+      the 8970 will measure at the IF frequencies from 1000 MHz to 500 MHz, applying the noise calibration from 2000 MHz to 2500 MHz.</p>
+      </note>
+    </section>
+    <section id="SettlingTime">
+      <title>Settling Time</title>
+      <p>In modes where the external local oscillator is swept <em>(modes 1.1 and 1.3)</em>, the <app>HP8970 Companion</app> will 
+      step the LO from the minimum frequency to the maximum frequency (offset by the IF) in steps. The signal generator will have
+      a defined settling time and the program will delay triggering a measurement, following a frequency step, by the settling time.</p>
+    </section>
+    <section id="Sideband">
+      <title>Sideband</title>
+      <p>Double sideband vs single sideband measurement be­comes a consideration in modes 1.1 , 1.3 and 1.4. 
+      Mode 1.2 must be single sideband.</p>
+      <p>The purpose of 8970 Sideband Selection is to allow <app>HP8970 Companion</app>
+      to properly control (offset) the external local oscillator frequency and so that the 8970 can tune its frequency properly.</p>
+      <p>That is all this accomplishes - it does not change the algorithms applied for calculating noise figure or correcting for 
+      second stage contribution.</p>
+      <p>Any filtering necessary to reject an unwanted sideband must be accomplished outside the 8970.</p>
+    </section>
+  </section>
+</page>

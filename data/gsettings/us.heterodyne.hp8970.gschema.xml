@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<schemalist>
+  <schema id="us.heterodyne.hp8970" path="/us/heterodyne/hp8970/">
+    <key name="print-settings" type="a{sv}">
+      <default>[]</default>
+      <summary>GTK print settings</summary>
+      <description>GTK print settings</description>
+    </key>
+    <key name="page-setup" type="a{sv}">
+      <default>[]</default>
+      <summary>GTK page setup</summary>
+      <description>GTK page setup</description>
+    </key>
+    <key name="last-directory" type="s">
+      <default>'~'</default>
+      <summary>Last directory used to save PDF, PNG or SVG</summary>
+      <description>Last directory used to save PDF, PNG or SVG</description>
+    </key>
+
+    <key name="corrected-noise-gain" type="b">
+      <default>false</default>
+      <summary>Obtain the corrected noise figure and gain</summary>
+      <description>Obtain the corrected noise figure and gain</description>
+    </key>
+    <key name="smoothing" type="i">
+      <default>0</default>
+      <summary>Smoothing factor</summary>
+      <description>Smoothing factor (log)</description>
+    </key>
+    <key name="mode" type="i">
+      <default>0</default>
+      <summary>Mode</summary>
+      <description>Mode (direct or with external mixer)</description>
+    </key>
+    <key name="frequency" type="i">
+      <default>30</default>
+      <summary>Frequency (MHz)</summary>
+      <description>Frequency (MHz)</description>
+    </key>
+    <key name="frequency-r2" type="i">
+      <default>12000</default>
+      <summary>Frequency (MHz)</summary>
+      <description>Frequency (MHz)</description>
+    </key>
+    <key name="sweep-start" type="i">
+      <default>10</default>
+      <summary>Sweep start frequency (MHz)</summary>
+      <description>Sweep start frequency (MHz)</description>
+    </key>
+    <key name="sweep-stop" type="i">
+      <default>1500</default>
+      <summary>Sweep stop frequency (MHz)</summary>
+      <description>Sweep stop frequency (MHz)</description>
+    </key>
+    <key name="sweep-step-sweep" type="i">
+      <default>20</default>
+      <summary>Sweep step frequency (MHz)</summary>
+      <description>Sweep step frequency (MHz)</description>
+    </key>
+    <key name="sweep-step-cal" type="i">
+      <default>20</default>
+      <summary>Sweep step calibration frequency (MHz)</summary>
+      <description>Sweep step calibration frequency (MHz)</description>
+    </key>
+    <key name="sweep-start-r2" type="i">
+      <default>8000</default>
+      <summary>Sweep start frequency (MHz)</summary>
+      <description>Sweep start frequency (MHz)</description>
+    </key>
+    <key name="sweep-stop-r2" type="i">
+      <default>12000</default>
+      <summary>Sweep stop frequency (MHz)</summary>
+      <description>Sweep stop frequency (MHz)</description>
+    </key>
+    <key name="sweep-step-cal-r2" type="i">
+      <default>200</default>
+      <summary>Sweep step calibration frequency (MHz)</summary>
+      <description>Sweep step calibration frequency (MHz)</description>
+    </key>
+    <key name="sweep-step-sweep-r2" type="i">
+      <default>200</default>
+      <summary>Sweep step frequency (MHz)</summary>
+      <description>Sweep step frequency (MHz)</description>
+    </key>
+    
+    <!-- Page GPIB -->
+    <key name="gpib-controller-index" type="i">
+      <default>0</default>
+      <summary>GPIB controller index (minor no.)</summary>
+      <description>GPIB controller index (minor no.). Either this or the name is used.</description>
+    </key>
+    <key name="gpib-device-pid" type="i">
+      <default>8</default>
+      <summary>GPIB PID of the 8790</summary>
+      <description>GPIB PID of the 8790</description>
+    </key>
+    <key name="gpib-use-device-pid" type="b">
+      <default>true</default>
+      <summary>Selection of whether to use the index or name of the GPIB device</summary>
+      <description>Selection of whether to use the index or name of the GPIB device</description>
+    </key>
+    <key name="gpib-device-name" type="s">
+      <default>'HP8970A'</default>
+      <summary>GPIB device name (as listed in /etc/gpib.conf)</summary>
+      <description>GPIB device name for HP8970 (as listed in /etc/gpib.conf)</description>
+    </key>
+    <key name="gpib-extlo-device-pid" type="i">
+      <default>16</default>
+      <summary>GPIB PID of the external LO</summary>
+      <description>GPIB PID of the external LO</description>
+    </key>
+    <key name="gpib-extlo-use-device-pid" type="b">
+      <default>true</default>
+      <summary>Selection of whether to use the GPIB PID of the external LO</summary>
+      <description>Selection of whether to use the GPIB PID of the external LO</description>
+    </key>
+    <key name="gpib-extlo-device-name" type="s">
+      <default>'HP8665A'</default>
+      <summary>GPIB device name of external LO (as listed in /etc/gpib.conf)</summary>
+      <description>GPIB device name of external LO (as listed in /etc/gpib.conf)</description>
+    </key>
+    
+	<!-- Page Source -->
+    <key name="noise-source-table-selected" type="i">
+      <default>0</default>
+      <summary>Currlenly selected Noise Source Table</summary>
+      <description>Currently Selected Noise Source Table</description>
+    </key>
+    <key name="noise-source-table-1" type="a(y)">
+      <default>[]</default>
+      <summary>Frequency/ENR pairs and name for noise source 1</summary>
+      <description>Frequency/ENR pairs and name for noise source 1</description>
+    </key>
+    <key name="noise-source-table-2" type="a(y)">
+      <default>[]</default>
+      <summary>Frequency/ENR pairs and name for noise source 2</summary>
+      <description>Frequency/ENR pairs and name for noise source 2</description>
+    </key>
+    <key name="noise-source-table-3" type="a(y)">
+      <default>[]</default>
+      <summary>Frequency/ENR pairs and name for noise source 3</summary>
+      <description>Frequency/ENR pairs and name for noise source 3</description>
+    </key>
+    <key name="noise-source-table-4" type="a(y)">
+      <default>[]</default>
+      <summary>Frequency/ENR pairs and name for noise source 4</summary>
+      <description>Frequency/ENR pairs and name for noise source 4</description>
+    </key>
+    <key name="noise-source-table-5" type="a(y)">
+      <default>[]</default>
+      <summary>Frequency/ENR pairs and name for noise source 5</summary>
+      <description>Frequency/ENR pairs and name for noise source 5</description>
+    </key>
+
+     <!-- Page Options -->
+    <key name="show-hp-logo" type="b">
+      <default>true</default>
+      <summary>Show the HP logo on the plot</summary>
+      <description>Show the hP logo on the plot</description>
+    </key>
+    <key name="show-time" type="b">
+      <default>true</default>
+      <summary>Show the time/date on the plot</summary>
+      <description>Show the time/date on the plot</description>
+    </key>
+    <key name="model-variant" type="i">
+      <default>0</default>
+      <summary>HP8970A or HP8970B variant</summary>
+      <description>HP8970A or HP8970B variant</description>
+    </key>
+    <key name="pdf-paper-size" type="i">
+      <default>0</default>
+      <summary>Size of the page when creating PDF or SVG pages</summary>
+      <description>Size of the page when creating PDF or SVG pages</description>
+    </key>
+    
+    <!-- Page Plot -->
+    <key name="grid-gain-range" type="a(dd)">
+      <default>[]</default>
+      <summary>Gain range grid</summary>
+      <description>Gain minimum for set grid</description>
+    </key>
+    <key name="grid-noise-range" type="a(dd)">
+      <default>[]</default>
+      <summary>Noise range for fixed grid</summary>
+      <description>Noise range for fixed grid</description>
+    </key>
+    <key name="grid-freq-range" type="a(dd)">
+      <default>[]</default>
+      <summary>Frequency maximum for set grid</summary>
+      <description>Frequency maximum for set grid</description>
+    </key>
+    <key name="trace-colors" type="a(dddd)">
+      <default>[]</default>
+      <summary>trace colors</summary>
+      <description>Trace &amp; grid pen colors (RGBA)</description>
+    </key>
+    <key name="plot-autoscaling" type="b">
+      <default>true</default>
+      <summary>Autoscale plot</summary>
+      <description>Autoscale plot</description>
+    </key>
+    
+    <!-- Page External L.O. -->
+    <key name="extlo-setup" type="s">
+      <default>''</default>
+      <summary>Setup sequence for external L.O.</summary>
+      <description>Setup sequence for external L.O.</description>
+    </key>    
+    <key name="extlo-set-freq" type="s">
+      <default>''</default>
+      <summary>Set frequency format for external L.O.</summary>
+      <description>Set frequency format for external L.O.</description>
+    </key>
+    <key name="extlo-if-freq" type="i">
+      <default>20</default>
+      <summary>I.F. frequency for modes using external L.O. with fixed I.F. frequency</summary>
+      <description>I.F. frequency for modes using external L.O. with fixed I.F. frequency</description>
+    </key>
+    <key name="extlo-lo-freq" type="i">
+      <default>2000</default>
+      <summary>L.O. frequency for modes using fixed freq external L.O.</summary>
+      <description>L.O. frequency for modes using fixed freq external L.O.</description>
+    </key>
+    <key name="extlo-sideband" type="i">
+      <default>0</default>
+      <summary>Sideband when using external L.O.</summary>
+      <description>Sideband when using external L.O.</description>
+    </key>
+    <key name="extlo-settling-time" type="i">
+      <default>0</default>
+      <summary>Sideband when using external L.O.</summary>
+      <description>Sideband when using external L.O.</description>
+    </key>
+    
+    <!-- Page HP8970 -->
+    <key name="noise-units" type="i">
+      <default>0</default>
+      <summary>Units for noise plot</summary>
+      <description>Units for noise plots</description>
+    </key>
+    <key name="option-t-cold" type="d">
+      <default>296.5</default>
+      <summary>Tcold in (K)</summary>
+      <description>Tcold in (K)</description>
+    </key>
+    <key name="option-loss-comp-on" type="b">
+      <default>false</default>
+      <summary>Compensate for losses</summary>
+      <description>Compensate for losses</description>
+    </key>
+    <key name="option-loss-before" type="d">
+      <default>296.5</default>
+      <summary>Loss before DUT (in dB)</summary>
+      <description>Loss after DUT (in dB)</description>
+    </key>
+    <key name="option-loss-after" type="d">
+      <default>296.5</default>
+      <summary>Loss after DUT (in dB)</summary>
+      <description>Loss after DUT (in dB)</description>
+    </key>
+    <key name="option-t-loss" type="d">
+      <default>0</default>
+      <summary>Loss temperature (K)</summary>
+      <description>Loss temperature (K)</description>
+    </key>
+  </schema>
+</schemalist>
+

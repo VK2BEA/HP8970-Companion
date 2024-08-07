@@ -1,0 +1,54 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic" style="guide"
+      id="measurements">
+
+  <info>
+    <link type="guide" xref="index#operations"/>
+    <revision pkgversion="2.00.1" date="2024-07-25" status="candidate" />
+
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email>michaelk@IEEE.org</email>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Making Measurements</desc>
+  </info>
+  
+  <title>Making Measurements</title>
+  <media type="image" mime="image/png" src="media/sweep.png" />
+
+  <section>
+    <title>Calibrate</title>
+    <p>Once the <gui>Start Frequency</gui>, <gui>Stop Frequency</gui> and <gui>Step Frequency</gui> have been set the 8970 can be calibrated</p>
+    <p>Connect the noise source to the instrument as described in the manual appropriate for the mode selected and press the <key>Calibrate</key> button.</p>
+    <p>The plot window of the <app>HP8970 Companion</app> will display the readings taken during calibration but the screen will blank after calibration completes</p>
+  </section>
+  <section>
+    <title>Frequency Sweep</title>
+    <p>Once the <gui>Start Frequency</gui>, <gui>Stop Frequency</gui>, <gui>Step Frequency</gui> and <gui>Resolution</gui> have been set the 8970
+    can take measurements of noise and (possibly) gain. Pre</p>
+    <p>Connect the noise source to the DUT as described in the manual and press the <key>Sweep</key> button.</p>
+    <p>The plot window of the <app>HP8970 Companion</app> will display the readings taken during during the sweep. If the 8970 was 
+    calibrated and the <gui>Correction</gui> checkbox was checked, the gain plot will also be displayed.</p>
+    <p>While the sweep is occuring, most controls will be disabled.</p>
+  </section>
+  <section>
+    <title>Spot Frequency Measurements over Time</title>
+    <p>When the <key>Spot</key> switch is pressed, continuous measurements are made at the <gui>Spot Frequency</gui></p>
+    <p>Connect the noise source to the DUT as described in the manual and press the <key>Spot</key> switch.</p>
+    <p>The plot window of the <app>HP8970 Companion</app> will display the readings taken vs time. If the 8970 was 
+    calibrated and the <gui>Correction</gui> checkbox was checked, the gain plot will also be displayed.</p>
+    <p>While the sweep is occuring, most controls will be disabled.</p>
+    <p>To end the acquisition of measurements at the spot frequency press the <key>Spot</key> again to turn it off.</p>
+    <note style="tip"><p>The range of time displayed varies with the <key>Smoothing</key> setting. Increaing the amount of smoothing
+    (averaging) slows the rate of measurement. The range of time displayed is inversley proportional to the measurement rate.</p></note>
+  </section>
+  <section>
+  <note style="tip"><p>To interrupt a sweep or other measurement press the <key>Esc</key> keyboard key.</p>
+    <p>Pressing <key>Ctrl</key><key>Esc</key> will abort the current operation and send a device clear to the 8970.</p>
+    <p>Pressing <key>Shift</key><key>Esc</key> will abort the current operation and reinitialize the GPIB communication channel.</p>
+  </note>
+  </section>
+</page>
