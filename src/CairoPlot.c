@@ -275,7 +275,7 @@ msTimeToString( gint64 msTime, gboolean bShort ) {
         sTime = g_strdup_printf( "%02d:%02d", g_date_time_get_minute( msTimeGD ), g_date_time_get_second( msTimeGD ) );
     else
         sTime = g_strdup_printf( "%02d:%02d:%02d.%01ld", g_date_time_get_hour( msTimeGD ), g_date_time_get_minute( msTimeGD ),
-                                 g_date_time_get_second( msTimeGD ), ((msTime + 50) % 1000) / 100  );
+                                 g_date_time_get_second( msTimeGD ), (msTime / 100) % 10  );
 
     g_date_time_unref( msTimeGD );
     return sTime;
