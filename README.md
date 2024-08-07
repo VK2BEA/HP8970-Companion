@@ -15,25 +15,25 @@ Program to augment functionality of the HP 8970 Noise Figure Meter:
 ![image](https://github.com/user-attachments/assets/8d9f8904-dc88-4985-8f57-75a039eb17c0)
 
 
-Fedora RPM package are available, install the program and GPIB driver, GPIB utilities and firmware by:
-------------------------------------------------------------------------------------------------------
+A Fedora RPM package is available, install the program and GPIB driver, GPIB utilities and firmware by:
+-------------------------------------------------------------------------------------------------------
 `sudo dnf copr enable vk2bea/GPIB`  
 `sudo dnf copr enable vk2bea/HP8970`  
 `sudo dnf install dkms-linux-gpib linux-gpib linux-gpib-devel linux-gpib-firmware hp8970`
 
 To build & install using Linux autotools, install the following required packages & tools:
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 * `automake`, `autoconf` and `libtool`  
 * To build on Raspberri Pi / Debian: 	`libgs-dev, libglib2.0-dev, libgtk-4-dev, librsvg2-dev, yelp-tools,`  
                 `https://linux-gpib.sourceforge.io/`  
 * To run on Raspberry Pi / Debian :	`libglib-2, libgtk-4, librsvg2-2, libgpib`
 
 Install the GPIB driver: 
-See the `GPIB-Linux.driver/installGPIBdriver.on.RPI` file for a script that may work for you to download and install the Linux GPIB driver, otherwise, visit https://linux-gpib.sourceforge.io/ for installation instructions.
+Visit https://linux-gpib.sourceforge.io/ for installation instructions.
 
 The National Instruments GPIB driver *may* also be used, but this has not been tested. The Linux GPIB API is compatable with the NI library.... quote: *"The API of the C library is intended to be compatible with National Instrument's GPIB library."*
 
-Once the prerequisites (as listed above) are installed, install the 'HP8753 Companion' with these commands:
+Once the prerequisites (as listed above) are installed, install the 'HP8970 Companion' with these commands:
 
         $ ./autogen.sh
         $ cd build/
