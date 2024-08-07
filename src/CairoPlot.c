@@ -270,12 +270,12 @@ gchar *
 msTimeToString( gint64 msTime, gboolean bShort ) {
     gchar *sTime = NULL;
 
-    GDateTime   *msTimeGD = g_date_time_new_from_unix_local_usec ( msTime * 1000 );
+    GDateTime   *msTimeGD = g_date_time_new_from_unix_local ( msTime / 1000 );
     if( bShort )
         sTime = g_strdup_printf( "%02d:%02d", g_date_time_get_minute( msTimeGD ), g_date_time_get_second( msTimeGD ) );
     else
-        sTime = g_strdup_printf( "%02d:%02d:%02d.%01d", g_date_time_get_hour( msTimeGD ), g_date_time_get_minute( msTimeGD ),
-                                 g_date_time_get_second( msTimeGD ), g_date_time_get_microsecond( msTimeGD ) / 100000  );
+        sTime = g_strdup_printf( "%02d:%02d:%02d.%01ld", g_date_time_get_hour( msTimeGD ), g_date_time_get_minute( msTimeGD ),
+                                 g_date_time_get_second( msTimeGD ), msTime % 1000  );
 
     g_date_time_unref( msTimeGD );
     return sTime;
