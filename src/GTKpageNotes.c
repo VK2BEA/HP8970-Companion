@@ -30,6 +30,13 @@
 #include "messageEvent.h"
 #include <math.h>
 
+/*!     \brief  Callback when the user changes the note
+ *
+ * Callback when the user changes the note
+ *
+ * \param  wNoteBuffer  pointer to the GtkTextBuffer from the GtkTextView widget
+ * \param  pGlobal      pointer to global data
+ */
 void
 CB_notes_changed ( GtkTextBuffer* wNoteBuffer, gpointer gpGlobal ) {
     tGlobal *pGlobal = (tGlobal *)gpGlobal;
@@ -39,6 +46,7 @@ CB_notes_changed ( GtkTextBuffer* wNoteBuffer, gpointer gpGlobal ) {
     g_free( pGlobal->plot.sNotes );
     pGlobal->plot.sNotes = gtk_text_buffer_get_text( wNoteBuffer, &start, &end, TRUE );
 }
+
 /*!     \brief  Initialize the widgets on the Notes Notebook page
  *
  * Initialize the widgets on the Notes Notebook page

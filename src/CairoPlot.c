@@ -52,13 +52,12 @@ GdkRGBA plotElementColorsFactory[ eMAX_COLORS ] = {
 };
 GdkRGBA plotElementColors[ eMAX_COLORS ];
 
-/*!     \brief  Determine the noise and gain grid based on the data
+/*!     \brief  Determine the noise and gain grid based max/min values set by user
  *
- * Determine the noise and gain grid based on the data
+ * Determine the noise and gain grid based user limits
  *
  * \param pGlobal       pointer to the global data structure
- * \param min           smallest number in plot
- * \param max           largest number in plot
+ * \param gridType      type of grid
  * \return              0
  */
 gint
@@ -124,7 +123,7 @@ determineFixedGridDivisions( tGlobal *pGlobal, tGridAxes gridType ) {
 }
 
 
-/*!     \brief  Determine the frequency grid based on the data
+/*!     \brief  Determine the frequency grid based on the data (whole grid divisions)
  *
  * Determine the frequency grid based on the data
  *
@@ -193,7 +192,7 @@ quantizePlotFrequencyRange( tGlobal *pGlobal, gdouble min, gdouble max ) {
 }
 
 
-/*!     \brief  Determine the X and Y plot scales based on the data
+/*!     \brief  Determine the X and Y plot scales based on the data (autoranging)
  *
  * Determine the X and Y plot scales based on the data
  *
@@ -266,6 +265,17 @@ setCairoFontSize( cairo_t *cr, gdouble fSize ) {
     cairo_set_font_matrix(cr, &fMatrix);
 }
 
+/*!     \brief  Generate a time string (minutes and seconds of an hour only) from milliseconds since Unix epoch.
+ *
+ * Generate a time string (minutes and seconds of an hour only) from milliseconds since Unix epoch. 1/1/1970
+ *
+ * \ingroup drawing
+ *
+ * \param msTime     ms since 1/1/1970
+ * \param bShort     TRUE if no fractional seconds returned in string
+ * \return           malloced string with mm:ss (or mm:ss.ss)
+ *
+ */
 gchar *
 msTimeToString( gint64 msTime, gboolean bShort ) {
     gchar *sTime = NULL;
@@ -282,9 +292,9 @@ msTimeToString( gint64 msTime, gboolean bShort ) {
 }
 
 
-/*!     \brief  Determine the X and Y plot scales based on the data
+/*!     \brief  Determine the X and Y plot scales based on the data and settings
  *
- * Determine the X and Y plot scales based on the data
+ * Determine the X and Y plot scales based on the data and settings (like autoscale or limits)
  *
  * \param pGlobal       pointer to the global data structure
  * \return              0
@@ -333,6 +343,7 @@ setPlotBoundaries( tGlobal *pGlobal ) {
  * \param pGrid      pointer to grid structure
  * \param sTitle     pointer to title string
  * \param sTime      pointer to time string
+ * \param pGlobal    pointer to global data
  */
 void
 showTitleAndTime( cairo_t *cr, tGridParameters *pGrid, gchar *sTitle, gchar *sTime, tGlobal *pGlobal)
@@ -382,7 +393,9 @@ gchar *sNoiseUnits[ eMAX_NOISE_UNITS ] = {"dB", "", "dB", "", "K"};
  * Draw the grid
  *
  * \param cr            pointer to cairo structure
+ * \param pGrid         pointer to grid settings
  * \param pGlobal       pointer to the global data structure
+ * \return              0
  */
 gint
 plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
@@ -714,7 +727,7 @@ flipCairoText( cairo_t *cr )
  * \ingroup drawing
  *
  * \param cr        pointer to cairo context
- * \param stGrid    pointer to paramaters calculated for the grid setup
+ * \param pGrid    pointer to parameters calculated for the grid setup
  *
  */
 void
@@ -729,6 +742,18 @@ flipVertical( cairo_t *cr, tGridParameters *pGrid ) {
     cairo_set_font_matrix( cr, &font_matrix );
 }
 
+/*!     \brief  Calculate the grid parameters
+ *
+ * Calculate the grid paramaters
+ *
+ * \ingroup drawing
+ *
+ * \param pGrid      pointer to parameters calculated for the grid setup
+ * \param areaWidth  width in cairo units (points) of the drawing area
+ * \param areaHeight height in cairo units (points) of the drawing area
+ * \param bSuppressLiveMarker if we are not displaying the live marker (printing but do not have a frozen live marker)
+ *
+ */
 void
 setGrid( tGridParameters *pGrid, gint areaWidth, gint areaHeight, gboolean bSuppressLiveMarker ) {
     pGrid->areaWidth = areaWidth;
@@ -748,6 +773,20 @@ setGrid( tGridParameters *pGrid, gint areaWidth, gint areaHeight, gboolean bSupp
     pGrid->bSuppressLiveMarker = bSuppressLiveMarker;
 }
 
+/*!     \brief  Interpolate the trace between measuring points
+ *
+ * Interpolate the trace between measuring points, The live marker may be between measurement points but
+ * we still wish to show the interpolated value.
+ *
+ * \ingroup drawing
+ *
+ * \param pGlobal         pointer to global data
+ * \param targetX         x position that we wish to get the interpolated ordinate for
+ * \param freqOrTimeScale scale value for the abscissa
+ * \param freqOrTime      frequency or time x
+ * \param whichGrid       noise or gain to return
+ * \return                noise or gain interploated value
+ */
 tCoordinate
 interpolate( tGlobal *pGlobal, gdouble targetX, gdouble freqOrTimeScale, tAbscissa freqOrTime, tGridAxes whichGrid ) {
     gdouble targetOrdinate;
@@ -878,6 +917,15 @@ centerTextOnDP( cairo_t *cr, gdouble x, gdouble y, gdouble num, gint nAfterDP ) 
     cairo_move_to( cr, x, y );
 }
 
+/*!     \brief  Clip the ordinate of the data point to just outside the grid
+ *
+ * Clip the ordinate of the data point to just outside the grid
+ *
+ * \param data            pointer to cairo structure
+ * \param minimum         minimum y value
+ * \param maximum         maximum
+ * \return                the clipped value
+ */
 gdouble
 clipData( gdouble data, gdouble minimum, gdouble maximum ) {
     gdouble margin = (maximum - minimum) / 150.0;
@@ -1001,7 +1049,7 @@ plotGainTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
     cairo_restore(cr);
 }
 
-/*!     \brief  Plot noise figure vs frequency onto drawing area
+/*!     \brief  Plot noise figure/factor vs frequency onto drawing area
  *
  * Plot noise figure vs frequency onto drawing area
  *
@@ -1152,6 +1200,7 @@ plotNoiseTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
  * \param cr            pointer to cairo structure
  * \param areaWidth     width
  * \param areaHeight    height
+ * \param bSuppressLiveMarker whether to suppress the live marker (say when printing)
  * \param pGlobal       pointer to the global data structure
  * \return           TRUE
  */

@@ -63,17 +63,16 @@ checkMessageQueue (GAsyncQueue *asyncQueue) {
     }
 }
 
-/*!     \brief  Write data from the GPIB device asynchronously
+/*!     \brief  Write binary data from the GPIB device asynchronously
  *
- * Read data from the GPIB device asynchronously while checking for exceptions
+ * Write data from the GPIB device asynchronously while checking for exceptions
  * This is needed when it is anticipated that the response will take some time.
  *
  * \param GPIBdescriptor GPIB device descriptor
- * \param readBuffer     pointer to data to save read data
- * \param maxBytes       maxium number of bytes to read
+ * \param sData          pointer to data to write
+ * \param length         number of bytes to write
  * \param pGPIBstatus    pointer to GPIB status
- * \param timeout        the maximum time to wait before abandoning
- * \param queue          message queue from main thread
+ * \param timeoutSecs    the maximum time to wait before abandoning
  * \return               read status result
  */
 tGPIBReadWriteStatus
@@ -161,6 +160,7 @@ GPIBasyncWriteBinary (gint GPIBdescriptor, const void *sData, gint length, gint 
  * \param GPIBdescriptor GPIB device descriptor
  * \param sData          data to send
  * \param pGPIBstatus    pointer to GPIB status
+ * \param timeoutSecs    the maximum time to wait before abandoning
  * \return               count or ERROR
  */
 tGPIBReadWriteStatus
@@ -181,7 +181,7 @@ GPIBasyncWrite (gint GPIBdescriptor, const void *sData, gint *pGPIBstatus, gdoub
  * \return               count or ERROR (from GPIBasyncWriteBinary)
  */
 tGPIBReadWriteStatus
-GPIBasyncWriteOneOfN (gint GPIBdescriptor, const void *sData, gint number, gint *GPIBstatus, double timeout) {
+GPIBasyncWriteNumber (gint GPIBdescriptor, const void *sData, gint number, gint *GPIBstatus, double timeout) {
     gchar *sCmd = g_strdup_printf (sData, number);
     DBG(eDEBUG_EXTREME, "👉 HP8970: %s", sCmd);
     tGPIBReadWriteStatus rtnStatus = GPIBasyncWrite (GPIBdescriptor, sCmd, GPIBstatus, timeout);
@@ -197,8 +197,9 @@ GPIBasyncWriteOneOfN (gint GPIBdescriptor, const void *sData, gint number, gint 
  * \param GPIBdescriptor GPIB device descriptor
  * \param readBuffer     pointer to data to save read data
  * \param maxBytes       maxium number of bytes to read
+ * \param pNbytesRead    pointer top the location to store the number of characters read
  * \param pGPIBstatus    pointer to GPIB status
- * \param timeout        the maximum time to wait before abandoning
+ * \param timeoutSecs        the maximum time to wait before abandoning
  * \return               read status result
  */
 tGPIBReadWriteStatus
@@ -321,7 +322,6 @@ freeMessage( messageEventData *pMessage )
  *
  * Checks for the presence of a device, by attempting to address it as a listener.
  *
- * \param descGPIBboard  GPIB controller board descriptor
  * \param descGPIBdevice GPIB device descriptor
  * \param pGPIBstatus    pointer to GPIB status
  * \return               TRUE if device responds or FALSE if not
@@ -428,8 +428,7 @@ open_8790_GPIBdevice (tGlobal *pGlobal, gint *pDescGPIB_HP8970) {
  * based on the parameters set (whether to use descriptors or GPIB addresses)
  *
  * \param pGlobal             pointer to global data structure
- * \param pDescGPIBcontroller pointer to GPIB controller descriptor
- * \param pDescGPIB_HP8753    pointer to GPIB device descriptor
+ * \param pDescGPIB_ExtLO     pointer to GPIB device descriptor
  * \return                    0 on success or ERROR on failure
  */
 gint
@@ -488,8 +487,7 @@ open_ExtLO_GPIBdevice (tGlobal *pGlobal, gint *pDescGPIB_ExtLO) {
  *
  * Close the controller if it was opened and close the device
  *
- * \param pDescGPIBcontroller pointer to GPIB controller descriptor
- * \param pDescGPIB_HP8753    pointer to GPIB device descriptor
+ * \param pDescGPIB    pointer to GPIB device descriptor
  */
 gint
 GPIBclose (gint *pDescGPIB) {
@@ -516,7 +514,7 @@ now_milliSeconds () {
     return now.tv_sec * 1.0e3 + now.tv_nsec / 1.0e6;
 }
 
-/*!     \brief  Update the min / max values
+/*!     \brief  Update the min / max values in the circular buffer
  *
  * Update the min / max values based on the current data point
  *
@@ -539,7 +537,7 @@ updateBoundaries( gdouble current, gdouble *pMin, gdouble *pMax ) {
  * Compare two frequencies in the data set
  *
  * \param a : pointer to the first tNoiseAndGain structure
- * \param a : pointer to the second tNoiseAndGain structure
+ * \param b : pointer to the second tNoiseAndGain structure
  * \return  0 equal - b greater than a and + if a greater than b
  */
 int

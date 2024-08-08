@@ -26,7 +26,13 @@
 
 #include "HP8970.h"
 
-
+/*!     \brief  Check to see if the schema for the settings exists
+ *
+ * Check to see if the schema for the settings exists
+ *
+ * \param id          schema identifier
+ * \return            true if exists
+ */
 static gboolean g_settings_schema_exist (const char * id)
 {
   gboolean bReturn = FALSE;
@@ -42,11 +48,19 @@ static gboolean g_settings_schema_exist (const char * id)
 }
 
 /*
- * The schema is defined in us.heterodyne.hpgl-plotter.gschema.xml
+ * The schema is defined in us.heterodyne.hp8970.gschema.xml
  * It is copied to /usr/share/glib-2.0/schemas and then glib-compile-schemas is run to compile.
- * (to test the schema use: glib-compile-schemas --dry-run /path/to/us.heterodyne.hpgl-plotter.gschema.xml
- * $ sudo cp us.heterodyne.hpgl-plotter.gschema.xml /usr/share/glib-2.0/schemas
+ * (to test the schema use: glib-compile-schemas --dry-run /path/to/us.heterodyne.hp8970.gschema.xml
+ * $ sudo cp us.heterodyne.hp8970.gschema.xml /usr/share/glib-2.0/schemas
  * $ sudo glib-compile-schemas /usr/share/glib-2.0/schemas
+ */
+
+/*!     \brief  Save settings in the dconf system
+ *
+ * Check to see if the schema for the settings exists
+ *
+ * \pGlobal     pointer to global data
+ * \return      true if OK, False if error (no save)
  */
 gint
 saveSettings( tGlobal *pGlobal ) {
@@ -175,6 +189,13 @@ saveSettings( tGlobal *pGlobal ) {
     return TRUE;
 }
 
+/*!     \brief  Recover settings from the dconf system
+ *
+ * Recover settings from the dconf system
+ *
+ * \pGlobal     pointer to global data
+ * \return      true if OK, False if error (no recovery)
+ */
 gint
 recoverSettings( tGlobal *pGlobal ) {
     GSettings *gs;

@@ -24,7 +24,7 @@ gint GPIBwriteBinary( gint, const void *, gint, gint * );
 gint GPIBread( gint, void *sData, gint, gint * );
 gint GPIBwrite( gint, const void *, gint * );
 gint GPIBwriteOneOfN( gint, const void *, gint, gint * );
-tGPIBReadWriteStatus GPIBasyncWriteOneOfN( gint, const void *, gint, gint *, gdouble );
+tGPIBReadWriteStatus GPIBasyncWriteNumber( gint, const void *, gint, gint *, gdouble );
 tGPIBReadWriteStatus GPIBasyncRead (gint, void *, glong, glong *, gint *, gdouble);
 tGPIBReadWriteStatus GPIBasyncWrite( gint , const void *, gint *, gdouble );
 tGPIBReadWriteStatus GPIBasyncWriteBinary( gint, const void *, gint , gint *, gdouble  );
