@@ -487,7 +487,7 @@ extern tGlobal globalData;
 
 // maximum and minimum frequencies (mode 1.1, 1.2)
 #define HP8970A_MAX_FREQ_R2            60000.0
-#define HP8970A_MIN_FREQ_R2              200.0
+#define HP8970A_MIN_FREQ_R2                1.0
 #define HP8970A_DEFAULT_FREQ_R2        10000.0
 #define HP8970A_PageStep_FREQ_R2         100.0
 
