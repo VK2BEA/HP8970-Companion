@@ -30,7 +30,7 @@
 #include "messageEvent.h"
 
 gdouble
-LOfrequency( tGlobal *pGlobal, gdouble freq ) {
+LOfrequency( tGlobal *pGlobal, gdouble freqRF ) {
 
     tMode mode = pGlobal->HP8970settings.mode;
     gdouble freqLO = pGlobal->HP8970settings.extLOfreqLO;
@@ -49,13 +49,13 @@ LOfrequency( tGlobal *pGlobal, gdouble freq ) {
             switch( sideband ) {
                 case eDSB:
                 default:
-                    LOfrequency =  freq;
+                    LOfrequency =  freqRF;
                     break;
                 case eLSB:
-                    LOfrequency =  freq + freqIF;
+                    LOfrequency =  freqRF + freqIF;
                     break;
                 case eUSB:
-                    LOfrequency = freq - freqIF;
+                    LOfrequency = freqRF - freqIF;
                     break;
             }
             break;
@@ -311,8 +311,11 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         }
 
         // Ensure that the basics are set in the HP8970
-        g_string_printf( pstCommands, "H1T1E%1dFA%dMZFB%dMZSS%dMZF%1dN%1dE%1dD0TC%.2lfENL%1dLA%.3lfENLB%.3lfENLT%.2lfEN",
+        g_string_printf( pstCommands, "H1T1E%1dIF%dMZLF%dMZB%1dFA%dMZFB%dMZSS%dMZF%1dN%1dE%1dD0TC%.2lfENL%1dLA%.3lfENLB%.3lfENLT%.2lfENM%1d",
                       pGlobal->HP8970settings.mode,
+                      (gint)pGlobal->HP8970settings.extLOfreqIF,
+                      (gint) pGlobal->HP8970settings.extLOfreqLO,
+                      pGlobal->HP8970settings.extLOsideband,
                       (gint)freqStartMHz,
                       (gint)freqStopMHz,
                       (gint)freqStepMHz,
@@ -323,7 +326,10 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
                       pGlobal->HP8970settings.switches.bLossCompensation,
                       pGlobal->HP8970settings.lossBeforeDUT,
                       pGlobal->HP8970settings.lossAfterDUT,
-                      pGlobal->HP8970settings.lossTemp );
+                      pGlobal->HP8970settings.lossTemp,
+                      pGlobal->HP8970settings.switches.bCorrectedNFAndGain ? 2 : 1
+
+        );
         if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, pGPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
             break;
 
@@ -514,8 +520,11 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
         }
 
         // Ensure that the basics are set in the HP8970
-        g_string_printf( pstCommands, "H1T1E%1dFR%dMZF%1dN%1dD0TC%.2lfENL%1dLA%.3lfENLB%.3lfENLT%.2lfEN",
+        g_string_printf( pstCommands, "H1T1E%1dIF%dMZLF%dMZB%1dFR%dMZF%1dN%1dD0TC%.2lfENL%1dLA%.3lfENLB%.3lfENLT%.2lfENM%1d",
                          pGlobal->HP8970settings.mode,
+                         (gint)pGlobal->HP8970settings.extLOfreqIF,
+                         (gint) pGlobal->HP8970settings.extLOfreqLO,
+                         pGlobal->HP8970settings.extLOsideband,
                          (gint)pGlobal->HP8970settings.range[ bExtLO ].freqSpotMHz,
                          (gint)round( log2( pGlobal->HP8970settings.smoothingFactor ) ),
                          pGlobal->HP8970settings.noiseUnits,
@@ -523,7 +532,8 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
                          pGlobal->HP8970settings.switches.bLossCompensation,
                          pGlobal->HP8970settings.lossBeforeDUT,
                          pGlobal->HP8970settings.lossAfterDUT,
-                         pGlobal->HP8970settings.lossTemp );
+                         pGlobal->HP8970settings.lossTemp,
+                         pGlobal->HP8970settings.switches.bCorrectedNFAndGain ? 2 : 1 );
         if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, pGPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
             break;
 
@@ -637,6 +647,7 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
     return completionStatus;
 }
 
+
 /*!     \brief  Calibrate the HP8970 to account for the 2nd stage noise and gain
  *
  * Calibrate the HP8970 to account for the 2nd stage noise and gain
@@ -657,7 +668,7 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
     tCircularBuffer *pCircularBuffer = &pGlobal->plot.measurementBuffer;
 
     gdouble LOfreq;
-    gdouble freqStartMHz, freqStopMHz, freqStepMHz, freqMHz;
+    gdouble freqStartMHz, freqStopMHz, freqStepMHz, freqRF_MHz;
     tNoiseAndGain measurement;
 
     pstCommands = g_string_new ( NULL );
@@ -705,6 +716,9 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
         // H1         - provide Gain & Noise Figure data
         // T1         - Hold
         // E?         - Mode
+        // IF????MZ   - IF frequency
+        // LF????MZ   - LO frequency
+        // B?         - sideband
         // FA????MZ   - Start Frequency
         // FB????MZ   - Stop Frequency
         // SS?MZ      - Step Size
@@ -716,8 +730,11 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
         // LA??.???EN - Loss before DUT
         // LB??.???EN - Loss after DUT
         // LT??.??EN  - Loss temperature
-        g_string_printf( pstCommands, "H1T1E%1dFA%dMZFB%dMZSS%dMZF%1dN%1dD0TC%.2lfENL%1dLA%.3lfENLB%.3lfENLT%.2lfEN",
+        g_string_printf( pstCommands, "H1T1E%1dIF%dMZLF%dMZB%1dFA%dMZFB%dMZSS%dMZF%1dN%1dD0TC%.2lfENL%1dLA%.3lfENLB%.3lfENLT%.2lfEN",
                       pGlobal->HP8970settings.mode,
+                      (gint)pGlobal->HP8970settings.extLOfreqIF,
+                      (gint) pGlobal->HP8970settings.extLOfreqLO,
+                      pGlobal->HP8970settings.extLOsideband,
                       (gint)freqStartMHz,
                       (gint)freqStopMHz,
                       (gint)freqStepMHz,
@@ -728,6 +745,9 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
                       pGlobal->HP8970settings.lossBeforeDUT,
                       pGlobal->HP8970settings.lossAfterDUT,
                       pGlobal->HP8970settings.lossTemp );
+
+        g_string_append_printf( pstCommands, "IF%dMZLF%dMZB%1d", pGlobal->HP8970settings.extLOfreqIF,
+                                pGlobal->HP8970settings.extLOfreqLO, pGlobal->HP8970settings.extLOsideband );
         if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, pGPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
             break;
 
@@ -735,7 +755,7 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
         pGlobal->plot.flags.bValidNoiseData  = FALSE;
         pGlobal->plot.flags.bValidGainData   = FALSE;
-        pGlobal->plot.flags.bCalibrationPlot = FALSE;
+        pGlobal->plot.flags.bCalibrationPlot = TRUE;
         postMessageToMainLoop(TM_REFRESH_PLOT, NULL);
 
         pGlobal->plot.flags.bSpotFrequencyPlot = FALSE;
@@ -758,7 +778,7 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
         getTimeStamp(&pGlobal->plot.sDateTime);
 
-        for( nCalPoint = 1, bContinue = TRUE, bRestartSweep = TRUE, freqMHz = pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz;
+        for( nCalPoint = 1, bContinue = TRUE, bRestartSweep = TRUE, freqRF_MHz = pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz;
                 GPIBsucceeded( *pGPIBstatus ) && bContinue
                 		&& checkMessageQueue(NULL) != SEVER_DIPLOMATIC_RELATIONS
 						&& HP8970error == 0; nCalPoint++ ) {
@@ -788,21 +808,21 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
             // Changing the LO only in mode 1.1 (1.2 has a fixed LO)
             if( pGlobal->flags.bNoLOcontrol == FALSE && mode == eMode1_1 ) {
-                if( freqMHz >= freqStopMHz ) {   // If we have sent the stop freq, then go back to the beginning
-                    freqMHz = freqStartMHz;
+                if( freqRF_MHz >= freqStopMHz ) {   // If we have sent the stop freq, then go back to the beginning
+                    freqRF_MHz = freqStartMHz;
                     nCalPoint = 0;
-                } else if( freqMHz + freqStepMHz > freqStopMHz ) {
-                    freqMHz = freqStopMHz;
+                } else if( freqRF_MHz + freqStepMHz > freqStopMHz ) {
+                    freqRF_MHz = freqStopMHz;
                 } else {
-                    freqMHz += freqStepMHz;
+                    freqRF_MHz += freqStepMHz;
                 }
 
                 if( nCalPoint >= (pGlobal->flags.bbHP8970Bmodel == e8970A ? 81:181)) {
-                    freqMHz = freqStopMHz;
+                    freqRF_MHz = freqStopMHz;
                     nCalPoint = 0;
                 }
 
-                if( ( LOfreq = LOfrequency( pGlobal, freqMHz ) ) != 0.0 ) {
+                if( ( LOfreq = LOfrequency( pGlobal, freqRF_MHz ) ) != 0.0 ) {
                     g_string_printf( pstCommands, pGlobal->HP8970settings.sExtLOsetFreq, LOfreq );
 
                     if( GPIBasyncWrite (descGPIB_extLO, pstCommands->str, pGPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
@@ -890,6 +910,8 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
     if( pGlobal->flags.bNoLOcontrol == FALSE && (mode == eMode1_1 || mode == eMode1_2) )
         ibloc(descGPIB_HP8970);
+
+    pGlobal->plot.flags.bCalibrationPlot = FALSE;
 
     return completionStatus;
 }

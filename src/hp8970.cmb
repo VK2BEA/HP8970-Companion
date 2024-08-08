@@ -231,8 +231,6 @@
 	(1,412,"GtkCheckButton","WID_chk_Settings8970B",409,None,None,None,1,None,None),
 	(1,413,"GtkCheckButton","WID_chk_Settings8970Bopt20",409,None,None,None,2,None,None),
 	(1,414,"GtkLabel","WID_lbl_Status_LO",30,None,None,None,1,None,None),
-	(1,415,"GtkLabel",None,30,None,None,None,2,None,None),
-	(1,416,"GtkLabel",None,30,None,None,None,3,None,None),
 	(1,417,"GtkSpinButton","WID_spin_FrStep_Cal",172,None,None,None,None,None,None),
 	(1,418,"GtkAdjustment","WID_adj_FrStep_Cal",417,None,None,None,-1,None,None)
   </object>
@@ -889,7 +887,7 @@
 	(1,412,"GtkCheckButton","label","8970B",None,None,None,None,None,None,None,None,None),
 	(1,413,"GtkCheckButton","group","411",None,None,None,None,None,None,None,None,None),
 	(1,413,"GtkCheckButton","label","8970B / 20",None,None,None,None,None,None,None,None,None),
-	(1,414,"GtkLabel","xalign","0.0",None,None,None,None,None,None,None,None,None),
+	(1,414,"GtkLabel","xalign","1.0",None,None,None,None,None,None,None,None,None),
 	(1,414,"GtkWidget","css-classes","status",None,None,None,None,None,None,None,None,None),
 	(1,414,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
 	(1,414,"GtkWidget","margin-bottom","4",None,None,None,None,None,None,None,None,None),
@@ -897,8 +895,6 @@
 	(1,414,"GtkWidget","margin-start","4",None,None,None,None,None,None,None,None,None),
 	(1,414,"GtkWidget","margin-top","4",None,None,None,None,None,None,None,None,None),
 	(1,414,"GtkWidget","valign","end",None,None,None,None,None,None,None,None,None),
-	(1,415,"GtkLabel","xalign","0.0",None,None,None,None,None,None,None,None,None),
-	(1,416,"GtkLabel","xalign","0.0",None,None,None,None,None,None,None,None,None),
 	(1,417,"GtkEditable","xalign","1.0",None,None,None,None,None,None,None,None,None),
 	(1,417,"GtkSpinButton","adjustment",None,None,None,None,None,418,None,None,None,None),
 	(1,417,"GtkSpinButton","numeric","True",None,None,None,None,None,None,None,None,None),

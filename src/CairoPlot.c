@@ -322,7 +322,7 @@ setPlotBoundaries( tGlobal *pGlobal ) {
     } else
         quantizePlotFrequencyRange( pGlobal, pCircularBuffer->minAbscissa.freq / MHz(1.0), pCircularBuffer->maxAbscissa.freq / MHz(1.0) );
 
-    if( pGlobal->flags.bAutoScaling ) {
+    if( pGlobal->flags.bAutoScaling || pGlobal->plot.flags.bCalibrationPlot ) {
         quantizePlotRange( pGlobal, pCircularBuffer->minNoise, pCircularBuffer->maxNoise, eNoise );
         quantizePlotRange( pGlobal, pCircularBuffer->minGain, pCircularBuffer->maxGain, eGain );
     } else {

@@ -21,7 +21,7 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.00-2"
+   #define VERSION "1.00-3"
 #endif
 
 
