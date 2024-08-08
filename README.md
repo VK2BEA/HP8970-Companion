@@ -5,7 +5,7 @@ Michael G. Katzmann (NV3Z/VK2BEA/G4NYV)
 ------------------------------------------------------------------
 
 Program to augment functionality of the HP 8970 Noise Figure Meter:
-1. Control the 8970 vis GPIB to take measurements of noise figure and gain over a frequency sweep or over time.
+1. Control the 8970 via GPIB to take measurements of noise figure and gain over a frequency sweep or over time.
 2. Plot the noise figure/temperature and gain vs frequency
        - Use mouse to examine the trace (interrogate plot to see measurements and interpolated values)
 3. Save traces as an image file (PNG) or PDF.
