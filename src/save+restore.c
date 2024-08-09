@@ -211,7 +211,7 @@ retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
         if( json_reader_read_member (reader, "coldTemp") == TRUE )
             pGlobal->plot.coldTemp = json_reader_get_double_value ( reader );
         else
-            pGlobal->plot.coldTemp = 0.0;
+            pGlobal->plot.coldTemp = DEFAULT_COLD_T;
         json_reader_end_member (reader);
 
         if( json_reader_read_member (reader, "lossCompensationOn") == TRUE )

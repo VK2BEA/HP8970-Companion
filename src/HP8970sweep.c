@@ -311,19 +311,28 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         }
 
         // Ensure that the basics are set in the HP8970
-        g_string_printf( pstCommands, "H1T1E%1dIF%dMZLF%dMZB%1dFA%dMZFB%dMZSS%dMZF%1dN%1dE%1dD0TC%.2lfENL%1dLA%.3lfENLB%.3lfENLT%.2lfENM%1d",
+        g_string_printf( pstCommands, "H1"        "T1"        "E%1d"      "IF%dMZ"    "LF%dMZ"
+                                      "B%1d"      "FA%dMZ"    "FB%dMZ"    "SS%dMZ"    "F%1d"
+                                      "N%1d"      "E%1d"      "D0"        "TC%.2lfEN" "L%1d"
+                                      "LA%.3lfEN" "LB%.3lfEN" "LT%.2lfEN" "M%1d",
+                      // H1 - provide Gain & Noise Figure data
+                      // T1 - Hold
                       pGlobal->HP8970settings.mode,
                       (gint)pGlobal->HP8970settings.extLOfreqIF,
                       (gint) pGlobal->HP8970settings.extLOfreqLO,
+
                       pGlobal->HP8970settings.extLOsideband,
                       (gint)freqStartMHz,
                       (gint)freqStopMHz,
                       (gint)freqStepMHz,
                       (gint)round( log2( pGlobal->HP8970settings.smoothingFactor ) ),
+
                       pGlobal->HP8970settings.noiseUnits,
                       pGlobal->HP8970settings.mode,
+                      // D0 - input temperature units K
                       pGlobal->HP8970settings.coldTemp,
                       pGlobal->HP8970settings.switches.bLossCompensation,
+
                       pGlobal->HP8970settings.lossBeforeDUT,
                       pGlobal->HP8970settings.lossAfterDUT,
                       pGlobal->HP8970settings.lossTemp,
@@ -520,19 +529,28 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
         }
 
         // Ensure that the basics are set in the HP8970
-        g_string_printf( pstCommands, "H1T1E%1dIF%dMZLF%dMZB%1dFR%dMZF%1dN%1dD0TC%.2lfENL%1dLA%.3lfENLB%.3lfENLT%.2lfENM%1d",
+        g_string_printf( pstCommands, "H1"        "T1"        "E%1d"      "IF%dMZ"    "LF%dMZ"
+                                      "B%1d"      "FR%dMZ"    "F%1d"      "N%1d"      "D0"
+                                      "TC%.2lfEN" "L%1d"      "LA%.3lfEN" "LB%.3lfEN" "LT%.2lfEN"
+                                      "M%1d",
+                         // H1 - provide Gain & Noise Figure data
+                         // T1 - Hold
                          pGlobal->HP8970settings.mode,
                          (gint)pGlobal->HP8970settings.extLOfreqIF,
                          (gint) pGlobal->HP8970settings.extLOfreqLO,
+
                          pGlobal->HP8970settings.extLOsideband,
                          (gint)pGlobal->HP8970settings.range[ bExtLO ].freqSpotMHz,
                          (gint)round( log2( pGlobal->HP8970settings.smoothingFactor ) ),
                          pGlobal->HP8970settings.noiseUnits,
+                         // D0 - input temperature units in K
+
                          pGlobal->HP8970settings.coldTemp,
                          pGlobal->HP8970settings.switches.bLossCompensation,
                          pGlobal->HP8970settings.lossBeforeDUT,
                          pGlobal->HP8970settings.lossAfterDUT,
                          pGlobal->HP8970settings.lossTemp,
+
                          pGlobal->HP8970settings.switches.bCorrectedNFAndGain ? 2 : 1 );
         if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, pGPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
             break;
@@ -730,24 +748,28 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
         // LA??.???EN - Loss before DUT
         // LB??.???EN - Loss after DUT
         // LT??.??EN  - Loss temperature
-        g_string_printf( pstCommands, "H1T1E%1dIF%dMZLF%dMZB%1dFA%dMZFB%dMZSS%dMZF%1dN%1dD0TC%.2lfENL%1dLA%.3lfENLB%.3lfENLT%.2lfEN",
+        g_string_printf( pstCommands, "H1"         "T1"         "E%1d"       "IF%dMZ"    "LF%dMZ"    "B%1d"
+        		                      "FA%dMZ"     "FB%dMZ"     "SS%dMZ"     "F%1d"      "N%1d"      "D0"
+        		                      "TC%.2lfEN"  "L%1d"       "LA%.3lfEN"  "LB%.3lfEN" "LT%.2lfEN",
                       pGlobal->HP8970settings.mode,
                       (gint)pGlobal->HP8970settings.extLOfreqIF,
                       (gint) pGlobal->HP8970settings.extLOfreqLO,
                       pGlobal->HP8970settings.extLOsideband,
+
                       (gint)freqStartMHz,
                       (gint)freqStopMHz,
                       (gint)freqStepMHz,
                       (gint)round( log2( pGlobal->HP8970settings.smoothingFactor ) ),
                       pGlobal->HP8970settings.noiseUnits,
+
                       pGlobal->HP8970settings.coldTemp,
                       pGlobal->HP8970settings.switches.bLossCompensation,
                       pGlobal->HP8970settings.lossBeforeDUT,
                       pGlobal->HP8970settings.lossAfterDUT,
                       pGlobal->HP8970settings.lossTemp );
 
-        g_string_append_printf( pstCommands, "IF%dMZLF%dMZB%1d", pGlobal->HP8970settings.extLOfreqIF,
-                                pGlobal->HP8970settings.extLOfreqLO, pGlobal->HP8970settings.extLOsideband );
+        g_string_append_printf( pstCommands, "IF%dMZ" "LF%dMZ" "B%1d",
+        		pGlobal->HP8970settings.extLOfreqIF,  pGlobal->HP8970settings.extLOfreqLO, pGlobal->HP8970settings.extLOsideband );
         if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, pGPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
             break;
 
