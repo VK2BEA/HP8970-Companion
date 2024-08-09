@@ -879,8 +879,9 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
         pGlobal->plot.flags.bValidGainData  = FALSE;
         postMessageToMainLoop(TM_REFRESH_PLOT, NULL);
 
+        // sweep off (in case we've interrupted the calibration .. according to the manual, this is the only way to stop the calibration)
         // resume auto trigger & disable SRQ
-        GPIBasyncWrite (descGPIB_HP8970, "T0Q0", pGPIBstatus, 10 * TIMEOUT_RW_1SEC);
+        GPIBasyncWrite (descGPIB_HP8970, "W0T0Q0", pGPIBstatus, 10 * TIMEOUT_RW_1SEC);
 
         completionStatus = TRUE;
         break;

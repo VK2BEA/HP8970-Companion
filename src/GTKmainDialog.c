@@ -267,15 +267,10 @@ static void
 CB_chk_Correction (GtkCheckButton *wCorrection, gpointer identifier)
 {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wCorrection), "data");
-    gboolean bUpdate;
 
     pGlobal->HP8970settings.switches.bCorrectedNFAndGain = gtk_check_button_get_active (wCorrection);
-    g_mutex_lock ( &pGlobal->HP8970settings.mUpdate );
-    bUpdate = (pGlobal->HP8970settings.updateFlags.all == 0);
-    pGlobal->HP8970settings.updateFlags.each.bCorrection = TRUE;
-    g_mutex_unlock ( &pGlobal->HP8970settings.mUpdate );
-    if( bUpdate )
-        postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL);
+
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bCorrection );
 }
 
 /*!     \brief  Callback for Start Frequency spin button
@@ -290,16 +285,10 @@ CB_spin_Frequency(   GtkSpinButton* wFrequency,
                    gpointer udata ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wFrequency), "data");
     gboolean bExtLO = !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4);
-    gboolean bUpdate = TRUE;
 
     pGlobal->HP8970settings.range[ bExtLO ].freqSpotMHz = gtk_spin_button_get_value( wFrequency );
-    g_mutex_lock ( &pGlobal->HP8970settings.mUpdate );
-    bUpdate = (pGlobal->HP8970settings.updateFlags.all == 0);
-    pGlobal->HP8970settings.updateFlags.each.bFrequency = TRUE;
-    g_mutex_unlock ( &pGlobal->HP8970settings.mUpdate );
 
-    if( bUpdate )
-        postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL);
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bFrequency );
 
     warnFrequencyRangeOutOfBounds( pGlobal );
 }
@@ -343,7 +332,6 @@ CB_spin_FrStart(   GtkSpinButton* wFrStart,
                    gpointer udata ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wFrStart), "data");
     gboolean bExtLO = !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4);
-    gboolean bUpdate = TRUE;
 
     gdouble startF = gtk_spin_button_get_value( wFrStart );
     gdouble stopF = pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz;
@@ -354,9 +342,6 @@ CB_spin_FrStart(   GtkSpinButton* wFrStart,
 
     if( startF > stopF )
         gtk_spin_button_set_value( WLOOKUP(pGlobal, "spin_FrStop"), startF );
-
-    if( bUpdate )
-        postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL);
 
     warnFrequencyRangeOutOfBounds( pGlobal );
     validateCalibrationOperation ( pGlobal );
@@ -374,7 +359,6 @@ CB_spin_FrStop(   GtkSpinButton* wFrStop,
                    gpointer udata ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wFrStop), "data");
     gboolean bExtLO = !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4);
-    gboolean bUpdate = TRUE;
 
     pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz = gtk_spin_button_get_value( wFrStop );
 
@@ -382,9 +366,6 @@ CB_spin_FrStop(   GtkSpinButton* wFrStop,
 
     if( pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz < pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz )
         gtk_spin_button_set_value( WLOOKUP(pGlobal, "spin_FrStart"), pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz );
-
-    if( bUpdate )
-        postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL);
 
     warnFrequencyRangeOutOfBounds( pGlobal );
     validateCalibrationOperation ( pGlobal );
@@ -402,15 +383,11 @@ static void
 CB_spin_FrStep_Cal( GtkSpinButton* wFrStepCal, gpointer udata ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wFrStepCal), "data");
     gboolean bExtLO = !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4);
-    gboolean bUpdate = TRUE;
     gdouble stepF = gtk_spin_button_get_value( wFrStepCal );
 
     pGlobal->HP8970settings.range[ bExtLO ].freqStepCalMHz = stepF;
 
     UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bStepFrequency );
-
-    if( bUpdate )
-        postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL);
 
     validateCalibrationOperation ( pGlobal );
 }
@@ -504,7 +481,6 @@ CB_combo_Mode ( GtkComboBox* wComboMode, gpointer udata ) {
 static void
 CB_combo_Smoothing ( GtkComboBox* wComboSmoothing, gpointer udata ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wComboSmoothing), "data");
-    gboolean bUpdate = TRUE;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     const gchar *sID = gtk_combo_box_get_active_id ( GTK_COMBO_BOX( wComboSmoothing ) );
@@ -514,9 +490,6 @@ CB_combo_Smoothing ( GtkComboBox* wComboSmoothing, gpointer udata ) {
         pGlobal->HP8970settings.smoothingFactor = (gint)pow( 2.0, atoi( sID ));
 
     UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bSmoothing );
-
-    if( bUpdate )
-        postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL);
 }
 
 // insert-text signal
