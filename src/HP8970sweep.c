@@ -451,7 +451,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         pGlobal->plot.flags.bValidNoiseData = FALSE;
         pGlobal->plot.flags.bValidGainData  = FALSE;
     } else if( HP8970error > 0 ) {
-        gchar *sError = g_strdup_printf( sError, "HP8970 error: %s", HP8970errorString( HP8970error ) );
+        gchar *sError = g_strdup_printf( "HP8970 error: %s", HP8970errorString( HP8970error ) );
         postError( sError );
         g_free( sError );
     } else {
