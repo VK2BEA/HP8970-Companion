@@ -13,7 +13,7 @@
 
     <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
 
-    <desc>Making Measurements</desc>
+    <desc>Calibration, swept and spot measurements of device noise and gain</desc>
   </info>
   
   <title>Making Measurements</title>

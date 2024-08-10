@@ -226,6 +226,7 @@ typedef struct {
         guint32 bHoldLiveMarker             : 1;
         guint32 bPreviewModeDiagram         : 1;
         guint32 bNoLOcontrol                : 1;
+        guint32 bCalibrationNotPossible     : 1;
 #define N_VARIANTS 3
 		guint32 bbHP8970Bmodel              : 2;
 	} flags;
@@ -411,6 +412,7 @@ gboolean sweepHP8970                (tGlobal *, gint, gint, gint *);
 gboolean calibrateHP8970            (tGlobal *, gint, gint, gint *);
 gboolean spotFrequencyHP8970        (tGlobal *, gint, gint, gint *);
 void validateCalibrationOperation   (tGlobal *);
+void quarantineControlsOnSweep( tGlobal *pGlobal, gboolean bSpot, gboolean bShow );
 
 void initCircularBuffer             (tCircularBuffer *, guint, tAbscissa);
 tNoiseAndGain *getItemFromCircularBuffer(tCircularBuffer *, guint);
@@ -447,12 +449,14 @@ extern tGlobal globalData;
 #define IS_HP8970_OVERFLOW(x) ((x) == ERROR_INDICATOR_HP8970 + 99.0E06)
 
 #define MIN_RANGE_FREQ      4.0
-#define MIN_RANGE_GAINdB    0.25
-#define MIN_RANGE_NOISE_FdB 0.25
-#define MIN_RANGE_NOISE_F   1.05925373
-#define MIN_RANGE_NOISE_YdB 0.25
-#define MIN_RANGE_NOISE_Y   1.05925373
+
+#define MIN_RANGE_GAINdB    0.2
+#define MIN_RANGE_NOISE_FdB 0.2
+#define MIN_RANGE_NOISE_F   1.0
+#define MIN_RANGE_NOISE_YdB 0.20
+#define MIN_RANGE_NOISE_Y   1.0
 #define MIN_RANGE_NOISE_T_K 10.0
+#define NOISE_MIN_RANGE_CALIBRATION 2.0
 
 #define MIN_GAIN -20.0
 #define MAX_GAIN  60.0

@@ -205,12 +205,15 @@ quantizePlotFrequencyRange( tGlobal *pGlobal, gdouble min, gdouble max ) {
 gint
 quantizePlotRange( tGlobal *pGlobal, gdouble min, gdouble max, tGridAxes gridType ) {
     gdouble gridRange, division, quantizedMin, quantizedMax, border;
-    gdouble logDecade, logFraction, log10diff;
+    gdouble logDecade, logFraction, log10diff, minRange = 0.1;
     gint rtnStatus = 0;
     gdouble quantum, headroom;
     int i;
 
     const static gdouble logRanges[ N_RANGES ] = { LOG10, LOG5, LOG2, LOG1 };
+    const static gdouble minNoiseRange[eMAX_NOISE_UNITS]
+                             = { MIN_RANGE_NOISE_FdB, MIN_RANGE_NOISE_F, MIN_RANGE_NOISE_YdB, MIN_RANGE_NOISE_Y, MIN_RANGE_NOISE_Y };
+
 
     log10diff = log10(max-min);
     logFraction = modf( log10diff, &logDecade );
@@ -231,6 +234,19 @@ quantizePlotRange( tGlobal *pGlobal, gdouble min, gdouble max, tGridAxes gridTyp
 
     // create the range
     gridRange = pow( 10.0, logDecade + quantum );
+
+    if( gridType == eNoise ) {
+        if( pGlobal->plot.flags.bCalibrationPlot )
+            minRange = NOISE_MIN_RANGE_CALIBRATION;
+        else
+            minRange = minNoiseRange[ pGlobal->plot.noiseUnits ];
+    } else {
+        minRange = MIN_RANGE_GAINdB;
+    }
+
+    if( gridRange < minRange )
+        gridRange = minRange;
+
     // ten divisions per grid
     division = gridRange/10.0;
 

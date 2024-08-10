@@ -147,7 +147,7 @@
                 <property name="vexpand">True</property>
                 <property name="width-request">320</property>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="WID_box_Spot">
                     <property name="homogeneous">True</property>
                     <child>
                       <object class="GtkFrame">
@@ -204,7 +204,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkFrame">
+                  <object class="GtkFrame" id="WID_frm_Sweep">
                     <property name="css-classes">square</property>
                     <property name="label">Sweep (MHz)</property>
                     <child>
@@ -330,7 +330,7 @@ If you choose a step too small to cover the range from start to stop the color w
                   </object>
                 </child>
                 <child>
-                  <object class="GtkFrame">
+                  <object class="GtkFrame" id="WID_frm_Mode">
                     <property name="css-classes">square</property>
                     <property name="label">Mode</property>
                     <child>
@@ -921,7 +921,7 @@ bottomBorderOnly</property>
                     </child>
                     <child type="tab">
                       <object class="GtkLabel">
-                        <property name="label">Ext. L.O.</property>
+                        <property name="label">Ext. Mixer</property>
                         <property name="tooltip-text">Used with modes 1.1, 1.3 (swept L.O. / fixed I.F.) and  1.2, 1.4 (fixed L.O. / swept I.F.)</property>
                       </object>
                     </child>

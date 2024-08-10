@@ -194,8 +194,53 @@ CB_edit_changed(   GtkEditable* self, gpointer user_data ) {
 	*/
 }
 
+/*!     \brief  Disable some controls when sweeping / calibrating / spot measurement
+ *
+ * Disable some controls when sweeping / calibrating / spot measurement
+ *
+ * \param  wBtnGetData  pointer to GtkButton
+ * \param  udata        user data
+ */
+void
+quarantineControlsOnSweep( tGlobal *pGlobal, gboolean bSpot, gboolean bShow ) {
+    GtkWidget *wBtnSweep = WLOOKUP( pGlobal, "btn_Sweep" );
+    GtkWidget *wBtnCalibrate = WLOOKUP( pGlobal, "btn_Calibrate" );
+    GtkWidget *wToggleSpot = WLOOKUP( pGlobal, "tgl_Spot" );
+    GtkWidget *wCheckCorrection = WLOOKUP( pGlobal, "chk_Correction" );
+
+    GtkWidget *wBoxSpot = WLOOKUP( pGlobal, "box_Spot" );
+    GtkWidget *wFrameSweep = WLOOKUP( pGlobal, "frm_Sweep" );
+    GtkWidget *wFrameMode = WLOOKUP( pGlobal, "frm_Mode" );
+
+    GtkWidget *wPageSource = WLOOKUP( pGlobal, "page_Source" );
+    GtkWidget *wPageSigGen = WLOOKUP( pGlobal, "page_SigGen" );
+    GtkWidget *wPageOptions = WLOOKUP( pGlobal, "page_Options" );
+
+    gtk_widget_set_sensitive ( wBtnSweep, bShow );
+    gtk_widget_set_sensitive ( wBtnCalibrate, pGlobal->flags.bCalibrationNotPossible ? FALSE : bShow );
+    gtk_widget_set_sensitive ( wToggleSpot, bSpot ? TRUE : bShow );
+    gtk_widget_set_sensitive ( wCheckCorrection, bShow );
+
+    gtk_widget_set_sensitive ( wBoxSpot, bShow );
+    gtk_widget_set_sensitive ( wFrameSweep, bShow );
+    gtk_widget_set_sensitive ( wFrameMode, bShow );
+
+    gtk_widget_set_sensitive ( wPageSource, bShow );
+    gtk_widget_set_sensitive ( wPageSigGen, bShow );
+    gtk_widget_set_sensitive ( wPageOptions, bShow );
+
+}
+
+
+/*!     \brief  Callback for Sweep button
+ *
+ * Callback for Sweep button
+ *
+ * \param  wBtnGetData  pointer to GtkButton
+ * \param  udata        user data
+ */
 static void
-CB_btn_Sweep( GtkButton* wBtnGetData, gpointer user_data ) {
+CB_btn_Sweep( GtkButton* wBtnGetData, gpointer udata ) {
 	tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wBtnGetData), "data");
 
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON( WLOOKUP( pGlobal, "tgl_Spot" ) ), FALSE );
@@ -206,11 +251,8 @@ CB_btn_Sweep( GtkButton* wBtnGetData, gpointer user_data ) {
 	}
 
 	postDataToGPIBThread (TG_SWEEP_HP8970, NULL);
-	gtk_widget_set_sensitive ( GTK_WIDGET( wBtnGetData ), FALSE );
-    gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "btn_Calibrate" ), FALSE );
-    gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "tgl_Spot" ), FALSE );
-    gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "chk_Correction" ), FALSE );
-    gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "Controls" ), FALSE );
+
+	quarantineControlsOnSweep( pGlobal, FALSE, FALSE );
 }
 
 /*!     \brief  Callback for Spot Frequency read
@@ -229,10 +271,7 @@ void CB_tgl_Spot (GtkToggleButton *wSpot, gpointer user_data) {
     pGlobal->HP8970settings.switches.bSpotFrequency = gtk_toggle_button_get_active (wSpot);
 
     if( bFormerState == FALSE &&  pGlobal->HP8970settings.switches.bSpotFrequency ) {
-        gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "chk_Correction" ), FALSE );
-        gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "btn_Calibrate" ), FALSE );
-        gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "Controls" ), FALSE );
-
+        quarantineControlsOnSweep( pGlobal, TRUE, FALSE );
         postDataToGPIBThread (TG_SPOT_HP8970, NULL);
     }
 }
@@ -249,11 +288,7 @@ CB_btn_Calibrate( GtkButton* wBtnCalibrate, gpointer udata ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wBtnCalibrate), "data");
 
     postDataToGPIBThread (TG_CALIBRATE, NULL);
-    gtk_widget_set_sensitive ( GTK_WIDGET( wBtnCalibrate ), FALSE );
-    gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "btn_Sweep" ), FALSE );
-    gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "Controls" ), FALSE );
-    gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "chk_Correction" ), FALSE );
-
+    quarantineControlsOnSweep( pGlobal, FALSE, FALSE );
 }
 
 /*!     \brief  Callback for correction check button
@@ -313,9 +348,11 @@ validateCalibrationOperation (tGlobal *pGlobal ){
     if( nPoints + 1 > (pGlobal->flags.bbHP8970Bmodel == e8970A ? CAL_POINTS_8970A : CAL_POINTS_8970B ) ) {
         gtk_widget_add_css_class( wFrStepCal, "warning" );
         gtk_widget_set_sensitive( wBtnCal, FALSE );
+        pGlobal->flags.bCalibrationNotPossible = TRUE;
     } else {
         gtk_widget_remove_css_class( wFrStepCal, "warning" );
         gtk_widget_set_sensitive( wBtnCal, TRUE );
+        pGlobal->flags.bCalibrationNotPossible = FALSE;
     }
 }
 
@@ -674,6 +711,7 @@ refreshMainDialog( tGlobal *pGlobal )
     g_signal_handlers_unblock_by_func( G_OBJECT( wFrStepSweep ), CB_spin_FrStep_Sweep, NULL );
     g_signal_handlers_unblock_by_func( G_OBJECT( wFrequency ), CB_spin_Frequency, NULL );
 
+    gtk_widget_set_sensitive( WLOOKUP( pGlobal, "btn_CSV" ), pGlobal->plot.flags.bValidNoiseData );
     enablePageExtLOwidgets( pGlobal, pGlobal->HP8970settings.mode );
     warnFrequencyRangeOutOfBounds( pGlobal );
 }

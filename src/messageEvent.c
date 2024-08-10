@@ -125,13 +125,8 @@ messageEventDispatch(GSource *source, GSourceFunc callback, gpointer udata) {
             break;
 
 		case TM_COMPLETE_GPIB:
-// 			sensitiseControlsInUse( pGlobal, TRUE );
-			gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "btn_Sweep" ), TRUE );
-            gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "tgl_Spot" ), TRUE );
+		    quarantineControlsOnSweep( pGlobal, FALSE, TRUE );
             validateCalibrationOperation( pGlobal);
-            gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "chk_Correction" ), TRUE );
-		    gtk_widget_set_sensitive ( WLOOKUP( pGlobal, "Controls" ), TRUE );
-
             gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON( WLOOKUP( pGlobal, "tgl_Spot" ) ), FALSE );
 
 			break;

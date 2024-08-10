@@ -281,6 +281,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         gchar *sMessage;
 
         postInfo( "HP8970 data sweep 🧹");
+        gtk_widget_set_sensitive( WLOOKUP( pGlobal, "btn_CSV" ), FALSE );
 
         // snapshot of the settings we need to send
         bExtLO = !(mode == eMode1_0 || mode == eMode1_4);
@@ -464,6 +465,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         ibloc(descGPIB_HP8970);
 
     ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
+    gtk_widget_set_sensitive( WLOOKUP( pGlobal, "btn_CSV" ), pGlobal->plot.flags.bValidNoiseData );
 
     return completionStatus;
 }
@@ -498,6 +500,7 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
 
     while TRUE {
         pstCommands = g_string_new ( NULL );
+        gtk_widget_set_sensitive( WLOOKUP( pGlobal, "btn_CSV" ), FALSE );
 
         gboolean bContinue;
         gchar *sMessage;
@@ -662,6 +665,7 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
     g_string_free ( pstCommands, TRUE );
     ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
 
+    gtk_widget_set_sensitive( WLOOKUP( pGlobal, "btn_CSV" ), pGlobal->plot.flags.bValidNoiseData );
     return completionStatus;
 }
 

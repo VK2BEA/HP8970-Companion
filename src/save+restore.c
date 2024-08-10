@@ -95,6 +95,8 @@ retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
             pGlobal->plot.flags.bSpotFrequencyPlot = json_reader_get_boolean_value ( reader );
         json_reader_end_member (reader);
 
+        g_free( pGlobal->plot.sTitle );
+        pGlobal->plot.sTitle = NULL;
         if( json_reader_read_member (reader, "title") == TRUE ) {
             g_free( pGlobal->plot.sTitle );
             pGlobal->plot.sTitle = g_strdup( json_reader_get_string_value ( reader ) );
@@ -105,14 +107,16 @@ retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
             pGlobal->plot.spotFrequency = json_reader_get_double_value ( reader );
         json_reader_end_member (reader);
 
+        g_free( pGlobal->plot.sDateTime );
+        pGlobal->plot.sDateTime = NULL;
         if( json_reader_read_member (reader, "dateTime") == TRUE ) {
-            g_free( pGlobal->plot.sDateTime );
             pGlobal->plot.sDateTime = g_strdup( json_reader_get_string_value ( reader ) );
         }
         json_reader_end_member (reader);
 
+        g_free( pGlobal->plot.sNotes );
+        pGlobal->plot.sNotes = NULL;
         if( json_reader_read_member (reader, "notes") == TRUE ) {
-            g_free( pGlobal->plot.sNotes );
             pGlobal->plot.sNotes = g_strdup( json_reader_get_string_value ( reader ) );
         }
         json_reader_end_member (reader);
@@ -280,6 +284,8 @@ retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
                                                                        TIME_PLOT_LENGTH * pGlobal->plot.smoothingFactor  );
     else
         pGlobal->plot.measurementBuffer.idxTimeBeforeTail = 0;
+
+    gtk_widget_set_sensitive( WLOOKUP( pGlobal, "btn_CSV" ), pGlobal->plot.flags.bValidNoiseData );
 
     return bOK ? 0 : ERROR;
 }
