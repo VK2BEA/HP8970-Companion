@@ -532,9 +532,14 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
 
 // X legend (Frequency or Time)
         setCairoFontSize(cr, pGrid->fontSize * 1.2);
-        centreJustifiedCairoText(cr, bSpotFreqency ? "Time" : "Frequency (MHz)", pGrid->leftGridPosn + pGrid->gridWidth / 2.0,
+        centreJustifiedCairoText(cr, bSpotFreqency ? "Time (mm:ss)" : "Frequency (MHz)", pGrid->leftGridPosn + pGrid->gridWidth / 2.0,
                                  pGrid->bottomGridPosn - 4.0 * pGrid->fontSize, 0.0 );
         setCairoFontSize(cr, pGrid->fontSize);
+        if( bSpotFreqency ) {
+            g_snprintf( sLegend, SHORT_STRING, "Frequency: %.0lf MHz", pGlobal->plot.freqSpotMHz );
+            leftJustifiedCairoText(cr, sLegend, pGrid->leftGridPosn, pGrid->bottomGridPosn - 4.0 * pGrid->fontSize, 1.0 );
+        }
+
 
 // Y (left) noise grid
 

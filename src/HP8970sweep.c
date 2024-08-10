@@ -344,7 +344,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
 
         *pGPIBstatus = ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
 
-        initCircularBuffer( &pGlobal->plot.measurementBuffer, MAX_HIRES_POINTS + MAX_CAL_POINTS + 1, eFreqAbscissa );
+        initCircularBuffer( &pGlobal->plot.measurementBuffer, (freqStopMHz - freqStartMHz) / freqStepMHz + 2, eFreqAbscissa );
 
         pGlobal->plot.measurementBuffer.minAbscissa.freq  = freqStartMHz * MHz(1.0);
         pGlobal->plot.measurementBuffer.maxAbscissa.freq  = freqStopMHz * MHz(1.0);
@@ -593,7 +593,7 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
                 break;  // this will exit the for loop when interrupted or error
             }
 
-            measurement.abscissa.time = g_get_real_time() / 1000;    // convert microseconds to miliseconds
+            measurement.abscissa.time = g_get_real_time() / 1000;    // convert microseconds to milliseconds
             measurement.flags.each.bNoiseInvalid =
                     IS_HP8970_ERROR( measurement.noise );
             measurement.flags.each.bNoiseOverflow =
@@ -813,9 +813,9 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
                                                     pGPIBstatus, &HP8970error, 30 * TIMEOUT_RW_1SEC);
 
             if( bRestartSweep ) {
-                initCircularBuffer( pCircularBuffer, MAX_CAL_POINTS + 1, eFreqAbscissa );
-                pCircularBuffer->minAbscissa.freq  = pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz * MHz(1.0);
-                pCircularBuffer->maxAbscissa.freq  = pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz * MHz(1.0);
+                initCircularBuffer( pCircularBuffer, (freqStopMHz - freqStartMHz) / freqStepMHz + 2, eFreqAbscissa );
+                pCircularBuffer->minAbscissa.freq  = freqStartMHz * MHz(1.0);
+                pCircularBuffer->maxAbscissa.freq  = freqStopMHz * MHz(1.0);
                 pGlobal->plot.flags.bValidNoiseData = FALSE;
                 pGlobal->plot.flags.bValidGainData  = FALSE;
                 bRestartSweep = FALSE;
@@ -839,7 +839,7 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
                     freqRF_MHz += freqStepMHz;
                 }
 
-                if( nCalPoint >= (pGlobal->flags.bbHP8970Bmodel == e8970A ? 81:181)) {
+                if( nCalPoint >= (pGlobal->flags.bbHP8970Bmodel == e8970A ? CAL_POINTS_8970A:CAL_POINTS_8970B)) {
                     freqRF_MHz = freqStopMHz;
                     nCalPoint = 0;
                 }

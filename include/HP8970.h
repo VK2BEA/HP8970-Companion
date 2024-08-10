@@ -92,7 +92,7 @@ typedef enum {
 
 
 typedef union {
-    struct {
+    struct {    // remember to change ALL_FUNCTIONS if an 'each' is added
         guint32 bFrequency        : 1;
         guint32 bStartFrequency   : 1;
         guint32 bStopFrequency    : 1;
@@ -105,7 +105,7 @@ typedef union {
         guint32 bCorrection       : 1;
         guint32 bExternalLO       : 1;
     } each;
-#define ALL_FUNCTIONS    0b11111111
+#define ALL_FUNCTIONS    0b11111111111
     guint32 all;
 } tUpdateFlags;
 
@@ -468,9 +468,11 @@ extern tGlobal globalData;
 #define TIME_PLOT_LENGTH    60.0
 #define TIME_DIVISIONS_PER_GRID 10
 
-#define MAX_HIRES_POINTS    401
-#define MAX_CAL_POINTS		 81
+#define CAL_POINTS_8970A    81
+#define CAL_POINTS_8970B    181
+
 #define MAX_SPOT_POINTS    2000
+#define SMIG 0.001
 
 
 // maximum and minimum frequencies (mode 1.0 and 1.4)

@@ -60,7 +60,7 @@ gchar   *HP8970errorCodes[] = {
         // Invalid Frequency Error
         "Start frequency is greater than stop frequency during calibration "
             "or plot. Or, the lower limit is greater than the upper limit (noise or gain) during sweep",
-        "Number of calibration points exceeds 81",
+        "Number of calibration points exceeds 81 (A) or 181 (B)",
         "LO frequency will be out range",
         "IF will be out of range",
         "Double sideband is not allowed in Measurement Mode 1.2"

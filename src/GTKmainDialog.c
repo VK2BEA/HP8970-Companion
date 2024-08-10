@@ -309,8 +309,8 @@ validateCalibrationOperation (tGlobal *pGlobal ){
     gdouble startF = pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz;
     gdouble stopF = pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz;
 
-    modf( (stopF - startF) / stepF, &nPoints );
-    if( nPoints + 1 > (pGlobal->flags.bbHP8970Bmodel == e8970A ? 81 : 181 ) ) {
+    modf( (stopF - startF + SMIG) / stepF, &nPoints );
+    if( nPoints + 1 > (pGlobal->flags.bbHP8970Bmodel == e8970A ? CAL_POINTS_8970A : CAL_POINTS_8970B ) ) {
         gtk_widget_add_css_class( wFrStepCal, "warning" );
         gtk_widget_set_sensitive( wBtnCal, FALSE );
     } else {

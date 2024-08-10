@@ -707,6 +707,7 @@ threadGPIB (gpointer _pGlobal) {
             postError("HP8970 is not responding");
             ibtmo (descGPIB_HP8970, T1s);
             GPIBstatus = ibclr (descGPIB_HP8970);
+            pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
             usleep (ms(250));
         } else {
             pGlobal->flags.bGPIBcommsActive = TRUE;
@@ -845,8 +846,10 @@ threadGPIB (gpointer _pGlobal) {
                         ibask (descGPIB_HP8970, IbaBNA, &boardIndex);
                         ibsic (boardIndex);
                         if( descGPIB_HP8970 != INVALID ) {
-							if( message->command == TG_ABORT_CLEAR )
+							if( message->command == TG_ABORT_CLEAR ) {
 								GPIBstatus = ibclr (descGPIB_HP8970);
+								pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
+							}
 							IBLOC(descGPIB_HP8970, datum, GPIBstatus);
                         }
 
@@ -856,8 +859,10 @@ threadGPIB (gpointer _pGlobal) {
 							ibloc(descGPIB_extLO);
                         }
 
-                        if( message->command == TG_ABORT_CLEAR )
+                        if( message->command == TG_ABORT_CLEAR ) {
                             GPIBstatus = ibclr (descGPIB_HP8970);
+                            pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
+                        }
                         IBLOC(descGPIB_HP8970, datum, GPIBstatus);
                     }
 
