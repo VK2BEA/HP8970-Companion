@@ -451,9 +451,9 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         pGlobal->plot.flags.bValidNoiseData = FALSE;
         pGlobal->plot.flags.bValidGainData  = FALSE;
     } else if( HP8970error > 0 ) {
-        gchar sError[ MEDIUM_STRING ];
-        g_snprintf( sError, MEDIUM_STRING, "HP8970 error: %s", HP8970errorString( HP8970error ) );
+        gchar *sError = g_strdup_printf( sError, "HP8970 error: %s", HP8970errorString( HP8970error ) );
         postError( sError );
+        g_free( sError );
     } else {
         postInfo( "HP8970 data sweep OK");
         postInfoLO( "");
@@ -903,7 +903,9 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
         // sweep off (in case we've interrupted the calibration .. according to the manual, this is the only way to stop the calibration)
         // resume auto trigger & disable SRQ
-        GPIBasyncWrite (descGPIB_HP8970, "W0T0Q0", pGPIBstatus, 10 * TIMEOUT_RW_1SEC);
+        gint altGPIBstatus = 0; // we try to write even if there was a GPIB error. If we don't provide an alternate status gint
+                                // the write will not be attempted
+        GPIBasyncWrite (descGPIB_HP8970, "W0T0Q0", &altGPIBstatus, 10 * TIMEOUT_RW_1SEC);
 
         completionStatus = TRUE;
         break;

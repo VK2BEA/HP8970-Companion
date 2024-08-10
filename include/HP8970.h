@@ -428,6 +428,7 @@ extern gchar *sHP89709models[];
 #define LOCAL_DELAYms   50              // Delay after going to local from remote
 #define SHORT_STRING    25
 #define MEDIUM_STRING   50
+#define LONG_STRING     256
 
 extern tGlobal globalData;
 
