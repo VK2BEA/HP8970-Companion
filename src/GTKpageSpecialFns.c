@@ -45,6 +45,7 @@ CB_chk_NoiseUnits (GtkCheckButton *wNoiseUnit, gpointer identifier)
     gboolean bActive = gtk_check_button_get_active (wNoiseUnit);
 
     if( bActive ) {
+        pGlobal->HP8970settings.noiseUnits = (tNoiseType)GPOINTER_TO_INT( identifier );
         UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bNoiseUnits);
     }
 }
