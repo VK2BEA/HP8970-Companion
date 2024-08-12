@@ -77,11 +77,13 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
                 case GDK_ALT_MASK:
                     break;
                 case GDK_SUPER_MASK:
-                    break;
-                case 0:
                     gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( WLOOKUP( pGlobal, "HP8970_application" ) )), 1, 1);
                     while (g_main_context_pending (g_main_context_default ()))
                         g_main_context_iteration (NULL, TRUE);
+                    break;
+                case 0:
+                    pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
+                    postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL);
                     break;
                 }
             break;

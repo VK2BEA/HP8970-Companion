@@ -586,14 +586,12 @@ CB_JSONopen( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
             gtk_editable_set_text( wTitle, pGlobal->plot.sTitle == 0 ? "" : pGlobal->plot.sTitle );
             g_signal_handlers_unblock_by_func( G_OBJECT( wTitle ),    CB_edit_Title,    NULL );
 
-            if( pGlobal->plot.sNotes ) {
-                GtkTextBuffer *wNotes = gtk_text_view_get_buffer(GTK_TEXT_VIEW(WLOOKUP( pGlobal, "textView_Notes") ));
-                g_signal_handlers_block_by_func( G_OBJECT( wNotes ), G_CALLBACK( CB_notes_changed ), pGlobal);
-                gtk_text_buffer_set_text( wNotes, pGlobal->plot.sNotes, -1 );
-                g_signal_handlers_unblock_by_func( G_OBJECT( wNotes ), G_CALLBACK( CB_notes_changed ), pGlobal );
+            GtkTextBuffer *wNotes = gtk_text_view_get_buffer(GTK_TEXT_VIEW(WLOOKUP( pGlobal, "textView_Notes") ));
+            g_signal_handlers_block_by_func( G_OBJECT( wNotes ), G_CALLBACK( CB_notes_changed ), pGlobal);
+            gtk_text_buffer_set_text( wNotes, pGlobal->plot.sNotes == NULL ? "" : pGlobal->plot.sNotes, -1 );
+            g_signal_handlers_unblock_by_func( G_OBJECT( wNotes ), G_CALLBACK( CB_notes_changed ), pGlobal );
 
-                gtk_notebook_set_current_page( WLOOKUP(pGlobal, "note_Controls" ), ePageNotes );
-            }
+            gtk_notebook_set_current_page( WLOOKUP(pGlobal, "note_Controls" ), ePageNotes );
 
             setSpinNoiseRange( pGlobal );
 
