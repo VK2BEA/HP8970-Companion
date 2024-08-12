@@ -614,6 +614,9 @@ threadGPIB (gpointer _pGlobal) {
     gulong __attribute__((unused)) datum = 0;
     GString *pstCommands;
     gchar HP8970status;
+#define DEFAULT_MSG_TIMEOUT 2000
+#define MINIMAL_MSG_TIMEOUT 1
+    gint messageTimeout = DEFAULT_MSG_TIMEOUT;
 
     gboolean bNewSettings;
     tUpdateFlags updateFlags;
@@ -646,7 +649,9 @@ threadGPIB (gpointer _pGlobal) {
     checkMessageQueue (pGlobal->messageQueueToGPIB);
 
     do {
-        message = g_async_queue_timeout_pop (pGlobal->messageQueueToGPIB, ms( 2000 ));
+        message = g_async_queue_timeout_pop (pGlobal->messageQueueToGPIB, ms( messageTimeout ));
+        // Reset message timeout
+        messageTimeout = DEFAULT_MSG_TIMEOUT;
         // See if it is a timeout
         if( message == NULL ) {
             // Timeout
@@ -848,8 +853,10 @@ threadGPIB (gpointer _pGlobal) {
                         if( descGPIB_HP8970 != INVALID ) {
 							if( message->command == TG_ABORT_CLEAR ) {
 								GPIBstatus = ibclr (descGPIB_HP8970);
-								pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
+
 							}
+                            pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
+							messageTimeout = MINIMAL_MSG_TIMEOUT;
 							IBLOC(descGPIB_HP8970, datum, GPIBstatus);
                         }
 
@@ -858,14 +865,7 @@ threadGPIB (gpointer _pGlobal) {
 								ibclr (descGPIB_extLO);
 							ibloc(descGPIB_extLO);
                         }
-
-                        if( message->command == TG_ABORT_CLEAR ) {
-                            GPIBstatus = ibclr (descGPIB_HP8970);
-                            pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
-                        }
-                        IBLOC(descGPIB_HP8970, datum, GPIBstatus);
                     }
-
                     break;
                 default:
                     break;
