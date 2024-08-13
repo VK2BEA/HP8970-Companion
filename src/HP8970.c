@@ -68,9 +68,9 @@ gboolean
 shrinkWrap (gpointer gpGlobal) {
     static gboolean bToggle = FALSE;
     tGlobal *pGlobal = (tGlobal*) gpGlobal;
-    gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( WLOOKUP( pGlobal, "HP8970_application" ) )), bToggle ? 1 : -1,
+    gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( pGlobal->widgets[ eW_HP8970_application ])), bToggle ? 1 : -1,
                                  bToggle ? 1 : -1);
-    gtk_widget_set_size_request (WLOOKUP(pGlobal, "aspect_Plot"), 707, 500);
+    gtk_widget_set_size_request ( pGlobal->widgets[ eW_aspect_Plot ], 707, 500);
     bToggle = !bToggle;
     return G_SOURCE_REMOVE;
 }
@@ -78,13 +78,13 @@ shrinkWrap (gpointer gpGlobal) {
 void
 appEnter (GtkEventControllerFocus *self, gpointer gpGlobal) {
     tGlobal *pGlobal = (tGlobal*) gpGlobal;
-    GtkWidget *wPlot = WLOOKUP(pGlobal, "aspect_Plot");
+    GtkWidget *wPlot = pGlobal->widgets[ eW_aspect_Plot ];
 
     gint height = gtk_widget_get_height (wPlot);
     gint width = gtk_widget_get_width (wPlot);
     g_print ("app enter: %d x %d\n", width, height);
     /*
-     gtk_widget_set_size_request( WLOOKUP( pGlobal, "aspect_Plot" ), width, height);
+     gtk_widget_set_size_request( pGlobal->widgets[ eW_aspect_Plot ], width, height);
      g_timeout_add ( 100, (GSourceFunc)shrinkWrap, gpGlobal );
      */
 }
@@ -92,7 +92,7 @@ appEnter (GtkEventControllerFocus *self, gpointer gpGlobal) {
 void
 appLeave (GtkEventControllerFocus *self, gpointer gpGlobal) {
     tGlobal *pGlobal = (tGlobal*) gpGlobal;
-    GtkWidget *wPlot = WLOOKUP(pGlobal, "aspect_Plot");
+    GtkWidget *wPlot = pGlobal->widgets[ eW_aspect_Plot ];
 
     gint height = gtk_widget_get_height (wPlot);
     gint width = gtk_widget_get_width (wPlot);
@@ -224,23 +224,15 @@ on_activate (GApplication *app, gpointer udata) {
     GtkBuilder *builder;
     GtkWidget *wApplicationWindow;
 
-    GSList *runner;
-    const gchar *name;
-    const gchar __attribute__((unused)) *wname;
-    GtkWidget *widget;
-    GSList *widgetList;
-
     tGlobal *pGlobal = (tGlobal*) udata;
 
     if (pGlobal->flags.bRunning) {
         // gtk_window_set_screen( GTK_WINDOW( MainWindow ),
         //                       unique_message_data_get_screen( message ) );
         gtk_widget_set_visible (
-                GTK_WIDGET(
-                        gtk_widget_get_root(GTK_WIDGET(g_hash_table_lookup ( pGlobal->widgetHashTable, (gconstpointer)"WID_HP8970_application")))),
-                TRUE);
+                GTK_WIDGET( gtk_widget_get_root( pGlobal->widgets[ eW_HP8970_application ])), TRUE);
 
-        gtk_window_present (GTK_WINDOW(g_hash_table_lookup (pGlobal->widgetHashTable, (gconstpointer )"WID_HP8970_application")));
+        gtk_window_present (GTK_WINDOW( pGlobal->widgets[ eW_HP8970_application ] ));
         return;
     } else {
         pGlobal->flags.bRunning = TRUE;
@@ -267,37 +259,13 @@ on_activate (GApplication *app, gpointer udata) {
     gtk_builder_add_from_resource (builder, "/src/hp8970.ui", NULL);
     wApplicationWindow = GTK_WIDGET(gtk_builder_get_object (builder, "WID_HP8970_application"));
 
-    // Get all the widgets in a list
-    // Filter for the ones we use (prefixed in glade by WID_)
-    // put them in a hash table so we can quickly access them when needed
-
-    widgetList = gtk_builder_get_objects (builder);
-    for (runner = widgetList; runner; runner = g_slist_next(runner)) {
-        widget = runner->data;
-        if (GTK_IS_WIDGET(widget)) {
-            wname = gtk_widget_get_name (widget);
-            name = gtk_buildable_get_buildable_id (GTK_BUILDABLE(widget));
-            // g_printerr("Widget type is %s and buildable get name is %s\n", wname, name);
-
-#define WIDGET_ID_PREFIX		"WID_"
-#define WIDGET_ID_PREXIX_LEN	(sizeof("WID_")-1)
-
-            if (g_str_has_prefix(name, WIDGET_ID_PREFIX)) {
-                gint sequence = (name[ WIDGET_ID_PREXIX_LEN] - '1');
-                if (sequence < 0 || sequence > 9)
-                    sequence = INVALID;
-                g_object_set_data (G_OBJECT(widget), "sequence", (gpointer) (guint64) sequence);
-                g_object_set_data (G_OBJECT(widget), "data", (gpointer) pGlobal);
-                g_hash_table_insert (pGlobal->widgetHashTable, (gchar*) (name + WIDGET_ID_PREXIX_LEN), widget);
-            }
-        }
-    }
-    g_slist_free (widgetList);
+    // Get the widgets we will be addressing into a fast array
+    buildWidgetList(pGlobal,  builder);
 
     // Stop a hexpand from a GtkEntry in sidebar box from causing the sidebar GtkBox itself (WID_Controls) to obtain this property.
     // The sidebar should maintain its width regardless of the size of the application window
     // See ... https://gitlab.gnome.org/GNOME/gtk/-/issues/6820
-    gtk_widget_set_hexpand( GTK_WIDGET(WLOOKUP( pGlobal, "Controls" )), FALSE );
+    gtk_widget_set_hexpand( GTK_WIDGET( pGlobal->widgets[ eW_Controls ] ), FALSE );
 
 #ifdef __OPTIMIZE__
     g_timeout_add (20, (GSourceFunc) splashCreate, pGlobal);
@@ -313,7 +281,7 @@ on_activate (GApplication *app, gpointer udata) {
 
     gtk_window_set_default_icon_name ("hp8970");
 
-    GtkColumnView *wNoiseTable = WLOOKUP(pGlobal, "CV_NoiseSource");
+    GtkColumnView *wNoiseTable = pGlobal->widgets[ eW_CV_NoiseSource ];
     createNoiseFigureColumnView (wNoiseTable, pGlobal);
 
     gtk_widget_set_visible (wApplicationWindow, TRUE);
@@ -418,8 +386,6 @@ on_shutdown (GApplication *app, gpointer userData) {
     g_source_unref (pGlobal->messageEventSource);
 
     g_mutex_clear( &pGlobal->HP8970settings.mUpdate );
-
-    g_hash_table_destroy (globalData.widgetHashTable);
 
     g_free (pGlobal->sUsersJSONfilename);
     g_free (pGlobal->sUsersPDFImageFilename);

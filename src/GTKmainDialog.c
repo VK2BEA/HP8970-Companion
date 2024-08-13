@@ -36,9 +36,9 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
                     pGlobal->plot.flags.bValidNoiseData = FALSE;
                     pGlobal->plot.flags.bValidGainData  = FALSE;
                     initCircularBuffer( &pGlobal->plot.measurementBuffer, 0, eTimeAbscissa );
-                    gtk_text_buffer_set_text( gtk_text_view_get_buffer(GTK_TEXT_VIEW(WLOOKUP( pGlobal, "textView_Notes") )), "", -1 );
-                    gtk_editable_set_text( GTK_EDITABLE(WLOOKUP( pGlobal, "entry_Title") ), "" );
-                    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+                    gtk_text_buffer_set_text( gtk_text_view_get_buffer(GTK_TEXT_VIEW( pGlobal->widgets[ eW_textView_Notes ] )), "", -1 );
+                    gtk_editable_set_text( GTK_EDITABLE( pGlobal->widgets[ eW_entry_Title ] ), "" );
+                    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
                     break;
                 case GDK_SUPER_MASK:
                     break;
@@ -60,7 +60,7 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
                     break;
                 case 0:
                     GtkUriLauncher *launcher = gtk_uri_launcher_new ("help:hp8970");
-                    gtk_uri_launcher_launch (launcher, GTK_WINDOW(gtk_widget_get_root( WLOOKUP( pGlobal, "HP8970_application" ))), NULL, NULL, NULL);
+                    gtk_uri_launcher_launch (launcher, GTK_WINDOW(gtk_widget_get_root( pGlobal->widgets[ eW_HP8970_application ] )), NULL, NULL, NULL);
                     g_object_unref (launcher);
                     break;
                 }
@@ -69,7 +69,7 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
             switch (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK | GDK_SUPER_MASK))
                 {
                 case GDK_SHIFT_MASK:
-                    gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( WLOOKUP( pGlobal, "HP8970_application" ) )), -1,
+                    gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( pGlobal->widgets[ eW_HP8970_application ] )), -1,
                                                  -1);
                     break;
                 case GDK_CONTROL_MASK:
@@ -77,7 +77,7 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
                 case GDK_ALT_MASK:
                     break;
                 case GDK_SUPER_MASK:
-                    gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( WLOOKUP( pGlobal, "HP8970_application" ) )), 1, 1);
+                    gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( pGlobal->widgets[ eW_HP8970_application ] )), 1, 1);
                     while (g_main_context_pending (g_main_context_default ()))
                         g_main_context_iteration (NULL, TRUE);
                     break;
@@ -129,7 +129,7 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
                 case GDK_SUPER_MASK:
                     break;
                 case 0:
-                    GtkWidget *wApplicationWindow = WLOOKUP( pGlobal, "HP8970_application" );
+                    GtkWidget *wApplicationWindow = pGlobal->widgets[ eW_HP8970_application ];
                     GdkRectangle geometry= {0};
                     GdkSurface *surface = gtk_native_get_surface(GTK_NATIVE(wApplicationWindow));
                     GdkDisplay *display = gdk_surface_get_display (surface);
@@ -205,31 +205,19 @@ CB_edit_changed(   GtkEditable* self, gpointer user_data ) {
  */
 void
 quarantineControlsOnSweep( tGlobal *pGlobal, gboolean bSpot, gboolean bShow ) {
-    GtkWidget *wBtnSweep = WLOOKUP( pGlobal, "btn_Sweep" );
-    GtkWidget *wBtnCalibrate = WLOOKUP( pGlobal, "btn_Calibrate" );
-    GtkWidget *wToggleSpot = WLOOKUP( pGlobal, "tgl_Spot" );
-    GtkWidget *wCheckCorrection = WLOOKUP( pGlobal, "chk_Correction" );
 
-    GtkWidget *wBoxSpot = WLOOKUP( pGlobal, "box_Spot" );
-    GtkWidget *wFrameSweep = WLOOKUP( pGlobal, "frm_Sweep" );
-    GtkWidget *wFrameMode = WLOOKUP( pGlobal, "frm_Mode" );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_btn_Sweep ], bShow );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_btn_Calibrate ], pGlobal->flags.bCalibrationNotPossible ? FALSE : bShow );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_tgl_Spot ], bSpot ? TRUE : bShow );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_chk_Correction ], bShow );
 
-    GtkWidget *wPageSource = WLOOKUP( pGlobal, "page_Source" );
-    GtkWidget *wPageSigGen = WLOOKUP( pGlobal, "page_SigGen" );
-    GtkWidget *wPageOptions = WLOOKUP( pGlobal, "page_Options" );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_box_Spot ], bShow );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_frm_Sweep ], bShow );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_frm_Mode ], bShow );
 
-    gtk_widget_set_sensitive ( wBtnSweep, bShow );
-    gtk_widget_set_sensitive ( wBtnCalibrate, pGlobal->flags.bCalibrationNotPossible ? FALSE : bShow );
-    gtk_widget_set_sensitive ( wToggleSpot, bSpot ? TRUE : bShow );
-    gtk_widget_set_sensitive ( wCheckCorrection, bShow );
-
-    gtk_widget_set_sensitive ( wBoxSpot, bShow );
-    gtk_widget_set_sensitive ( wFrameSweep, bShow );
-    gtk_widget_set_sensitive ( wFrameMode, bShow );
-
-    gtk_widget_set_sensitive ( wPageSource, bShow );
-    gtk_widget_set_sensitive ( wPageSigGen, bShow );
-    gtk_widget_set_sensitive ( wPageOptions, bShow );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_page_Source ], bShow );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_page_SigGen ], bShow );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_page_Options ], bShow );
 
 }
 
@@ -245,7 +233,7 @@ static void
 CB_btn_Sweep( GtkButton* wBtnGetData, gpointer udata ) {
 	tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wBtnGetData), "data");
 
-	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON( WLOOKUP( pGlobal, "tgl_Spot" ) ), FALSE );
+	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON( pGlobal->widgets[ eW_tgl_Spot ] ), FALSE );
 
 	if( pGlobal->HP8970settings.switches.bSpotFrequency ) {
         postDataToGPIBThread (TG_ABORT, NULL);
@@ -339,8 +327,8 @@ CB_spin_Frequency(   GtkSpinButton* wFrequency,
 void
 validateCalibrationOperation (tGlobal *pGlobal ){
     gdouble nPoints;
-    GtkWidget *wFrStepCal = GTK_WIDGET( WLOOKUP( pGlobal, "spin_FrStep_Cal" ) );
-    GtkWidget *wBtnCal    = GTK_WIDGET( WLOOKUP( pGlobal, "btn_Calibrate" ) );
+    GtkWidget *wFrStepCal = GTK_WIDGET( pGlobal->widgets[ eW_spin_FrStep_Cal ] );
+    GtkWidget *wBtnCal    = GTK_WIDGET( pGlobal->widgets[ eW_btn_Calibrate ] );
     gboolean bExtLO = !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4);
     gdouble stepF = pGlobal->HP8970settings.range[ bExtLO ].freqStepCalMHz;
     gdouble startF = pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz;
@@ -380,7 +368,7 @@ CB_spin_FrStart(   GtkSpinButton* wFrStart,
     UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bStartFrequency );
 
     if( startF > stopF )
-        gtk_spin_button_set_value( WLOOKUP(pGlobal, "spin_FrStop"), startF );
+        gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_FrStop ], startF );
 
     warnFrequencyRangeOutOfBounds( pGlobal );
     validateCalibrationOperation ( pGlobal );
@@ -404,7 +392,7 @@ CB_spin_FrStop(   GtkSpinButton* wFrStop,
     UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bStopFrequency );
 
     if( pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz < pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz )
-        gtk_spin_button_set_value( WLOOKUP(pGlobal, "spin_FrStart"), pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz );
+        gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_FrStart ], pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz );
 
     warnFrequencyRangeOutOfBounds( pGlobal );
     validateCalibrationOperation ( pGlobal );
@@ -505,9 +493,9 @@ CB_combo_Mode ( GtkComboBox* wComboMode, gpointer udata ) {
 
     // Switch notebook page to Ext LO if not mode 1.0
     if( bShowLOpage )
-        gtk_notebook_set_current_page( WLOOKUP( pGlobal, "note_Controls" ), ePageExtLO );
+        gtk_notebook_set_current_page( pGlobal->widgets[ eW_note_Controls ], ePageExtLO );
 
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Callback for smoothing GtkComboBoxText
@@ -541,7 +529,7 @@ CB_edit_Title (   GtkEditable* self, gpointer user_data )
     g_free( pGlobal->plot.sTitle );
     pGlobal->plot.sTitle = g_strdup( sTitle );
 
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*
@@ -596,7 +584,7 @@ on_PlotLeftMouse_1_press ( GtkGestureClick* eventGesture, gint n_press, gdouble 
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(gtk_widget_get_root(GTK_WIDGET(wDrawingArea))), "data");
 
     if ( pGlobal->flags.bPreviewModeDiagram )
-        gtk_widget_grab_focus ( WLOOKUP( pGlobal, "note_Controls" ) );
+        gtk_widget_grab_focus ( pGlobal->widgets[ eW_note_Controls ] );
     pGlobal->flags.bPreviewModeDiagram = FALSE;
 
     pGlobal->flags.bHoldLiveMarker = FALSE;
@@ -626,7 +614,7 @@ CB_PlotMouse_3_press_1_release ( GtkGestureClick* eventGesture, gint n_press, gd
     guint button = gtk_gesture_single_get_current_button( GTK_GESTURE_SINGLE( eventGesture ) );
 
     if ( pGlobal->flags.bPreviewModeDiagram )
-        gtk_widget_grab_focus ( WLOOKUP( pGlobal, "note_Controls" ) );
+        gtk_widget_grab_focus ( pGlobal->widgets[ eW_note_Controls ] );
     pGlobal->flags.bPreviewModeDiagram = FALSE;
 
     if ( button == 1 )
@@ -655,12 +643,12 @@ refreshMainDialog( tGlobal *pGlobal )
     gdouble max = bExtLO ? HP8970A_MAX_FREQ_R2 : HP8970A_MAX_FREQ;
     gdouble pageStep = bExtLO ? HP8970A_PageStep_FREQ_R2 : HP8970A_PageStep_FREQ;
 
-    wFrStart     = WLOOKUP( pGlobal, "spin_FrStart" );
-    wFrequency   = WLOOKUP( pGlobal, "spin_Frequency" );
-    wFrStop      = WLOOKUP( pGlobal, "spin_FrStop" );
-    wFrStepCal   = WLOOKUP( pGlobal, "spin_FrStep_Cal" );
-    wFrStepSweep = WLOOKUP( pGlobal, "spin_FrStep_Sweep" );
-    wMode        = WLOOKUP( pGlobal, "combo_Mode" );
+    wFrStart     = pGlobal->widgets[ eW_spin_FrStart ];
+    wFrequency   = pGlobal->widgets[ eW_spin_Frequency ];
+    wFrStop      = pGlobal->widgets[ eW_spin_FrStop ];
+    wFrStepCal   = pGlobal->widgets[ eW_spin_FrStep_Cal ];
+    wFrStepSweep = pGlobal->widgets[ eW_spin_FrStep_Sweep ];
+    wMode        = pGlobal->widgets[ eW_combo_Mode ];
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -674,12 +662,12 @@ refreshMainDialog( tGlobal *pGlobal )
 
     gtk_combo_box_set_active( GTK_COMBO_BOX( wMode ), pGlobal->HP8970settings.mode );
 
-    gtk_combo_box_set_active( GTK_COMBO_BOX( WLOOKUP( pGlobal, "combo_Smoothing" )),
+    gtk_combo_box_set_active( GTK_COMBO_BOX( pGlobal->widgets[ eW_combo_Smoothing ]),
                               (gint)log2(pGlobal->HP8970settings.smoothingFactor) );
 #pragma GCC diagnostic pop
 
     // Initialize widgets on main page
-    gtk_check_button_set_active ( WLOOKUP(pGlobal, "chk_Correction" ), pGlobal->HP8970settings.switches.bCorrectedNFAndGain );
+    gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_Correction ], pGlobal->HP8970settings.switches.bCorrectedNFAndGain );
 
     // Frequency
     gtk_spin_button_set_range( GTK_SPIN_BUTTON( wFrequency ), min, max );
@@ -704,7 +692,7 @@ refreshMainDialog( tGlobal *pGlobal )
     gtk_spin_button_set_value( GTK_SPIN_BUTTON( wFrStepSweep ), pGlobal->HP8970settings.range[bExtLO].freqStepSweepMHz );
 
     // Initialize widgets on main page
-    gtk_check_button_set_active ( WLOOKUP(pGlobal, "chk_Correction" ), pGlobal->HP8970settings.switches.bCorrectedNFAndGain );
+    gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_Correction ], pGlobal->HP8970settings.switches.bCorrectedNFAndGain );
 
     g_signal_handlers_unblock_by_func( G_OBJECT( wMode ), CB_combo_Mode, NULL );
     g_signal_handlers_unblock_by_func( G_OBJECT( wFrStart ), CB_spin_FrStart, NULL );
@@ -713,7 +701,7 @@ refreshMainDialog( tGlobal *pGlobal )
     g_signal_handlers_unblock_by_func( G_OBJECT( wFrStepSweep ), CB_spin_FrStep_Sweep, NULL );
     g_signal_handlers_unblock_by_func( G_OBJECT( wFrequency ), CB_spin_Frequency, NULL );
 
-    gtk_widget_set_sensitive( WLOOKUP( pGlobal, "btn_CSV" ), pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
     enablePageExtLOwidgets( pGlobal, pGlobal->HP8970settings.mode );
     warnFrequencyRangeOutOfBounds( pGlobal );
 }
@@ -745,7 +733,7 @@ void on_ModeCombo_MouseEnterLeave ( GtkEventControllerMotion* eventGesture, gdou
             gtk_widget_get_first_child( gtk_widget_get_first_child( GTK_WIDGET( wModeCombo ) ) ) );
 
     pGlobal->flags.bPreviewModeDiagram = value || ( GDK_ENTER_NOTIFY == action ) || bFocused;
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Callback for when the focus leaves the combo box
@@ -764,7 +752,7 @@ CB_combo_ModeOutOfFocus( GtkEventControllerFocus* eventFocus, gpointer uData ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(gtk_widget_get_root(GTK_WIDGET(wModeCombo))), "data");
 
     pGlobal->flags.bPreviewModeDiagram = FALSE;
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Callback when Mode combobox is shown and hidden
@@ -785,7 +773,7 @@ CB_combo_ModePopupAndDown ( GtkComboBox* wModeCombo, gpointer gpGlobal ) {
     g_object_get (G_OBJECT (wModeCombo), "popup-shown", &bPopup, NULL);
 
     pGlobal->flags.bPreviewModeDiagram = TRUE;
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Set the sweep spin buttons to match the mode
@@ -799,53 +787,53 @@ initializeMainDialog( tGlobal *pGlobal )
 {
     GtkWidget *wDrawingArea, *wApplication, *wModeCombo, *wSaveJSON;
 
-    wDrawingArea = WLOOKUP(pGlobal, "drawing_Plot");
-    wApplication = WLOOKUP( pGlobal, "HP8970_application");
-    wModeCombo = WLOOKUP( pGlobal, "combo_Mode" );
-    wSaveJSON = WLOOKUP( pGlobal, "btn_SaveJSON" );
-    GtkNotebook *noteBook = WLOOKUP(pGlobal, "note_Controls" );
+    wDrawingArea = pGlobal->widgets[ eW_drawing_Plot ];
+    wApplication = pGlobal->widgets[ eW_HP8970_application ];
+    wModeCombo = pGlobal->widgets[ eW_combo_Mode ];
+    wSaveJSON = pGlobal->widgets[ eW_btn_SaveJSON ];
+    GtkNotebook *noteBook = pGlobal->widgets[ eW_note_Controls ];
 
-    gtk_notebook_reorder_child  ( noteBook, WLOOKUP(pGlobal, "page_Options" ), ePage8970 );
-    gtk_notebook_reorder_child  ( noteBook, WLOOKUP(pGlobal, "page_Notes" ), ePageNotes );
-    gtk_notebook_reorder_child  ( noteBook, WLOOKUP(pGlobal, "page_Plot" ), ePagePlot );
-    gtk_notebook_reorder_child  ( noteBook, WLOOKUP(pGlobal, "page_SigGen" ), ePageExtLO );
-    gtk_notebook_reorder_child  ( noteBook, WLOOKUP(pGlobal, "page_Source" ), ePageNoiseSource );
-    gtk_notebook_reorder_child  ( noteBook, WLOOKUP(pGlobal, "page_Settings" ), ePageOptions );
-    gtk_notebook_reorder_child  ( noteBook, WLOOKUP(pGlobal, "page_GPIB" ), ePageGPIB );
+    gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_Options ], ePage8970 );
+    gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_Notes ], ePageNotes );
+    gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_Plot ], ePagePlot );
+    gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_SigGen ], ePageExtLO );
+    gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_Source ], ePageNoiseSource );
+    gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_Settings ], ePageOptions );
+    gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_GPIB ], ePageGPIB );
 
     // Setup callbacks for **some** widgets first so that we send the initial settings
-    g_signal_connect(WLOOKUP( pGlobal, "chk_Correction" ),  "toggled", G_CALLBACK( CB_chk_Correction ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_chk_Correction ],  "toggled", G_CALLBACK( CB_chk_Correction ), NULL);
     // Frequency and Sweep Spinner signals
-    g_signal_connect(WLOOKUP( pGlobal, "spin_Frequency" ), "value-changed", G_CALLBACK( CB_spin_Frequency ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "spin_FrStart" ),   "value-changed", G_CALLBACK( CB_spin_FrStart ),   NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "spin_FrStop" ),    "value-changed", G_CALLBACK( CB_spin_FrStop ),    NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "spin_FrStep_Cal" ),    "value-changed", G_CALLBACK( CB_spin_FrStep_Cal ),    NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "spin_FrStep_Sweep" ),    "value-changed", G_CALLBACK( CB_spin_FrStep_Sweep ),    NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "combo_Smoothing" ),  "changed", G_CALLBACK( CB_combo_Smoothing ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_spin_Frequency ], "value-changed", G_CALLBACK( CB_spin_Frequency ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_spin_FrStart ],   "value-changed", G_CALLBACK( CB_spin_FrStart ),   NULL);
+    g_signal_connect( pGlobal->widgets[ eW_spin_FrStop ],    "value-changed", G_CALLBACK( CB_spin_FrStop ),    NULL);
+    g_signal_connect( pGlobal->widgets[ eW_spin_FrStep_Cal ],    "value-changed", G_CALLBACK( CB_spin_FrStep_Cal ),    NULL);
+    g_signal_connect( pGlobal->widgets[ eW_spin_FrStep_Sweep ],    "value-changed", G_CALLBACK( CB_spin_FrStep_Sweep ),    NULL);
+    g_signal_connect( pGlobal->widgets[ eW_combo_Smoothing ],  "changed", G_CALLBACK( CB_combo_Smoothing ), NULL);
     // Connect callbacks
-    g_signal_connect(WLOOKUP( pGlobal, "btn_Sweep" ),  "clicked", G_CALLBACK( CB_btn_Sweep ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "tgl_Spot" ),  "toggled", G_CALLBACK( CB_tgl_Spot ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "btn_Calibrate" ), "clicked", G_CALLBACK( CB_btn_Calibrate ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_btn_Sweep ],  "clicked", G_CALLBACK( CB_btn_Sweep ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_tgl_Spot ],  "toggled", G_CALLBACK( CB_tgl_Spot ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_btn_Calibrate ], "clicked", G_CALLBACK( CB_btn_Calibrate ), NULL);
 
-    g_signal_connect(WLOOKUP( pGlobal, "btn_Print" ),  "clicked", G_CALLBACK( CB_btn_Print ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "btn_PDF" ),  "clicked", G_CALLBACK( CB_btn_PDF ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "btn_SVG" ),  "clicked", G_CALLBACK( CB_btn_SVG ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "btn_PNG" ),  "clicked", G_CALLBACK( CB_btn_PNG ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "btn_CSV" ),  "clicked", G_CALLBACK( CB_btn_CSV ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_btn_Print ],  "clicked", G_CALLBACK( CB_btn_Print ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_btn_PDF ],  "clicked", G_CALLBACK( CB_btn_PDF ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_btn_SVG ],  "clicked", G_CALLBACK( CB_btn_SVG ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_btn_PNG ],  "clicked", G_CALLBACK( CB_btn_PNG ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_btn_CSV ],  "clicked", G_CALLBACK( CB_btn_CSV ), NULL);
 
     // Connect a right click gesture to the 'save JSON' widget
-    g_signal_connect(WLOOKUP( pGlobal, "btn_SaveJSON" ),  "clicked", G_CALLBACK( CB_btn_SaveJSON ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_btn_SaveJSON ],  "clicked", G_CALLBACK( CB_btn_SaveJSON ), NULL);
     GtkGesture *gesture = gtk_gesture_click_new ();
     gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gesture), 3);
     g_signal_connect (gesture, "released", G_CALLBACK (CB_rightClickGesture_SaveJSON), wSaveJSON);
     gtk_widget_add_controller (wSaveJSON, GTK_EVENT_CONTROLLER (gesture));
 
 
-    g_signal_connect(WLOOKUP( pGlobal, "btn_RestoreJSON" ),  "clicked", G_CALLBACK( CB_btn_RestoreJSON ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_btn_RestoreJSON ],  "clicked", G_CALLBACK( CB_btn_RestoreJSON ), NULL);
 
     g_signal_connect(wModeCombo, "changed", G_CALLBACK( CB_combo_Mode ), NULL);
 
-    g_signal_connect(gtk_editable_get_delegate(GTK_EDITABLE(WLOOKUP( pGlobal, "entry_Title") )), "changed",
+    g_signal_connect(gtk_editable_get_delegate(GTK_EDITABLE( pGlobal->widgets[ eW_entry_Title ] )), "changed",
                      G_CALLBACK( CB_edit_Title ), NULL);
 
     // Live marker when mouse moved in Plot area
@@ -876,7 +864,7 @@ initializeMainDialog( tGlobal *pGlobal )
     gtk_widget_add_controller ( wDrawingArea, GTK_EVENT_CONTROLLER (gestureMouseClick) );
 
     // Define the drawing function for the GtkDrawingArea widget
-    gtk_drawing_area_set_draw_func (WLOOKUP(pGlobal, "drawing_Plot"), CB_DrawingArea_Draw, pGlobal, NULL);
+    gtk_drawing_area_set_draw_func ( pGlobal->widgets[ eW_drawing_Plot ], CB_DrawingArea_Draw, pGlobal, NULL);
 
 #if 0
     void appEnter (GtkEventControllerFocus *self, gpointer gpGlobal);

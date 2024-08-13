@@ -55,7 +55,7 @@ CB_notes_changed ( GtkTextBuffer* wNoteBuffer, gpointer gpGlobal ) {
  */
 void
 initializePageNotes( tGlobal *pGlobal ) {
-    GtkTextView *wNotes = WLOOKUP( pGlobal, "textView_Notes" );
+    GtkTextView *wNotes = pGlobal->widgets[ eW_textView_Notes ];
     GtkTextBuffer *wNoteBuffer = gtk_text_view_get_buffer( wNotes );
 
     gtk_text_view_set_input_hints( wNotes, 0 );

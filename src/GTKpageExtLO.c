@@ -156,11 +156,11 @@ void
 enablePageExtLOwidgets( tGlobal *pGlobal, tMode mode ) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    gpointer wIFfreq = WLOOKUP( pGlobal, "LO_frm_FixedIF_Freq");
-    gpointer wLOfreq = WLOOKUP( pGlobal, "LO_frm_FixedLO_Freq");
-    gpointer wLOsideband = WLOOKUP( pGlobal, "LO_frm_sideband");
+    gpointer wIFfreq = pGlobal->widgets[ eW_LO_frm_FixedIF_Freq ];
+    gpointer wLOfreq = pGlobal->widgets[ eW_LO_frm_FixedLO_Freq ];
+    gpointer wLOsideband = pGlobal->widgets[ eW_LO_frm_sideband ];
 
-    gpointer wSideband = WLOOKUP( pGlobal, "LO_combo_sideband");
+    gpointer wSideband = pGlobal->widgets[ eW_LO_combo_sideband ];
     GtkTreeIter iter;
     GtkTreeModel *sidebandListStore = gtk_combo_box_get_model (wSideband);
     gboolean bValid;
@@ -243,7 +243,7 @@ isMode1_2_FrequencyValid( gboolean freqMHz, tGlobal *pGlobal ) {
  */
 void
 warnFrequencyRangeOutOfBounds( tGlobal *pGlobal ) {
-    gpointer wNotice = WLOOKUP( pGlobal, "lbl_LOnotice");
+    gpointer wNotice = pGlobal->widgets[ eW_lbl_LOnotice ];
     gdouble lowF, highF, startF, stopF, spotF;
     gdouble downcvtStartF, downcvtStopF, downcvtSpotF;
     gdouble mode1_4_StartF = 0.0, mode1_4_StopF = 0.0;
@@ -361,9 +361,9 @@ warnFrequencyRangeOutOfBounds( tGlobal *pGlobal ) {
     gtk_label_set_text( wNotice, sWarning );
     g_free( sWarning );
 
-    GtkWidget *wFrStart   = WLOOKUP( pGlobal, "spin_FrStart" );
-    GtkWidget *wFrSpot    = WLOOKUP( pGlobal, "spin_Frequency" );
-    GtkWidget *wFrStop    = WLOOKUP( pGlobal, "spin_FrStop" );
+    GtkWidget *wFrStart   = pGlobal->widgets[ eW_spin_FrStart ];
+    GtkWidget *wFrSpot    = pGlobal->widgets[ eW_spin_Frequency ];
+    GtkWidget *wFrStop    = pGlobal->widgets[ eW_spin_FrStop ];
 
     if( pGlobal->HP8970settings.mode == eMode1_2 ) {
         if( isMode1_2_FrequencyValid( pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz, pGlobal ) )
@@ -395,12 +395,12 @@ warnFrequencyRangeOutOfBounds( tGlobal *pGlobal ) {
  */
 void
 setPageExtLOwidgets( tGlobal *pGlobal ) {
-    gpointer wLO_Setup = WLOOKUP( pGlobal, "LO_entry_LO_Setup");
-    gpointer wLO_Freq  = WLOOKUP( pGlobal, "LO_entry_LO_Freq");
-    gpointer wIFfreq = WLOOKUP( pGlobal, "LO_spin_FixedIF_Freq");
-    gpointer wLOfreq = WLOOKUP( pGlobal, "LO_spin_FixedLO_Freq");
-    gpointer wSettlingTime = WLOOKUP( pGlobal, "LO_spin_SettlingTime");
-    gpointer wSideband = WLOOKUP( pGlobal, "LO_combo_sideband");
+    gpointer wLO_Setup = pGlobal->widgets[ eW_LO_entry_LO_Setup ];
+    gpointer wLO_Freq  = pGlobal->widgets[ eW_LO_entry_LO_Freq ];
+    gpointer wIFfreq = pGlobal->widgets[ eW_LO_spin_FixedIF_Freq ];
+    gpointer wLOfreq = pGlobal->widgets[ eW_LO_spin_FixedLO_Freq ];
+    gpointer wSettlingTime = pGlobal->widgets[ eW_LO_spin_SettlingTime ];
+    gpointer wSideband = pGlobal->widgets[ eW_LO_combo_sideband ];
 
     g_signal_handlers_block_by_func( G_OBJECT( wLO_Setup ), G_CALLBACK( CB_edit_LO_Setup ), NULL );
     g_signal_handlers_block_by_func( G_OBJECT( wLO_Freq ), G_CALLBACK( CB_edit_LO_Freq ), NULL );
@@ -431,12 +431,12 @@ setPageExtLOwidgets( tGlobal *pGlobal ) {
  */
 void
 initializePageExtLO( tGlobal *pGlobal ) {
-    gpointer wLO_Setup = WLOOKUP( pGlobal, "LO_entry_LO_Setup");
-    gpointer wLO_Freq  = WLOOKUP( pGlobal, "LO_entry_LO_Freq");
-    gpointer wIFfreq = WLOOKUP( pGlobal, "LO_spin_FixedIF_Freq");
-    gpointer wLOfreq = WLOOKUP( pGlobal, "LO_spin_FixedLO_Freq");
-    gpointer wSettlingTime = WLOOKUP( pGlobal, "LO_spin_SettlingTime");
-    gpointer wSideband = WLOOKUP( pGlobal, "LO_combo_sideband");
+    gpointer wLO_Setup = pGlobal->widgets[ eW_LO_entry_LO_Setup ];
+    gpointer wLO_Freq  = pGlobal->widgets[ eW_LO_entry_LO_Freq ];
+    gpointer wIFfreq = pGlobal->widgets[ eW_LO_spin_FixedIF_Freq ];
+    gpointer wLOfreq = pGlobal->widgets[ eW_LO_spin_FixedLO_Freq ];
+    gpointer wSettlingTime = pGlobal->widgets[ eW_LO_spin_SettlingTime ];
+    gpointer wSideband = pGlobal->widgets[ eW_LO_combo_sideband ];
 
     setPageExtLOwidgets( pGlobal );
 

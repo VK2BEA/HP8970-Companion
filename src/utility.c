@@ -71,9 +71,9 @@ getTimeStamp( gchar **psDateTime ) {
  */
 gint
 splashCreate (tGlobal *pGlobal) {
-    GtkWidget *wSplash = WLOOKUP(pGlobal, "Splash");
-    GtkWidget *wApplicationWidget = WLOOKUP(pGlobal, "HP8970_application");
-    GtkWidget *wVersionLabel = WLOOKUP(pGlobal, "lbl_version");
+    GtkWidget *wSplash = pGlobal->widgets[ eW_Splash ];
+    GtkWidget *wApplicationWidget = pGlobal->widgets[ eW_HP8970_application ];
+    GtkWidget *wVersionLabel = pGlobal->widgets[ eW_lbl_version ];
     gchar *sVersion;
     if (wSplash) {
         sVersion = g_strdup_printf ("Version %s\t(🔨 %s)", VERSION, __DATE__); // Changelog date is used in RPM
@@ -98,7 +98,7 @@ splashCreate (tGlobal *pGlobal) {
  */
 gint
 splashDestroy (tGlobal *pGlobal) {
-    GtkWidget *wSplash = WLOOKUP(pGlobal, "Splash");
+    GtkWidget *wSplash = pGlobal->widgets[ eW_Splash ];
     if (GTK_IS_WIDGET(wSplash)) {
         gtk_window_destroy (GTK_WINDOW(wSplash));
     }

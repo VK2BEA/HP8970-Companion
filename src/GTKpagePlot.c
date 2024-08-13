@@ -34,9 +34,9 @@ struct {
     gdouble min, max, step, page;
     gchar *unit;
 } noiseSpinParams[ eMAX_NOISE_UNITS ] = {
-        [eFdB]      = {0.00,   40.0, 0.1,   2.0, "FdB"},
+        [eFdB]      = {-1.0,   40.0, 0.1,   2.0, "FdB"},
         [eF]        = {1.00, 9999.0, 1.0, 100.0,   "F"},
-        [eYdB]      = {0.00,   20.0, 0.1,   1.0, "YdB"},
+        [eYdB]      = {-1.0,   20.0, 0.1,   1.0, "YdB"},
         [eY]        = {1.00, 1000.0, 1.0, 100.0,   "Y"},
         [eTeK]      = {0.00, 9999.0, 1.0, 100.0, "TeK"}
 };
@@ -45,7 +45,7 @@ void CB_ColorNotify ( GObject* self, GParamSpec* pspec, gpointer gpColor ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(self, "data");
     plotElementColors[ GPOINTER_TO_INT( gpColor ) ] = *gtk_color_dialog_button_get_rgba( GTK_COLOR_DIALOG_BUTTON( self ));
 
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Reset colors
@@ -59,25 +59,18 @@ void
 CB_ColorReset ( GtkButton* wBtnColorReset, gpointer user_data ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wBtnColorReset), "data");
 
-    gpointer wColorTitle = WLOOKUP( pGlobal, "color_Title");
-    gpointer wColorGrid  = WLOOKUP( pGlobal, "color_Grid");
-    gpointer wColorGridGain  = WLOOKUP( pGlobal, "color_GridGain");
-    gpointer wColorNoise = WLOOKUP( pGlobal, "color_Noise");
-    gpointer wColorGain  = WLOOKUP( pGlobal, "color_Gain");
-    gpointer wColorFreq  = WLOOKUP( pGlobal, "color_Freq");
-
     for( gint pen = 0; pen < eMAX_COLORS; pen++ ) {
         plotElementColors[ pen ] = plotElementColorsFactory[ pen ];
     }
 
-    gtk_color_dialog_button_set_rgba( wColorTitle,  &plotElementColors[ eColorTitle ] );
-    gtk_color_dialog_button_set_rgba( wColorGrid,  &plotElementColors[ eColorGrid ] );
-    gtk_color_dialog_button_set_rgba( wColorGridGain,  &plotElementColors[ eColorGridGain ] );
-    gtk_color_dialog_button_set_rgba( wColorNoise,  &plotElementColors[ eColorNoise ] );
-    gtk_color_dialog_button_set_rgba( wColorGain,  &plotElementColors[ eColorGain ] );
-    gtk_color_dialog_button_set_rgba( wColorFreq,  &plotElementColors[ eColorFrequency ] );
+    gtk_color_dialog_button_set_rgba( pGlobal->widgets[ eW_color_Title ],  &plotElementColors[ eColorTitle ] );
+    gtk_color_dialog_button_set_rgba( pGlobal->widgets[ eW_color_Grid ],  &plotElementColors[ eColorGrid ] );
+    gtk_color_dialog_button_set_rgba( pGlobal->widgets[ eW_color_GridGain ],  &plotElementColors[ eColorGridGain ] );
+    gtk_color_dialog_button_set_rgba( pGlobal->widgets[ eW_color_Noise ],  &plotElementColors[ eColorNoise ] );
+    gtk_color_dialog_button_set_rgba( pGlobal->widgets[ eW_color_Gain ],  &plotElementColors[ eColorGain ] );
+    gtk_color_dialog_button_set_rgba( pGlobal->widgets[ eW_color_Freq ],  &plotElementColors[ eColorFrequency ] );
 
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 
 }
 
@@ -91,9 +84,9 @@ CB_ColorReset ( GtkButton* wBtnColorReset, gpointer user_data ) {
 void CB_chk_AutoScale ( GtkCheckButton *wChkAutoScale, gpointer user_data
 ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wChkAutoScale), "data");
-    pGlobal->flags.bAutoScaling = gtk_check_button_get_active( WLOOKUP( pGlobal, "chk_AutoScale") );
+    pGlobal->flags.bAutoScaling = gtk_check_button_get_active( pGlobal->widgets[ eW_chk_AutoScale ] );
 
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Callback for Gain Maximum spin button
@@ -107,8 +100,8 @@ void
 CB_spin_GainMax(  GtkSpinButton* wSpinGainMax, gpointer udata ) {
 
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wSpinGainMax), "data");
-    gpointer wSpinGainMin  = WLOOKUP( pGlobal, "spin_GainMin");
-    gpointer wChkAuto      = WLOOKUP( pGlobal, "chk_AutoScale");
+    gpointer wSpinGainMin  = pGlobal->widgets[ eW_spin_GainMin ];
+    gpointer wChkAuto      = pGlobal->widgets[ eW_chk_AutoScale ];
 
     gdouble gainMax = gtk_spin_button_get_value( wSpinGainMax );
 
@@ -126,7 +119,7 @@ CB_spin_GainMax(  GtkSpinButton* wSpinGainMax, gpointer udata ) {
     }
 
     gtk_check_button_set_active( wChkAuto, FALSE );
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Callback for Gain Minimum spin button
@@ -140,8 +133,8 @@ void
 CB_spin_GainMin(  GtkSpinButton* wSpinGainMin, gpointer udata ) {
 
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wSpinGainMin), "data");
-    gpointer wSpinGainMax  = WLOOKUP( pGlobal, "spin_GainMax");
-    gpointer wChkAuto      = WLOOKUP( pGlobal, "chk_AutoScale");
+    gpointer wSpinGainMax  = pGlobal->widgets[ eW_spin_GainMax ];
+    gpointer wChkAuto      = pGlobal->widgets[ eW_chk_AutoScale ];
 
     gdouble gainMin = gtk_spin_button_get_value( wSpinGainMin );
 
@@ -158,7 +151,7 @@ CB_spin_GainMin(  GtkSpinButton* wSpinGainMin, gpointer udata ) {
         gtk_spin_button_set_value( wSpinGainMax, pGlobal->fixedGridGain[ 0 ] + MIN_GAIN_RANGE );
 
     gtk_check_button_set_active( wChkAuto, FALSE );
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 
@@ -173,8 +166,8 @@ void
 CB_spin_NoiseMax(  GtkSpinButton* wSpinNoiseMax, gpointer udata ) {
 
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wSpinNoiseMax), "data");
-    gpointer wSpinNoiseMin  = WLOOKUP( pGlobal, "spin_NoiseMin");
-    gpointer wChkAuto      = WLOOKUP( pGlobal, "chk_AutoScale");
+    gpointer wSpinNoiseMin  = pGlobal->widgets[ eW_spin_NoiseMin ];
+    gpointer wChkAuto      = pGlobal->widgets[ eW_chk_AutoScale ];
     tNoiseType noiseUnits = pGlobal->plot.noiseUnits;
 
     gdouble step = noiseSpinParams[ noiseUnits ].step;
@@ -188,7 +181,7 @@ CB_spin_NoiseMax(  GtkSpinButton* wSpinNoiseMax, gpointer udata ) {
     pGlobal->fixedGridNoise[ noiseUnits ][ 1 ] = noise;
 
     gtk_check_button_set_active( wChkAuto, FALSE );
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Callback for Noise Minimum spin button
@@ -202,8 +195,8 @@ void
 CB_spin_NoiseMin(  GtkSpinButton* wSpinNoiseMin, gpointer udata ) {
 
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wSpinNoiseMin), "data");
-    gpointer wSpinNoiseMax  = WLOOKUP( pGlobal, "spin_NoiseMax");
-    gpointer wChkAuto      = WLOOKUP( pGlobal, "chk_AutoScale");
+    gpointer wSpinNoiseMax  = pGlobal->widgets[ eW_spin_NoiseMax ];
+    gpointer wChkAuto      = pGlobal->widgets[ eW_chk_AutoScale ];
     tNoiseType noiseUnits = pGlobal->plot.noiseUnits;
 
     gdouble step = noiseSpinParams[ noiseUnits ].step;
@@ -217,7 +210,7 @@ CB_spin_NoiseMin(  GtkSpinButton* wSpinNoiseMin, gpointer udata ) {
     pGlobal->fixedGridNoise[ noiseUnits ][ 0 ] = noise;
 
     gtk_check_button_set_active( wChkAuto, FALSE );
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 
@@ -231,9 +224,9 @@ CB_spin_NoiseMin(  GtkSpinButton* wSpinNoiseMin, gpointer udata ) {
  */
 void
 setSpinNoiseRange( tGlobal *pGlobal ) {
-    gpointer wSpinNoiseMin  = WLOOKUP( pGlobal, "spin_NoiseMin");
-    gpointer wSpinNoiseMax  = WLOOKUP( pGlobal, "spin_NoiseMax");
-    gpointer wFrmNoiseRange = WLOOKUP( pGlobal, "frame_NoiseRange");
+    gpointer wSpinNoiseMin  = pGlobal->widgets[ eW_spin_NoiseMin ];
+    gpointer wSpinNoiseMax  = pGlobal->widgets[ eW_spin_NoiseMax ];
+    gpointer wFrmNoiseRange = pGlobal->widgets[ eW_frame_NoiseRange ];
 
     gtk_spin_button_set_range( wSpinNoiseMin, noiseSpinParams[ pGlobal->plot.noiseUnits ].min,
                                noiseSpinParams[ pGlobal->plot.noiseUnits ].max - noiseSpinParams[ pGlobal->plot.noiseUnits ].step);
@@ -259,8 +252,8 @@ setSpinNoiseRange( tGlobal *pGlobal ) {
  */
 void
 setSpinGainRange( tGlobal *pGlobal ) {
-    gpointer wSpinGainMin  = WLOOKUP( pGlobal, "spin_GainMin");
-    gpointer wSpinGainMax  = WLOOKUP( pGlobal, "spin_GainMax");
+    gpointer wSpinGainMin  = pGlobal->widgets[ eW_spin_GainMin ];
+    gpointer wSpinGainMax  = pGlobal->widgets[ eW_spin_GainMax ];
 
     gtk_spin_button_set_range( wSpinGainMin, MIN_GAIN, MAX_GAIN - MIN_GAIN_RANGE );
     gtk_spin_button_set_range( wSpinGainMax, MIN_GAIN + MIN_GAIN_RANGE, MAX_GAIN );
@@ -270,23 +263,16 @@ setSpinGainRange( tGlobal *pGlobal ) {
 
 void
 setFixedRangePlotWidgets( tGlobal *pGlobal ) {
-    gpointer wSpinNoiseMin  = WLOOKUP( pGlobal, "spin_NoiseMin");
-    gpointer wSpinNoiseMax  = WLOOKUP( pGlobal, "spin_NoiseMax");
-    gpointer wSpinGainMin   = WLOOKUP( pGlobal, "spin_GainMin");
-    gpointer wSpinGainMax   = WLOOKUP( pGlobal, "spin_GainMax");
-
-    gpointer wChkAuto       = WLOOKUP( pGlobal, "chk_AutoScale");
-
     setSpinNoiseRange( pGlobal );
     setSpinGainRange( pGlobal );
 
-    gtk_spin_button_set_value( wSpinNoiseMin, pGlobal->fixedGridNoise[ pGlobal->plot.noiseUnits ][ 0 ] );
-    gtk_spin_button_set_value( wSpinNoiseMax, pGlobal->fixedGridNoise[ pGlobal->plot.noiseUnits ][ 1 ] );
+    gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_NoiseMin ], pGlobal->fixedGridNoise[ pGlobal->plot.noiseUnits ][ 0 ] );
+    gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_NoiseMax ], pGlobal->fixedGridNoise[ pGlobal->plot.noiseUnits ][ 1 ] );
 
-    gtk_spin_button_set_value( GTK_SPIN_BUTTON( wSpinGainMin ),  pGlobal->fixedGridGain[ 0 ] );
-    gtk_spin_button_set_value( GTK_SPIN_BUTTON( wSpinGainMax ),  pGlobal->fixedGridGain[ 1 ] );
+    gtk_spin_button_set_value( GTK_SPIN_BUTTON( pGlobal->widgets[ eW_spin_GainMin ] ),  pGlobal->fixedGridGain[ 0 ] );
+    gtk_spin_button_set_value( GTK_SPIN_BUTTON( pGlobal->widgets[ eW_spin_GainMax ] ),  pGlobal->fixedGridGain[ 1 ] );
 
-    gtk_check_button_set_active( wChkAuto, pGlobal->flags.bAutoScaling );
+    gtk_check_button_set_active( pGlobal->widgets[ eW_chk_AutoScale ], pGlobal->flags.bAutoScaling );
 }
 
 /*!     \brief  Initialize the widgets on the Plot page
@@ -297,19 +283,19 @@ setFixedRangePlotWidgets( tGlobal *pGlobal ) {
  */
 void
 initializePagePlot( tGlobal *pGlobal ) {
-    gpointer wColorTitle = WLOOKUP( pGlobal, "color_Title");
-    gpointer wColorGrid  = WLOOKUP( pGlobal, "color_Grid");
-    gpointer wColorGridGain  = WLOOKUP( pGlobal, "color_GridGain");
-    gpointer wColorNoise = WLOOKUP( pGlobal, "color_Noise");
-    gpointer wColorGain  = WLOOKUP( pGlobal, "color_Gain");
-    gpointer wColorFreq  = WLOOKUP( pGlobal, "color_Freq");
+    gpointer wColorTitle = pGlobal->widgets[ eW_color_Title ];
+    gpointer wColorGrid  = pGlobal->widgets[ eW_color_Grid ];
+    gpointer wColorGridGain  = pGlobal->widgets[ eW_color_GridGain ];
+    gpointer wColorNoise = pGlobal->widgets[ eW_color_Noise ];
+    gpointer wColorGain  = pGlobal->widgets[ eW_color_Gain ];
+    gpointer wColorFreq  = pGlobal->widgets[ eW_color_Freq ];
 
-    gpointer wSpinNoiseMin  = WLOOKUP( pGlobal, "spin_NoiseMin");
-    gpointer wSpinNoiseMax  = WLOOKUP( pGlobal, "spin_NoiseMax");
-    gpointer wSpinGainMin   = WLOOKUP( pGlobal, "spin_GainMin");
-    gpointer wSpinGainMax   = WLOOKUP( pGlobal, "spin_GainMax");
+    gpointer wSpinNoiseMin  = pGlobal->widgets[ eW_spin_NoiseMin ];
+    gpointer wSpinNoiseMax  = pGlobal->widgets[ eW_spin_NoiseMax ];
+    gpointer wSpinGainMin   = pGlobal->widgets[ eW_spin_GainMin ];
+    gpointer wSpinGainMax   = pGlobal->widgets[ eW_spin_GainMax ];
 
-    gpointer wChkAuto       = WLOOKUP( pGlobal, "chk_AutoScale");
+    gpointer wChkAuto       = pGlobal->widgets[ eW_chk_AutoScale ];
 
     gtk_color_dialog_button_set_rgba( wColorTitle,  &plotElementColors[ eColorTitle ] );
     gtk_color_dialog_button_set_rgba( wColorGrid,  &plotElementColors[ eColorGrid ] );
@@ -332,7 +318,7 @@ initializePagePlot( tGlobal *pGlobal ) {
     g_signal_connect ( wColorGain, "notify::rgba", G_CALLBACK (CB_ColorNotify), GINT_TO_POINTER( eColorGain ));
     g_signal_connect ( wColorFreq, "notify::rgba", G_CALLBACK (CB_ColorNotify), GINT_TO_POINTER( eColorFrequency ));
 
-    g_signal_connect ( WLOOKUP( pGlobal, "btn_ColorReset"), "clicked", G_CALLBACK (CB_ColorReset), NULL );
+    g_signal_connect ( pGlobal->widgets[ eW_btn_ColorReset ], "clicked", G_CALLBACK (CB_ColorReset), NULL );
 
     g_signal_connect ( wChkAuto, "toggled", G_CALLBACK (CB_chk_AutoScale), NULL );
 

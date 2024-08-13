@@ -32,6 +32,7 @@
 #include <cairo/cairo.h>
 #include <glib-2.0/glib.h>
 #include "HP8970.h"
+#include "widgetID.h"
 #include <math.h>
 
 #define SIGN(x) ((x > 0) ? 1 : ((x < 0) ? -1 : 0))

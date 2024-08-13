@@ -18,6 +18,7 @@
 #include <gpib/ib.h>
 #include <gtk/gtk.h>
 #include <cairo/cairo.h>
+#include "widgetID.h"
 
 
 #ifndef VERSION
@@ -310,6 +311,9 @@ typedef struct {
 	gchar           *sUsersPNGImageFilename;	// filename chosen by user for PNG file
 	gchar           *sUsersSVGImageFilename;	// filename chosen by user for SVG file
     gchar           *sUsersCSVfilename;    // filename chosen by user for SVG file
+
+    gpointer         widgets[ ew_N_WIDGETS ];
+
 	GThread         *pGThread;
 
 } tGlobal;
@@ -360,7 +364,6 @@ extern GdkRGBA plotElementColorsFactory[ eMAX_COLORS ];
 extern gchar *sNoiseLabel[ eMAX_NOISE_UNITS ];
 extern gchar *sNoiseUnits[ eMAX_NOISE_UNITS ];
 
-#define WLOOKUP(p,n) g_hash_table_lookup ( (p)->widgetHashTable, (gconstpointer)(n))
 #define UPDATE_8970_SETTING( pGlobal, flag ) ({ \
         g_mutex_lock ( &pGlobal->HP8970settings.mUpdate ); \
         gboolean bUpdate = (pGlobal->HP8970settings.updateFlags.all == 0); \
@@ -371,6 +374,8 @@ extern gchar *sNoiseUnits[ eMAX_NOISE_UNITS ];
     })
 
 void drawHPlogo 					(cairo_t *, gdouble, gdouble, gdouble, gboolean );
+void catalogWidgets                 (tGlobal *);
+void buildWidgetList                (tGlobal *,  GtkBuilder *);
 gint createNoiseFigureColumnView 	(GtkColumnView *, tGlobal * );
 void logVersion						(void);
 gint splashCreate 					(tGlobal *);
@@ -378,9 +383,9 @@ gint splashDestroy 					(tGlobal *);
 gpointer threadGPIB					(gpointer);
 gboolean plotNoiseFigureAndGain     (cairo_t *, gint, gint, tGlobal *, gboolean);
 
-void centreJustifiedCairoText       (cairo_t *cr, gchar *sLabel, gdouble x, gdouble y, gdouble);
-void rightJustifiedCairoText        (cairo_t *cr, gchar *sLabel, gdouble x, gdouble y, gboolean);
-void leftJustifiedCairoText         (cairo_t *cr, gchar *sLabel, gdouble x, gdouble y, gboolean);
+void centreJustifiedCairoText       (cairo_t *, gchar *, gdouble, gdouble, gdouble);
+void rightJustifiedCairoText        (cairo_t *, gchar *, gdouble, gdouble, gboolean);
+void leftJustifiedCairoText         (cairo_t *, gchar *, gdouble, gdouble, gboolean);
 void updateBoundaries               ( gdouble, gdouble *, gdouble * );
 void cairo_renderHewlettPackardLogo (cairo_t *, gboolean, gboolean, gdouble, gdouble );
 gint getTimeStamp                   (gchar **);
@@ -395,7 +400,7 @@ void initializePageSource           (tGlobal *);
 void initializePageExtLO            (tGlobal *);
 void setPageExtLOwidgets            (tGlobal *);
 void enablePageExtLOwidgets         (tGlobal *, tMode);
-void warnFrequencyRangeOutOfBounds  (tGlobal *pGlobal);
+void warnFrequencyRangeOutOfBounds  (tGlobal *);
 void initializePageHP8970           (tGlobal *);
 void refreshPageHP8970              (tGlobal *);
 void initializePagePlot             (tGlobal *);
@@ -404,7 +409,7 @@ gint recoverSettings                (tGlobal *);
 gint saveSettings                   (tGlobal *);
 void snapshotSettings               (tGlobal *);
 void setSpinNoiseRange              (tGlobal *);
-void setSpinGainRange              (tGlobal *);
+void setSpinGainRange               (tGlobal *);
 void setFixedRangePlotWidgets       (tGlobal *);
 void initializeMainDialog           (tGlobal *);
 void refreshMainDialog              (tGlobal *);
@@ -412,7 +417,7 @@ gboolean sweepHP8970                (tGlobal *, gint, gint, gint *);
 gboolean calibrateHP8970            (tGlobal *, gint, gint, gint *);
 gboolean spotFrequencyHP8970        (tGlobal *, gint, gint, gint *);
 void validateCalibrationOperation   (tGlobal *);
-void quarantineControlsOnSweep( tGlobal *pGlobal, gboolean bSpot, gboolean bShow );
+void quarantineControlsOnSweep      (tGlobal *, gboolean, gboolean);
 
 void initCircularBuffer             (tCircularBuffer *, guint, tAbscissa);
 tNoiseAndGain *getItemFromCircularBuffer(tCircularBuffer *, guint);

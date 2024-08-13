@@ -57,10 +57,8 @@ messageEventDispatch(GSource *source, GSourceFunc callback, gpointer udata) {
 	static gboolean bInitial = TRUE;
 
 	if( bInitial ) {
-        clearTimer.wLabel = GTK_LABEL(
-                g_hash_table_lookup(pGlobal->widgetHashTable, (gconstpointer )"lbl_Status"));
-        clearTimer_LO.wLabel = GTK_LABEL(
-                g_hash_table_lookup(pGlobal->widgetHashTable, (gconstpointer )"lbl_Status_LO"));
+        clearTimer.wLabel = GTK_LABEL( pGlobal->widgets[ eW_lbl_Status ]);
+        clearTimer_LO.wLabel = GTK_LABEL( pGlobal->widgets[ eW_lbl_Status_LO ]);
         bInitial = FALSE;
 	}
 	gchar *sMarkup;
@@ -120,14 +118,14 @@ messageEventDispatch(GSource *source, GSourceFunc callback, gpointer udata) {
 
         case TM_REFRESH_PLOT:
             setSpinNoiseRange( pGlobal );
-            gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+            gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
             g_free( message->data );
             break;
 
 		case TM_COMPLETE_GPIB:
 		    quarantineControlsOnSweep( pGlobal, FALSE, TRUE );
             validateCalibrationOperation( pGlobal);
-            gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON( WLOOKUP( pGlobal, "tgl_Spot" ) ), FALSE );
+            gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON( pGlobal->widgets[ eW_tgl_Spot ] ), FALSE );
 
 			break;
 

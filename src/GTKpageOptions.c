@@ -30,8 +30,8 @@
 #include "messageEvent.h"
 #include <math.h>
 
-gchar *sPDFpageSizeWidgetNames[] = {"chk_SettingsA4", "chk_SettingsLetter", "chk_SettingsA3", "chk_SettingsTabloid"};
-gchar *sVariantWidgetNames[] = {"chk_Settings8970A", "chk_Settings8970B", "chk_Settings8970Bopt20"};
+widgetIDs PDFpageSizeWidgetNames[] = { eW_chk_SettingsA4, eW_chk_SettingsLetter, eW_chk_SettingsA3, eW_chk_SettingsTabloid};
+widgetIDs VariantWidgetNames[] = { eW_chk_Settings8970A, eW_chk_Settings8970B, eW_chk_Settings8970Bopt20};
 
 
 /*!     \brief  Callback for the show HP logo check button
@@ -46,7 +46,7 @@ CB_chk_SettingsHPlogo(GtkCheckButton *wHPlogo, gpointer udata) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wHPlogo), "data");
 
     pGlobal->flags.bShowHPlogo = gtk_check_button_get_active (wHPlogo);
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Callback for the show time check button
@@ -61,7 +61,7 @@ CB_chk_SettingsTime(GtkCheckButton *wTime, gpointer udata) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wTime), "data");
 
     pGlobal->flags.bShowTime = gtk_check_button_get_active (wTime);
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Callback for the PDF page size radio check buttons
@@ -92,9 +92,9 @@ CB_chk_Variants(GtkCheckButton *wVariant, gpointer identifier) {
 
     if( gtk_check_button_get_active (wVariant) ) {
         pGlobal->flags.bbHP8970Bmodel = GPOINTER_TO_INT( identifier );
-        gtk_spin_button_set_range( WLOOKUP( pGlobal, "LO_spin_FixedIF_Freq"), 10.0, maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ] );
+        gtk_spin_button_set_range( pGlobal->widgets[ eW_LO_spin_FixedIF_Freq ], 10.0, maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ] );
     }
-    gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
 /*!     \brief  Initialize the widgets on the Settings Notebook page
@@ -105,17 +105,17 @@ CB_chk_Variants(GtkCheckButton *wVariant, gpointer identifier) {
  */
 void
 initializePageOptions( tGlobal *pGlobal ) {
-    gtk_check_button_set_active ( WLOOKUP( pGlobal, "chk_SettingsHPlogo" ), pGlobal->flags.bShowHPlogo );
-    gtk_check_button_set_active ( WLOOKUP( pGlobal, "chk_SettingsTime" ), pGlobal->flags.bShowTime );
+    gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_SettingsHPlogo ], pGlobal->flags.bShowHPlogo );
+    gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_SettingsTime ], pGlobal->flags.bShowTime );
 
-    gtk_check_button_set_active ( WLOOKUP( pGlobal, sPDFpageSizeWidgetNames[ pGlobal->PDFpaperSize % N_PAPER_SIZES ] ), TRUE );
-    gtk_check_button_set_active ( WLOOKUP( pGlobal, sVariantWidgetNames[ pGlobal->flags.bbHP8970Bmodel % N_VARIANTS ] ), TRUE );
+    gtk_check_button_set_active (  pGlobal->widgets[ PDFpageSizeWidgetNames[ pGlobal->PDFpaperSize % N_PAPER_SIZES ] ], TRUE );
+    gtk_check_button_set_active ( pGlobal->widgets[ VariantWidgetNames[ pGlobal->flags.bbHP8970Bmodel % N_VARIANTS ] ], TRUE );
 
     for( gint i=0; i < N_PAPER_SIZES; i++ )
-        g_signal_connect(WLOOKUP( pGlobal, sPDFpageSizeWidgetNames[ i ] ), "toggled", G_CALLBACK( CB_chk_PDFpageSize ), GINT_TO_POINTER(i));
+        g_signal_connect( pGlobal->widgets[ PDFpageSizeWidgetNames[ i ] ], "toggled", G_CALLBACK( CB_chk_PDFpageSize ), GINT_TO_POINTER(i));
     for( gint i=0; i < N_VARIANTS; i++ )
-        g_signal_connect(WLOOKUP( pGlobal, sVariantWidgetNames[ i ] ), "toggled", G_CALLBACK( CB_chk_Variants ), GINT_TO_POINTER(i));
+        g_signal_connect( pGlobal->widgets[ VariantWidgetNames[ i ] ], "toggled", G_CALLBACK( CB_chk_Variants ), GINT_TO_POINTER(i));
 
-    g_signal_connect(WLOOKUP( pGlobal, "chk_SettingsHPlogo" ),   "toggled", G_CALLBACK( CB_chk_SettingsHPlogo ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "chk_SettingsTime" ),   "toggled", G_CALLBACK( CB_chk_SettingsTime ), NULL);
+    g_signal_connect(pGlobal->widgets[ eW_chk_SettingsHPlogo ],   "toggled", G_CALLBACK( CB_chk_SettingsHPlogo ), NULL);
+    g_signal_connect(pGlobal->widgets[ eW_chk_SettingsTime ],   "toggled", G_CALLBACK( CB_chk_SettingsTime ), NULL);
 }

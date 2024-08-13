@@ -166,28 +166,28 @@ CB_chk_use_LO_GPIBdeviceName (GtkCheckButton *wUseLOname, gpointer identifier) {
  */
 void
 initializePageGPIB( tGlobal *pGlobal ) {
-    gtk_spin_button_set_value( WLOOKUP( pGlobal, "spin_opt_ControllerIdx"), pGlobal->GPIBcontrollerIndex );
-    gtk_spin_button_set_value( WLOOKUP( pGlobal, "spin_opt_GPIB_PID"), pGlobal->GPIBdevicePID );
-    gtk_spin_button_set_value( WLOOKUP( pGlobal, "spin_opt_GPIB_PID_LO"), pGlobal->GPIB_extLO_PID );
+    gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_opt_ControllerIdx ], pGlobal->GPIBcontrollerIndex );
+    gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_opt_GPIB_PID ], pGlobal->GPIBdevicePID );
+    gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_opt_GPIB_PID_LO ], pGlobal->GPIB_extLO_PID );
     gtk_entry_buffer_set_text(
-                gtk_entry_get_buffer( WLOOKUP( pGlobal, "entry_opt_GPIB_name") ),
+                gtk_entry_get_buffer( pGlobal->widgets[ eW_entry_opt_GPIB_name ] ),
                 pGlobal->sGPIBdeviceName, -1 );
     gtk_entry_buffer_set_text(
-                gtk_entry_get_buffer( WLOOKUP( pGlobal, "entry_opt_LO_GPIB_name") ),
+                gtk_entry_get_buffer( pGlobal->widgets[ eW_entry_opt_LO_GPIB_name ] ),
                 pGlobal->sGPIBextLOdeviceName, -1 );
-    // gboolean bUseGPIBcontrollerName = gtk_check_button_get_active ( WLOOKUP( pGlobal, "cbutton_ControlerNameNotIdx" ) );
-    gtk_check_button_set_active ( WLOOKUP( pGlobal, "chk_useGPIBdeviceName" ), !pGlobal->flags.bGPIB_UseCardNoAndPID );
-    gtk_check_button_set_active ( WLOOKUP( pGlobal, "chk_use_LO_GPIBdeviceName" ), !pGlobal->flags.bGPIB_extLO_usePID );
+    // gboolean bUseGPIBcontrollerName = gtk_check_button_get_active ( pGlobal->widgets[ eW_cbutton_ControlerNameNotIdx" ) );
+    gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_useGPIBdeviceName ], !pGlobal->flags.bGPIB_UseCardNoAndPID );
+    gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_use_LO_GPIBdeviceName ], !pGlobal->flags.bGPIB_extLO_usePID );
 
-    g_signal_connect(WLOOKUP( pGlobal, "spin_opt_GPIB_PID" ), "value-changed", G_CALLBACK( CB_spin_GPIB_PID ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "spin_opt_ControllerIdx" ), "value-changed", G_CALLBACK( CB_spin_GPIB_ControllerIndex ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "chk_useGPIBdeviceName" ),  "toggled", G_CALLBACK( CB_chk_GPIB_useName ), NULL);
-    g_signal_connect(gtk_editable_get_delegate(GTK_EDITABLE(WLOOKUP( pGlobal, "entry_opt_GPIB_name") )), "changed",
+    g_signal_connect( pGlobal->widgets[ eW_spin_opt_GPIB_PID ], "value-changed", G_CALLBACK( CB_spin_GPIB_PID ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_spin_opt_ControllerIdx ], "value-changed", G_CALLBACK( CB_spin_GPIB_ControllerIndex ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_chk_useGPIBdeviceName ],  "toggled", G_CALLBACK( CB_chk_GPIB_useName ), NULL);
+    g_signal_connect(gtk_editable_get_delegate(GTK_EDITABLE(pGlobal->widgets[ eW_entry_opt_GPIB_name ] )), "changed",
                      G_CALLBACK( CB_edit_GPIBdeviceName ), NULL);
 
-    g_signal_connect(WLOOKUP( pGlobal, "spin_opt_GPIB_PID_LO" ), "value-changed", G_CALLBACK( CB_spin_opt_GPIB_PID_LO ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "chk_use_LO_GPIBdeviceName" ),  "toggled", G_CALLBACK( CB_chk_use_LO_GPIBdeviceName ), NULL);
-    g_signal_connect(gtk_editable_get_delegate(GTK_EDITABLE(WLOOKUP( pGlobal, "entry_opt_LO_GPIB_name") )), "changed",
+    g_signal_connect( pGlobal->widgets[ eW_spin_opt_GPIB_PID_LO ], "value-changed", G_CALLBACK( CB_spin_opt_GPIB_PID_LO ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_chk_use_LO_GPIBdeviceName ],  "toggled", G_CALLBACK( CB_chk_use_LO_GPIBdeviceName ), NULL);
+    g_signal_connect(gtk_editable_get_delegate(GTK_EDITABLE( pGlobal->widgets[ eW_entry_opt_LO_GPIB_name ] )), "changed",
                      G_CALLBACK( CB_edit_opt_LO_GPIB_name ), NULL);
 }
 

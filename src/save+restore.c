@@ -285,7 +285,7 @@ retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
     else
         pGlobal->plot.measurementBuffer.idxTimeBeforeTail = 0;
 
-    gtk_widget_set_sensitive( WLOOKUP( pGlobal, "btn_CSV" ), pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
 
     return bOK ? 0 : ERROR;
 }
@@ -579,19 +579,19 @@ CB_JSONopen( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
                 updateBoundaries( pMeasurement->abscissa.freq,  &pGlobal->plot.measurementBuffer.minAbscissa.freq,
                                   &pGlobal->plot.measurementBuffer.maxAbscissa.freq );
             }
-            gtk_widget_queue_draw ( WLOOKUP ( pGlobal, "drawing_Plot") );
+            gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
             // This has the side effect of redrawing
-            GtkEditable *wTitle = gtk_editable_get_delegate(GTK_EDITABLE(WLOOKUP( pGlobal, "entry_Title") ));
+            GtkEditable *wTitle = gtk_editable_get_delegate(GTK_EDITABLE( pGlobal->widgets[ eW_entry_Title ] ));
             g_signal_handlers_block_by_func( G_OBJECT( wTitle ),    CB_edit_Title,    NULL );
             gtk_editable_set_text( wTitle, pGlobal->plot.sTitle == 0 ? "" : pGlobal->plot.sTitle );
             g_signal_handlers_unblock_by_func( G_OBJECT( wTitle ),    CB_edit_Title,    NULL );
 
-            GtkTextBuffer *wNotes = gtk_text_view_get_buffer(GTK_TEXT_VIEW(WLOOKUP( pGlobal, "textView_Notes") ));
+            GtkTextBuffer *wNotes = gtk_text_view_get_buffer(GTK_TEXT_VIEW( pGlobal->widgets[ eW_textView_Notes ] ));
             g_signal_handlers_block_by_func( G_OBJECT( wNotes ), G_CALLBACK( CB_notes_changed ), pGlobal);
             gtk_text_buffer_set_text( wNotes, pGlobal->plot.sNotes == NULL ? "" : pGlobal->plot.sNotes, -1 );
             g_signal_handlers_unblock_by_func( G_OBJECT( wNotes ), G_CALLBACK( CB_notes_changed ), pGlobal );
 
-            gtk_notebook_set_current_page( WLOOKUP(pGlobal, "note_Controls" ), ePageNotes );
+            gtk_notebook_set_current_page( pGlobal->widgets[ eW_note_Controls ], ePageNotes );
 
             setSpinNoiseRange( pGlobal );
 

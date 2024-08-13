@@ -164,7 +164,7 @@ CB_NS_entry_insertText ( GtkEditable* wEditable, gchar* text, gint length, gint*
     if( bIgnore )
         g_signal_stop_emission_by_name( wEditable, "insert-text");
 
-    gtk_widget_set_sensitive( WLOOKUP( &globalData, "NS_btn_Save" ), TRUE );
+    gtk_widget_set_sensitive( globalData.widgets[ eW_NS_btn_Save ], TRUE );
 
 }
 
@@ -454,7 +454,7 @@ CB_NS_btn_Upload ( GtkButton* wNSsaveBtn, gpointer user_data ) {
 
     // We upload what is shown in the table...
     // This might be different to what is stored in the array of noise sources
-    GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW( WLOOKUP( pGlobal, "CV_NoiseSource") );
+    GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW( pGlobal->widgets[ eW_CV_NoiseSource ] );
     GListModel *listModel = G_LIST_MODEL( gtk_column_view_get_model( wCVnoiseSource) );
 
     bzero( &pGlobal->HP8970settings.noiseSourceCache, sizeof(tNoiseSource) );
@@ -486,7 +486,7 @@ CB_NS_btn_Upload ( GtkButton* wNSsaveBtn, gpointer user_data ) {
 static void
 CB_NS_btn_Save ( GtkButton* wNSsaveBtn, gpointer user_data ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data( G_OBJECT( wNSsaveBtn ), "data");
-    GtkComboBoxText *wNSselect = WLOOKUP( pGlobal, "NS_combo_Source" );
+    GtkComboBoxText *wNSselect = pGlobal->widgets[ eW_NS_combo_Source ];
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -499,7 +499,7 @@ CB_NS_btn_Save ( GtkButton* wNSsaveBtn, gpointer user_data ) {
     gtk_combo_box_text_insert_text( wNSselect, activeNoiseSource, pGlobal->HP8970settings.noiseSources[ activeNoiseSource ].name );
 #pragma GCC diagnostic pop
 
-    GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW( WLOOKUP( pGlobal, "CV_NoiseSource") );
+    GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW( pGlobal->widgets[ eW_CV_NoiseSource ] );
 //  GListStore *listStore = g_object_get_data( G_OBJECT( wCVnoiseSource ), "list");
     GListModel *listModel = G_LIST_MODEL( gtk_column_view_get_model( wCVnoiseSource) );
 
@@ -520,7 +520,7 @@ CB_NS_btn_Save ( GtkButton* wNSsaveBtn, gpointer user_data ) {
 
     g_free( sNewName );
     // Disable save button
-    gtk_widget_set_sensitive( WLOOKUP( pGlobal, "NS_btn_Save" ), FALSE );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_NS_btn_Save ], FALSE );
 }
 
 /*!     \brief  Delete frequency / ENR line to Noise Source table
@@ -534,7 +534,7 @@ static void
 CB_NS_btn_Delete ( GtkButton* wNSdeleteBtn, gpointer user_data ) {
 	tGlobal *pGlobal = (tGlobal *)g_object_get_data( G_OBJECT( wNSdeleteBtn ), "data");
 
-	GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW ( WLOOKUP( pGlobal, "CV_NoiseSource") );
+	GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW ( pGlobal->widgets[ eW_CV_NoiseSource ] );
 	GListStore *listStore = g_object_get_data( G_OBJECT( wCVnoiseSource ), "list");
 
 	// Find the selected item in the list model
@@ -548,7 +548,7 @@ CB_NS_btn_Delete ( GtkButton* wNSdeleteBtn, gpointer user_data ) {
 	}
 
     // Enable save button
-    gtk_widget_set_sensitive( WLOOKUP( pGlobal, "NS_btn_Save" ), TRUE );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_NS_btn_Save ], TRUE );
 }
 
 /*!     \brief  Update the scroll window holding the ENR table
@@ -577,7 +577,7 @@ static void
 CB_NS_btn_Add( GtkButton* wNSaddBtn, gpointer uData ) {
 	tGlobal *pGlobal = (tGlobal *)g_object_get_data( G_OBJECT( wNSaddBtn ), "data");
 
-	GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW ( WLOOKUP( pGlobal, "CV_NoiseSource") );
+	GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW ( pGlobal->widgets[ eW_CV_NoiseSource ] );
 	GListStore *listStore = g_object_get_data( G_OBJECT( wCVnoiseSource ), "list");
 
 	g_autoptr(NoiseSourceTuple) calPoint = noise_source_tuple_new ( "0.00", "15.00");
@@ -590,7 +590,7 @@ CB_NS_btn_Add( GtkButton* wNSaddBtn, gpointer uData ) {
 	gtk_selection_model_select_item( gtk_column_view_get_model( wCVnoiseSource ),
 	                                 g_list_model_get_n_items( G_LIST_MODEL( listStore ) ) - 1, TRUE);
     // Schedule scroll when the list updates the column view widget
-    GtkAdjustment *wScrollAdj = gtk_scrolled_window_get_vadjustment( WLOOKUP( pGlobal, "scroll_NoiseSource" ));
+    GtkAdjustment *wScrollAdj = gtk_scrolled_window_get_vadjustment( pGlobal->widgets[ eW_scroll_NoiseSource ]);
     g_idle_add_once (CB_scrollNSlisonIdle, wScrollAdj);
 #else
     // This doesn't work because the added item in the listStore has not propagated
@@ -599,14 +599,14 @@ CB_NS_btn_Add( GtkButton* wNSaddBtn, gpointer uData ) {
 #endif
 
 	// Enable save button
-	gtk_widget_set_sensitive( WLOOKUP( pGlobal, "NS_btn_Save" ), TRUE );
+	gtk_widget_set_sensitive( pGlobal->widgets[ eW_NS_btn_Save ], TRUE );
 }
 
 void
 CB_NS_combo_Source_changed ( GtkComboBox* wNSselect, gpointer gpGlobal ) {
     tGlobal *pGlobal = (tGlobal *)gpGlobal;
     gint whichNoiseSource;
-    GListStore *listStore = g_object_get_data( G_OBJECT( WLOOKUP( pGlobal, "CV_NoiseSource" ) ), "list");
+    GListStore *listStore = g_object_get_data( G_OBJECT( pGlobal->widgets[ eW_CV_NoiseSource ] ), "list");
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -622,11 +622,11 @@ CB_NS_combo_Source_changed ( GtkComboBox* wNSselect, gpointer gpGlobal ) {
         initializeNoiseSourceCalPoints (listStore, &pGlobal->HP8970settings.noiseSources[ whichNoiseSource ]);
         gtk_widget_grab_focus( GTK_WIDGET( wNSentry ));
         gtk_editable_select_region( GTK_EDITABLE(wNSentry), -1, -1);
-        gtk_widget_grab_focus( WLOOKUP( pGlobal, "NS_btn_Upload" ) );
+        gtk_widget_grab_focus( pGlobal->widgets[ eW_NS_btn_Upload ] );
         pGlobal->HP8970settings.activeNoiseSource = whichNoiseSource;
     }
 
-    gtk_widget_set_sensitive( WLOOKUP( pGlobal, "NS_btn_Save" ), whichNoiseSource == INVALID );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_NS_btn_Save ], whichNoiseSource == INVALID );
 
 #pragma GCC diagnostic pop
 }
@@ -640,18 +640,18 @@ CB_NS_combo_Source_changed ( GtkComboBox* wNSselect, gpointer gpGlobal ) {
 void
 initializePageSource( tGlobal *pGlobal ) {
     GtkSizeGroup *wSrcSize =  gtk_size_group_new ( GTK_SIZE_GROUP_HORIZONTAL );
-    GtkComboBoxText *wSelectNoiseSource = WLOOKUP( pGlobal, "NS_combo_Source" );
+    GtkComboBoxText *wSelectNoiseSource = pGlobal->widgets[ eW_NS_combo_Source ];
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    gtk_size_group_add_widget ( wSrcSize, WLOOKUP( pGlobal, "NS_btn_Delete" ) );
-    gtk_size_group_add_widget ( wSrcSize, WLOOKUP( pGlobal, "NS_btn_Add" ) );
-    gtk_size_group_add_widget ( wSrcSize, WLOOKUP( pGlobal, "NS_btn_Save" ) );
-    gtk_size_group_add_widget ( wSrcSize, WLOOKUP( pGlobal, "NS_btn_Upload" ) );
+    gtk_size_group_add_widget ( wSrcSize, pGlobal->widgets[ eW_NS_btn_Delete ] );
+    gtk_size_group_add_widget ( wSrcSize, pGlobal->widgets[ eW_NS_btn_Add ] );
+    gtk_size_group_add_widget ( wSrcSize, pGlobal->widgets[ eW_NS_btn_Save ] );
+    gtk_size_group_add_widget ( wSrcSize, pGlobal->widgets[ eW_NS_btn_Upload ] );
 
-    g_signal_connect(WLOOKUP( pGlobal, "NS_btn_Delete" ), "clicked", G_CALLBACK( CB_NS_btn_Delete ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "NS_btn_Add" ), "clicked", G_CALLBACK( CB_NS_btn_Add ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "NS_btn_Save" ), "clicked", G_CALLBACK( CB_NS_btn_Save ), NULL);
-    g_signal_connect(WLOOKUP( pGlobal, "NS_btn_Upload" ), "clicked", G_CALLBACK( CB_NS_btn_Upload ), NULL);
+    g_signal_connect(pGlobal->widgets[ eW_NS_btn_Delete ], "clicked", G_CALLBACK( CB_NS_btn_Delete ), NULL);
+    g_signal_connect(pGlobal->widgets[ eW_NS_btn_Add ], "clicked", G_CALLBACK( CB_NS_btn_Add ), NULL);
+    g_signal_connect(pGlobal->widgets[ eW_NS_btn_Save ], "clicked", G_CALLBACK( CB_NS_btn_Save ), NULL);
+    g_signal_connect(pGlobal->widgets[ eW_NS_btn_Upload ], "clicked", G_CALLBACK( CB_NS_btn_Upload ), NULL);
 
     // This is called if either the combobox is changed or the entry is changed
     g_signal_connect(wSelectNoiseSource, "changed", G_CALLBACK( CB_NS_combo_Source_changed ), pGlobal);
