@@ -312,7 +312,7 @@ typedef struct {
 	gchar           *sUsersSVGImageFilename;	// filename chosen by user for SVG file
     gchar           *sUsersCSVfilename;    // filename chosen by user for SVG file
 
-    gpointer         widgets[ ew_N_WIDGETS ];
+    gpointer         widgets[ eW_N_WIDGETS ];
 
 	GThread         *pGThread;
 

@@ -105,7 +105,7 @@ typedef enum {
     eW_Splash,
     eW_textView_Notes,
     eW_tgl_Spot,
-    ew_N_WIDGETS
+    eW_N_WIDGETS
 } widgetIDs;
 
 #endif /* WIDGETID_H_ */

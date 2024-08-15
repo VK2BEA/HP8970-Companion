@@ -261,7 +261,7 @@ quantizePlotRange( tGlobal *pGlobal, gdouble min, gdouble max, tGridAxes gridTyp
     pGlobal->plot.axis[ gridType ].min = quantizedMin - border;
     pGlobal->plot.axis[ gridType ].max = pGlobal->plot.axis[ gridType ].min + gridRange;
     pGlobal->plot.axis[ gridType ].offset = 0.0;
-    pGlobal->plot.axis[ gridType ].perDiv = gridRange / 10.0;
+    pGlobal->plot.axis[ gridType ].perDiv = division;
 
     return  rtnStatus;
 }
@@ -603,8 +603,7 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
         rightJustifiedCairoText(cr, sLegend, pGrid->leftGridPosn - 0.5 * pGrid->fontSize,
                                 pGrid->bottomGridPosn - pGrid->fontSize * 0.3, FALSE );
 
-        modf( (pNoiseAxis->min + pNoiseAxis->offset + VERY_SMALL )/pNoiseAxis->perDiv, &noise );
-        noise = noise * pNoiseAxis->perDiv;
+        noise = pNoiseAxis->min + pNoiseAxis->offset;
 
 // Noise (left y) annotations
         for( y = pGrid->bottomGridPosn + pNoiseAxis->offset * pixelsPerUnit; y < pGrid->topGridPosn;
@@ -689,8 +688,7 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
             g_snprintf( sLegend, SHORT_STRING, "%*.*lf", 2+2*dp, dp, pGainAxis->min );
             leftJustifiedCairoText(cr, sLegend, pGrid->rightGridPosn + 0.5 * pGrid->fontSize, pGrid->bottomGridPosn - pGrid->fontSize * 0.3, FALSE );
 
-            modf( (pGainAxis->min + pGainAxis->offset + VERY_SMALL)/pGainAxis->perDiv, &gain );
-            gain = gain * pGainAxis->perDiv;
+            noise = pGainAxis->min + pGainAxis->offset;
 
 // gain (right Y) annotations
             for( y = pGrid->bottomGridPosn + pGainAxis->offset * pixelsPerUnit; y < pGrid->topGridPosn;
