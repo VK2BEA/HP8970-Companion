@@ -688,7 +688,7 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
             g_snprintf( sLegend, SHORT_STRING, "%*.*lf", 2+2*dp, dp, pGainAxis->min );
             leftJustifiedCairoText(cr, sLegend, pGrid->rightGridPosn + 0.5 * pGrid->fontSize, pGrid->bottomGridPosn - pGrid->fontSize * 0.3, FALSE );
 
-            noise = pGainAxis->min + pGainAxis->offset;
+            gain = pGainAxis->min + pGainAxis->offset;
 
 // gain (right Y) annotations
             for( y = pGrid->bottomGridPosn + pGainAxis->offset * pixelsPerUnit; y < pGrid->topGridPosn;
