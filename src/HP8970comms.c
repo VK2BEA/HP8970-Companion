@@ -255,8 +255,8 @@ GPIBtriggerMeasurement (gint descGPIB_HP8970, tNoiseAndGain *pResult, gint *pGPI
                             rtn = eRDWT_ERROR;
                     }
                 }
-                if( status & ST_CAL )
-                    rtn = rtn | CAL_COMPLETE;
+                if( rtn == eRDWT_CONTINUE && (status & ST_CAL) )
+                    rtn = CAL_COMPLETE;
             } else {
                 DBG(eDEBUG_ALWAYS, "No SRQ from HP8970 but SRQ triggered", status);
             }

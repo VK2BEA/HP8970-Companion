@@ -603,7 +603,7 @@ threadGPIB (gpointer _pGlobal) {
 
     gchar *sGPIBversion = NULL;
     gint verMajor, verMinor, verMicro;
-    gint GPIBstatus;
+    gint GPIBstatus, LO_GPIBstatus;
     gint timeoutHP8970;   				// previous timeout
 
     gint descGPIB_HP8970 = ERROR;
@@ -620,6 +620,7 @@ threadGPIB (gpointer _pGlobal) {
 
     gboolean bNewSettings;
     tUpdateFlags updateFlags;
+    tMode mode;
 
     // The HP8970 formats numbers like 3.141 not, the continental European way 3,14159
     setlocale (LC_NUMERIC, "C");
@@ -726,6 +727,7 @@ threadGPIB (gpointer _pGlobal) {
                     break;
                 case TG_SEND_SETTINGS_to_HP8970:
                     bNewSettings = TRUE;
+
                     do {
                         pstCommands = g_string_new ( NULL );
                         gboolean bExtLO;
@@ -734,13 +736,51 @@ threadGPIB (gpointer _pGlobal) {
                         g_mutex_lock ( &pGlobal->HP8970settings.mUpdate );
                         updateFlags = pGlobal->HP8970settings.updateFlags;
                         pGlobal->HP8970settings.updateFlags.all = 0;
-                        bExtLO = !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4);
+                        mode = pGlobal->HP8970settings.mode;
+                        bExtLO = !(mode == eMode1_0 || mode == eMode1_4);
                         g_mutex_unlock ( &pGlobal->HP8970settings.mUpdate );
+
+                        // Set the external signal generator (LO) for higher modes
+                        if( (updateFlags.each.bSpotFrequency || updateFlags.each.bStartFrequency || updateFlags.each.bStopFrequency)
+                                &&  pGlobal->flags.bNoLOcontrol == FALSE && mode != eMode1_0 ) {
+                            gboolean bLOerror = TRUE;
+                            gchar LOstatus;
+                            gdouble signalFrequency = 0.0, LOfreq = 0.0;
+
+                            if( updateFlags.each.bSpotFrequency )
+                                signalFrequency = pGlobal->HP8970settings.range[ bExtLO ].freqSpotMHz;
+                            if( updateFlags.each.bStopFrequency )
+                                signalFrequency = pGlobal->HP8970settings.range[ bExtLO ].freqStopMHz;
+                            else if( updateFlags.each.bStartFrequency )
+                                signalFrequency = pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz;
+
+                            do {    //
+                                if( pGlobal->HP8970settings.sExtLOsetup )
+                                    if( GPIBasyncWrite (descGPIB_extLO, pGlobal->HP8970settings.sExtLOsetup, &LO_GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
+                                        break;
+
+                                if( ( LOfreq = LOfrequency( pGlobal, signalFrequency ) ) != 0.0 ) {
+                                    g_string_printf( pstCommands, pGlobal->HP8970settings.sExtLOsetFreq, LOfreq );
+                                    if( GPIBasyncWrite (descGPIB_extLO, pstCommands->str, &LO_GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
+                                        break;
+                                    }
+                                    bLOerror = FALSE;
+                                    LO_GPIBstatus = ibrsp (descGPIB_extLO, &LOstatus); // get the status byte from the LO
+                                    gchar *sMessage = g_strdup_printf( "Signal Generator (LO): %.0lf MHz", LOfreq );
+                                    postInfoLO( sMessage );
+                                    g_free( sMessage );
+                                }
+
+                            } while FALSE;  // do loop one time so we can break on problem
+
+                            if( bLOerror )
+                                postErrorLO( "Communications failure with signal generator (LO)" );
+                        }
 
                         // Send new settings to the HP8970
                         // always send the mode because if this is wrong (say preset was pressed), the
                         // frequencies may not make sense.
-                        g_string_append_printf( pstCommands, "E%1d", pGlobal->HP8970settings.mode );
+                        g_string_printf( pstCommands, "E%1d", pGlobal->HP8970settings.mode );
                         if( updateFlags.each.bStartFrequency )
                             g_string_append_printf( pstCommands, "FA%dMZ", (gint)pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz );
                         if( updateFlags.each.bStopFrequency )
@@ -749,7 +789,7 @@ threadGPIB (gpointer _pGlobal) {
                             g_string_append_printf( pstCommands, "SS%dMZ", (gint)pGlobal->HP8970settings.range[ bExtLO ].freqStepCalMHz );
                         if( updateFlags.each.bSmoothing )
                             g_string_append_printf( pstCommands, "F%1d", (gint)round( log2( pGlobal->HP8970settings.smoothingFactor ) ));
-                        if( updateFlags.each.bFrequency )
+                        if( updateFlags.each.bSpotFrequency )
                             g_string_append_printf( pstCommands, "FR%dMZ", (gint)pGlobal->HP8970settings.range[ bExtLO ].freqSpotMHz );
                         if( updateFlags.each.bNoiseUnits )
                             g_string_append_printf( pstCommands, "N%1d", pGlobal->HP8970settings.noiseUnits );
@@ -775,6 +815,7 @@ threadGPIB (gpointer _pGlobal) {
                         bNewSettings = ( pGlobal->HP8970settings.updateFlags.all != 0 );
                         g_mutex_unlock ( &pGlobal->HP8970settings.mUpdate );
                     } while ( bNewSettings );
+
                     if( pstCommands )
                     	g_string_free ( pstCommands, TRUE );
                     IBLOC(descGPIB_HP8970, datum, GPIBstatus);

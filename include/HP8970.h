@@ -22,7 +22,7 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.00-4"
+   #define VERSION "1.00-5"
 #endif
 
 
@@ -94,7 +94,7 @@ typedef enum {
 
 typedef union {
     struct {    // remember to change ALL_FUNCTIONS if an 'each' is added
-        guint32 bFrequency        : 1;
+        guint32 bSpotFrequency    : 1;
         guint32 bStartFrequency   : 1;
         guint32 bStopFrequency    : 1;
         guint32 bStepFrequency    : 1;
@@ -373,61 +373,58 @@ extern gchar *sNoiseUnits[ eMAX_NOISE_UNITS ];
                 postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL); \
     })
 
-void drawHPlogo 					(cairo_t *, gdouble, gdouble, gdouble, gboolean );
-void catalogWidgets                 (tGlobal *);
+gboolean addItemToCircularBuffer    (tCircularBuffer *, tNoiseAndGain *, gboolean );
 void buildWidgetList                (tGlobal *,  GtkBuilder *);
-gint createNoiseFigureColumnView 	(GtkColumnView *, tGlobal * );
-void logVersion						(void);
-gint splashCreate 					(tGlobal *);
-gint splashDestroy 					(tGlobal *);
-gpointer threadGPIB					(gpointer);
-gboolean plotNoiseFigureAndGain     (cairo_t *, gint, gint, tGlobal *, gboolean);
-
-void centreJustifiedCairoText       (cairo_t *, gchar *, gdouble, gdouble, gdouble);
-void rightJustifiedCairoText        (cairo_t *, gchar *, gdouble, gdouble, gboolean);
-void leftJustifiedCairoText         (cairo_t *, gchar *, gdouble, gdouble, gboolean);
-void updateBoundaries               ( gdouble, gdouble *, gdouble * );
-void cairo_renderHewlettPackardLogo (cairo_t *, gboolean, gboolean, gdouble, gdouble );
-gint getTimeStamp                   (gchar **);
 void CB_edit_Title                  (GtkEditable*, gpointer);
 void CB_notes_changed               (GtkTextBuffer*, gpointer);
-
-gint savePlot                       (gchar *filePath, tGlobal *);
-
-void initializePageGPIB             (tGlobal *);
-void initializePageOptions          (tGlobal *);
-void initializePageSource           (tGlobal *);
-void initializePageExtLO            (tGlobal *);
-void setPageExtLOwidgets            (tGlobal *);
-void enablePageExtLOwidgets         (tGlobal *, tMode);
-void warnFrequencyRangeOutOfBounds  (tGlobal *);
-void initializePageHP8970           (tGlobal *);
-void refreshPageHP8970              (tGlobal *);
-void initializePagePlot             (tGlobal *);
-void initializePageNotes            (tGlobal *);
-gint recoverSettings                (tGlobal *);
-gint saveSettings                   (tGlobal *);
-void snapshotSettings               (tGlobal *);
-void setSpinNoiseRange              (tGlobal *);
-void setSpinGainRange               (tGlobal *);
-void setFixedRangePlotWidgets       (tGlobal *);
-void initializeMainDialog           (tGlobal *);
-void refreshMainDialog              (tGlobal *);
-gboolean sweepHP8970                (tGlobal *, gint, gint, gint *);
 gboolean calibrateHP8970            (tGlobal *, gint, gint, gint *);
-gboolean spotFrequencyHP8970        (tGlobal *, gint, gint, gint *);
-void validateCalibrationOperation   (tGlobal *);
-void quarantineControlsOnSweep      (tGlobal *, gboolean, gboolean);
-
-void initCircularBuffer             (tCircularBuffer *, guint, tAbscissa);
-tNoiseAndGain *getItemFromCircularBuffer(tCircularBuffer *, guint);
-gint nItemsInCircularBuffer         (tCircularBuffer *);
-gboolean addItemToCircularBuffer    (tCircularBuffer *, tNoiseAndGain *, gboolean );
+void cairo_renderHewlettPackardLogo (cairo_t *, gboolean, gboolean, gdouble, gdouble );
+void catalogWidgets                 (tGlobal *);
+void centreJustifiedCairoText       (cairo_t *, gchar *, gdouble, gdouble, gdouble);
 gboolean determineTimeExtremesInCircularBuffer( tCircularBuffer * );
-gint findTimeDeltaInCircularBuffer  (tCircularBuffer *, gdouble);
-gchar *msTimeToString               (gint64, gboolean);
+gint createNoiseFigureColumnView    (GtkColumnView *, tGlobal * );
+void drawHPlogo 					(cairo_t *, gdouble, gdouble, gdouble, gboolean );
 void drawModeDiagram                (cairo_t *, tMode, gint, gdouble, gdouble, gdouble);
+void enablePageExtLOwidgets         (tGlobal *, tMode);
+gint findTimeDeltaInCircularBuffer  (tCircularBuffer *, gdouble);
 void freeSVGhandles                 (void);
+tNoiseAndGain *getItemFromCircularBuffer(tCircularBuffer *, guint);
+gint getTimeStamp                   (gchar **);
+void initCircularBuffer             (tCircularBuffer *, guint, tAbscissa);
+void initializeMainDialog           (tGlobal *);
+void initializePageExtLO            (tGlobal *);
+void initializePageGPIB             (tGlobal *);
+void initializePageHP8970           (tGlobal *);
+void initializePageOptions          (tGlobal *);
+void initializePageNotes            (tGlobal *);
+void initializePagePlot             (tGlobal *);
+void initializePageSource           (tGlobal *);
+gdouble LOfrequency                 (tGlobal *, gdouble);
+void leftJustifiedCairoText         (cairo_t *, gchar *, gdouble, gdouble, gboolean);
+void logVersion						(void);
+gchar *msTimeToString               (gint64, gboolean);
+gint nItemsInCircularBuffer         (tCircularBuffer *);
+gboolean plotNoiseFigureAndGain     (cairo_t *, gint, gint, tGlobal *, gboolean);
+void quarantineControlsOnSweep      (tGlobal *, gboolean, gboolean);
+gint recoverSettings                (tGlobal *);
+void refreshMainDialog              (tGlobal *);
+void refreshPageHP8970              (tGlobal *);
+void rightJustifiedCairoText        (cairo_t *, gchar *, gdouble, gdouble, gboolean);
+gint savePlot                       (gchar *filePath, tGlobal *);
+gint saveSettings                   (tGlobal *);
+void setFixedRangePlotWidgets       (tGlobal *);
+void setPageExtLOwidgets            (tGlobal *);
+void setSpinGainRange               (tGlobal *);
+void setSpinNoiseRange              (tGlobal *);
+void snapshotSettings               (tGlobal *);
+gint splashCreate 					(tGlobal *);
+gint splashDestroy 					(tGlobal *);
+gboolean spotFrequencyHP8970        (tGlobal *, gint, gint, gint *);
+gboolean sweepHP8970                (tGlobal *, gint, gint, gint *);
+gpointer threadGPIB					(gpointer);
+void updateBoundaries               ( gdouble, gdouble *, gdouble * );
+void validateCalibrationOperation   (tGlobal *);
+void warnFrequencyRangeOutOfBounds  (tGlobal *);
 
 extern gdouble maxInputFreq[ e8970_MAXmodels ];
 extern gchar *sHP89709models[];

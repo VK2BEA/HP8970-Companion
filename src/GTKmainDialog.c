@@ -313,7 +313,7 @@ CB_spin_Frequency(   GtkSpinButton* wFrequency,
 
     pGlobal->HP8970settings.range[ bExtLO ].freqSpotMHz = gtk_spin_button_get_value( wFrequency );
 
-    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bFrequency );
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bSpotFrequency );
 
     warnFrequencyRangeOutOfBounds( pGlobal );
 }
@@ -480,7 +480,7 @@ CB_combo_Mode ( GtkComboBox* wComboMode, gpointer udata ) {
     bUpdate = (pGlobal->HP8970settings.updateFlags.all == 0);
     pGlobal->HP8970settings.mode = mode;
     pGlobal->HP8970settings.updateFlags.each.bMode = TRUE;
-    pGlobal->HP8970settings.updateFlags.each.bFrequency = TRUE;
+    pGlobal->HP8970settings.updateFlags.each.bSpotFrequency = TRUE;
     pGlobal->HP8970settings.updateFlags.each.bStartFrequency = TRUE;
     pGlobal->HP8970settings.updateFlags.each.bStopFrequency = TRUE;
     pGlobal->HP8970settings.updateFlags.each.bStepFrequency = TRUE;

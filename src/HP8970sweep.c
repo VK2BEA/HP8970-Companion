@@ -837,7 +837,8 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
                 if( freqRF_MHz >= freqStopMHz ) {   // If we have sent the stop freq, then go back to the beginning
                     freqRF_MHz = freqStartMHz;
                     nCalPoint = 0;
-                } else if( freqRF_MHz + freqStepMHz > freqStopMHz ) {
+                } else if( freqRF_MHz + freqStepMHz > freqStopMHz
+                		|| (rtn & CAL_COMPLETE) ) {
                     freqRF_MHz = freqStopMHz;
                 } else {
                     freqRF_MHz += freqStepMHz;
