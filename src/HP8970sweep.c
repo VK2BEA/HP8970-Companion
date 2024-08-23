@@ -78,6 +78,8 @@ LOfrequency( tGlobal *pGlobal, gdouble freqRF ) {
  */
 void
 initCircularBuffer( tCircularBuffer *pCircBuffer, guint size, tAbscissa abscissa ) {
+
+	size = size+1;	// add one so that tail != head when size items in buffer
     pCircBuffer->measurementData = g_realloc( pCircBuffer->measurementData, size * sizeof( tNoiseAndGain ) );
     pCircBuffer->head = 0;
     pCircBuffer->tail = 0;
@@ -361,7 +363,6 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
 
         getTimeStamp(&pGlobal->plot.sDateTime);
 
-
         // Sweep with the sweep step (may not be the same as the calibration step)
         for( freqMHz = freqStartMHz, bContinue = TRUE;
                 GPIBsucceeded( *pGPIBstatus ) && bContinue && checkMessageQueue(NULL) != SEVER_DIPLOMATIC_RELATIONS; ) {
@@ -416,7 +417,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
                 pGlobal->plot.flags.bValidNoiseData = TRUE;
             if( measurement.flags.each.bGainInvalid == FALSE )
                 pGlobal->plot.flags.bValidGainData = TRUE;
-
+;
             addItemToCircularBuffer( &pGlobal->plot.measurementBuffer, &measurement, TRUE );
 
             if( HP8970error ) {
@@ -796,6 +797,12 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
         switch( HP8970error ) {
         case 20:	// we expect it to be not calibrated
+        case 21:	// Current frequency is out of calibrated range
+        case 22:	// Current RF attenuation not calibrated
+        case 23:	// Not calibrated in the current measurement and sideband modes
+        case 24:	// Not calibrated for the current IF
+        case 25:	// Not calibrated for the current LO frequency
+        case 99:	// Measurement overflow
         	HP8970error = 0;
         	break;
         default:

@@ -256,7 +256,8 @@ quantizePlotRange( tGlobal *pGlobal, gdouble min, gdouble max, tGridAxes gridTyp
     quantizedMax = ceil( max / division )  * division;
 
     // half the remaining grid squares (may be zero)
-    border = floor((gridRange - (quantizedMax-quantizedMin)) / division / 2.0) * division;
+    if( (border = floor((gridRange - (quantizedMax-quantizedMin)) / division / 2.0) * division) < 0.0 )
+        border = 0.0;
 
     pGlobal->plot.axis[ gridType ].min = quantizedMin - border;
     pGlobal->plot.axis[ gridType ].max = pGlobal->plot.axis[ gridType ].min + gridRange;
