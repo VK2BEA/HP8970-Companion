@@ -21,6 +21,18 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
 //  if (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK))
 //      return FALSE;
 
+    /*       ESC: abort - stop reading / writing to HP8970
+     * shift ESC: abort, then reinitialize the GPIB devices
+     *  ctrl ESC: abort & send a GPIB clear to the HP8970
+     *   alt ESC: clear any plot
+     *
+     *        F1: show help screen
+     *
+     *        F2: send all settings to HP8970 (useful if HP8970 has been reset)
+     *
+     *       F12: enlarge to max screen height
+     * shift F12: make default size
+    */
     switch (keyval)  {
         case GDK_KEY_Escape:
             switch (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK | GDK_SUPER_MASK))
@@ -69,17 +81,12 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
             switch (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK | GDK_SUPER_MASK))
                 {
                 case GDK_SHIFT_MASK:
-                    gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( pGlobal->widgets[ eW_HP8970_application ] )), -1,
-                                                 -1);
                     break;
                 case GDK_CONTROL_MASK:
                     break;
                 case GDK_ALT_MASK:
                     break;
                 case GDK_SUPER_MASK:
-                    gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( pGlobal->widgets[ eW_HP8970_application ] )), 1, 1);
-                    while (g_main_context_pending (g_main_context_default ()))
-                        g_main_context_iteration (NULL, TRUE);
                     break;
                 case 0:
                     pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
@@ -121,6 +128,9 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
             switch (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK | GDK_SUPER_MASK))
                 {
                 case GDK_SHIFT_MASK:
+                    gtk_window_set_default_size (GTK_WINDOW(gtk_widget_get_root( pGlobal->widgets[ eW_HP8970_application ] )), -1, -1);
+                    while (g_main_context_pending (g_main_context_default ()))
+                        g_main_context_iteration (NULL, TRUE);
                     break;
                 case GDK_CONTROL_MASK:
                     break;
@@ -135,7 +145,9 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
                     GdkDisplay *display = gdk_surface_get_display (surface);
                     GdkMonitor *monitor = gdk_display_get_monitor_at_surface( display, surface );
                     gdk_monitor_get_geometry( monitor, &geometry );
-                    gtk_window_set_default_size(GTK_WINDOW(wApplicationWindow), geometry.height*1.54, geometry.height);
+                    gtk_window_set_default_size(GTK_WINDOW(wApplicationWindow), geometry.height*1.53, geometry.height);
+                    while (g_main_context_pending (g_main_context_default ()))
+                        g_main_context_iteration (NULL, TRUE);
                     break;
                 }
             break;
