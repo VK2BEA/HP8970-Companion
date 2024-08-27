@@ -652,7 +652,7 @@ refreshMainDialog( tGlobal *pGlobal )
     GtkWidget *wFrStart, *wFrStop, *wFrStepCal, *wFrStepSweep, *wFrequency, *wMode;
     gboolean bExtLO = !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4);
     gdouble min = bExtLO ? HP8970A_MIN_FREQ_R2 : HP8970A_MIN_FREQ;
-    gdouble max = bExtLO ? HP8970A_MAX_FREQ_R2 : HP8970A_MAX_FREQ;
+    gdouble max = bExtLO ? HP8970A_MAX_FREQ_R2 : maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ];
     gdouble pageStep = bExtLO ? HP8970A_PageStep_FREQ_R2 : HP8970A_PageStep_FREQ;
 
     wFrStart     = pGlobal->widgets[ eW_spin_FrStart ];

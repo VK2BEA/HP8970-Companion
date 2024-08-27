@@ -92,7 +92,8 @@ CB_chk_Variants(GtkCheckButton *wVariant, gpointer identifier) {
 
     if( gtk_check_button_get_active (wVariant) ) {
         pGlobal->flags.bbHP8970Bmodel = GPOINTER_TO_INT( identifier );
-        gtk_spin_button_set_range( pGlobal->widgets[ eW_LO_spin_FixedIF_Freq ], 10.0, maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ] );
+        gtk_spin_button_set_range( pGlobal->widgets[ eW_LO_spin_FixedIF_Freq ], HP8970A_MIN_FREQ, maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ] );
+        gtk_spin_button_set_range( pGlobal->widgets[ eW_spin_FrStop ], HP8970A_MIN_FREQ, maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ] );
     }
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
