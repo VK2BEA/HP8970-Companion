@@ -213,6 +213,10 @@ CB_btn_DeleteRestoreSaveConfiguration ( GtkButton *wBtn, gpointer eOperation ) {
         configurationItem = g_list_find_custom ( pGlobal->configurationList,
                                                  (gconstpointer)sConfigurationName, compareFindConfiguration );
 
+    // unselect text in entry
+    GtkEntry *wEntry = GTK_ENTRY( gtk_combo_box_get_child( GTK_COMBO_BOX( wComboConfiguration ) ) );
+    gtk_editable_select_region( GTK_EDITABLE(wEntry), -1, -1);
+
     switch( GPOINTER_TO_INT( eOperation ) ) {
         case eRestoreConfig:
             if ( configurationItem == NULL )
@@ -265,9 +269,7 @@ CB_btn_DeleteRestoreSaveConfiguration ( GtkButton *wBtn, gpointer eOperation ) {
 
             freeConfigationItemContent( configurationItem->data );
             pGlobal->configurationList = g_list_delete_link( pGlobal->configurationList, configurationItem );
-            gtk_entry_buffer_set_text(
-                    gtk_entry_get_buffer(GTK_ENTRY( gtk_combo_box_get_child( GTK_COMBO_BOX( wComboConfiguration ) ))),
-                    "", -1);
+            gtk_entry_buffer_set_text( gtk_entry_get_buffer(wEntry), "", -1);
             sensitizeConfigurationButtons( pGlobal, "" );
             gtk_combo_box_set_active( GTK_COMBO_BOX( wComboConfiguration ), active <= 0 ? 0 : active-1 );
             break;
