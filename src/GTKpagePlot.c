@@ -263,6 +263,11 @@ setSpinGainRange( tGlobal *pGlobal ) {
 
 void
 setFixedRangePlotWidgets( tGlobal *pGlobal ) {
+    g_signal_handlers_block_by_func( G_OBJECT(  pGlobal->widgets[ eW_spin_NoiseMin ] ), CB_spin_NoiseMin, NULL );
+    g_signal_handlers_block_by_func( G_OBJECT(  pGlobal->widgets[ eW_spin_NoiseMax ] ), CB_spin_NoiseMax, NULL );
+    g_signal_handlers_block_by_func( G_OBJECT(  pGlobal->widgets[ eW_spin_GainMin ] ), CB_spin_NoiseMin, NULL );
+    g_signal_handlers_block_by_func( G_OBJECT(  pGlobal->widgets[ eW_spin_GainMax ] ), CB_spin_NoiseMin, NULL );
+
     setSpinNoiseRange( pGlobal );
     setSpinGainRange( pGlobal );
 
@@ -273,6 +278,11 @@ setFixedRangePlotWidgets( tGlobal *pGlobal ) {
     gtk_spin_button_set_value( GTK_SPIN_BUTTON( pGlobal->widgets[ eW_spin_GainMax ] ),  pGlobal->HP8970settings.fixedGridGain[ 1 ] );
 
     gtk_check_button_set_active( pGlobal->widgets[ eW_chk_AutoScale ], pGlobal->HP8970settings.switches.bAutoScaling );
+
+    g_signal_handlers_unblock_by_func( G_OBJECT(  pGlobal->widgets[ eW_spin_NoiseMin ] ), CB_spin_NoiseMin, NULL );
+    g_signal_handlers_unblock_by_func( G_OBJECT(  pGlobal->widgets[ eW_spin_NoiseMax ] ), CB_spin_NoiseMax, NULL );
+    g_signal_handlers_unblock_by_func( G_OBJECT(  pGlobal->widgets[ eW_spin_GainMin ] ), CB_spin_NoiseMin, NULL );
+    g_signal_handlers_unblock_by_func( G_OBJECT(  pGlobal->widgets[ eW_spin_GainMax ] ), CB_spin_NoiseMin, NULL );
 }
 
 /*!     \brief  Initialize the widgets on the Plot page

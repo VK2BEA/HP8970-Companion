@@ -592,7 +592,6 @@ CB_JSONopen( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
 
             gtk_notebook_set_current_page( pGlobal->widgets[ eW_note_Controls ], ePageNotes );
 
-            setSpinNoiseRange( pGlobal );
             setFixedRangePlotWidgets( pGlobal );
 
             // Recover settings .. read to snapshot, now copy to controls
