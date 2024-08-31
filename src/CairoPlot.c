@@ -71,11 +71,11 @@ determineFixedGridDivisions( tGlobal *pGlobal, tGridAxes gridType ) {
     int i;
 
     if( gridType == eNoise ) {
-        min = pGlobal->fixedGridNoise[ pGlobal->plot.noiseUnits ][ 0 ];
-        max = pGlobal->fixedGridNoise[ pGlobal->plot.noiseUnits ][ 1 ];
+        min = pGlobal->HP8970settings.fixedGridNoise[ pGlobal->plot.noiseUnits ][ 0 ];
+        max = pGlobal->HP8970settings.fixedGridNoise[ pGlobal->plot.noiseUnits ][ 1 ];
     } else {
-        min = pGlobal->fixedGridGain[ 0 ];
-        max = pGlobal->fixedGridGain[ 1 ];
+        min = pGlobal->HP8970settings.fixedGridGain[ 0 ];
+        max = pGlobal->HP8970settings.fixedGridGain[ 1 ];
     }
     const static gdouble logRanges[ N_RANGES ] = { LOG10, LOG5, LOG2, LOG1 };
     const static gdouble multipliers[ N_RANGES ] = { 10, 5, 2, 1 };
@@ -340,7 +340,7 @@ setPlotBoundaries( tGlobal *pGlobal ) {
     } else
         quantizePlotFrequencyRange( pGlobal, pCircularBuffer->minAbscissa.freq / MHz(1.0), pCircularBuffer->maxAbscissa.freq / MHz(1.0) );
 
-    if( pGlobal->flags.bAutoScaling || pGlobal->plot.flags.bCalibrationPlot ) {
+    if( pGlobal->HP8970settings.switches.bAutoScaling || pGlobal->plot.flags.bCalibrationPlot ) {
         quantizePlotRange( pGlobal, pCircularBuffer->minNoise, pCircularBuffer->maxNoise, eNoise );
         quantizePlotRange( pGlobal, pCircularBuffer->minGain, pCircularBuffer->maxGain, eGain );
     } else {

@@ -488,7 +488,7 @@ CB_combo_Mode ( GtkComboBox* wComboMode, gpointer udata ) {
             break;
     }
 
-    g_mutex_lock ( &pGlobal->HP8970settings.mUpdate );
+    g_mutex_lock ( &pGlobal->mUpdate );
     bUpdate = (pGlobal->HP8970settings.updateFlags.all == 0);
     pGlobal->HP8970settings.mode = mode;
     pGlobal->HP8970settings.updateFlags.each.bMode = TRUE;
@@ -496,7 +496,7 @@ CB_combo_Mode ( GtkComboBox* wComboMode, gpointer udata ) {
     pGlobal->HP8970settings.updateFlags.each.bStartFrequency = TRUE;
     pGlobal->HP8970settings.updateFlags.each.bStopFrequency = TRUE;
     pGlobal->HP8970settings.updateFlags.each.bStepFrequency = TRUE;
-    g_mutex_unlock ( &pGlobal->HP8970settings.mUpdate );
+    g_mutex_unlock ( &pGlobal->mUpdate );
 
     refreshMainDialog( pGlobal );
 
@@ -675,7 +675,7 @@ refreshMainDialog( tGlobal *pGlobal )
     gtk_combo_box_set_active( GTK_COMBO_BOX( wMode ), pGlobal->HP8970settings.mode );
 
     gtk_combo_box_set_active( GTK_COMBO_BOX( pGlobal->widgets[ eW_combo_Smoothing ]),
-                              (gint)log2(pGlobal->HP8970settings.smoothingFactor) );
+                              pGlobal->HP8970settings.smoothingFactor ? (gint)log2(pGlobal->HP8970settings.smoothingFactor) : 1 );
 #pragma GCC diagnostic pop
 
     // Initialize widgets on main page

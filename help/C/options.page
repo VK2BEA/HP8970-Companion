@@ -16,23 +16,39 @@
     <desc>Available option settings</desc>
   </info>
   
-  <title>Options</title>
+  <title>Options &amp; Configuration Save/Recall</title>
   <section>
-  <title>General</title>
-  <media type="image" style="floatright"  mime="image/png" src="media/optionsPage.png" />
-  <list>
-    <item><p>The <gui>Logo</gui> checkbox will enable or disable the display of the HP logo on the plot.</p></item>
-    <item><p>The <gui>Time</gui> checkbox will enable or disable the display of the time and date on the plot.</p></item>
-    <item><p>The <gui>8970A</gui> and <gui>8970B</gui> radio buttons change the behaviour of the program to match the device being controlled.</p></item>
-  </list>
+    <title>Configuration Memory</title>
+    <media type="image" style="floatright"  mime="image/png" src="media/optionsPage.png" />
+    <p>The configuration settings may be saved and restored.</p>
+    <p>Type the name of the configuration and press the <key>Save</key> button to save a new configuration or to overwrite an existing one.</p>
+    <p>To recall the configuration select the named configuration from the drop down list, or type the name into the entry widget, and press the <key>Restore</key> button.</p>
+    <p>Press the <key>Delete</key> button to delete the named configuration.</p>
+    <note style="tip">
+     <p>The title and notes are not saved and recalled with the configuration. They are specific to the plot and are consequently saved and restored with the plot.</p>
+    </note>
   </section>
   <section>
-  <title>PDF/SVG Page Size</title>
-  <p>The radio buttons select the PDF and SVG page size for images saved in those formats.</p>
-  <note style="tip">
-  <p>The size of the printed page is selectable from the printer dialog at the time of printing. The selection is saved.</p>
-  </note>
+    <title>PDF/SVG Page Size</title>
+    <p>The <gui>PDF/SVG Page Size</gui> radio buttons select the page size for images saved in those formats.</p>
+    <note style="tip">
+      <p>The size of the printed page is selectable from the printer dialog at the time of printing and is remembered by the program.</p>
+    </note>
   </section>
+  <section>
+    <title>Show / Hide</title>
+    <list>
+      <item><p>The <gui>Instrument</gui> checkbox will enable or disable the display of the HP logo and instrument identifier on the plot.</p></item>
+      <item><p>The <gui>Date &amp; Time</gui> checkbox will enable or disable the display of the time and date on the plot.</p></item>
+    </list>
+  </section>
+  <section>
+    <title>Instrument Variant</title>
+    <p>The <gui>8970A</gui>, <gui>8970B</gui>, <gui>8970B/20</gui> radio buttons change the behaviour of the program to match the device being controlled.</p>
+    <p>The 8970A has a maximum of 81 callibration points and an upper frequency, in mode 1.0, of 1500 MHz</p>
+    <p>The 8970B has a maximum of 181 callibration points and an upper frequency, in mode 1.0, of 1600 MHz and, with option 20, 2047 MHz</p>
+  </section>
+
 
 
 </page>

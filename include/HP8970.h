@@ -22,7 +22,7 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.00-6"
+   #define VERSION "1.01-1"
 #endif
 
 
@@ -36,8 +36,7 @@
 
 /*!     \brief Debugging levels
  */
-enum _debug
-{
+enum _debug {
         eDEBUG_ALWAYS    = 0,
         eDEBUG_INFO      = 1,
         eDEBUG_MINOR     = 3,
@@ -59,71 +58,78 @@ enum _debug
 #define GINT_MSTIME_TO_DOUBLE( x ) ((gdouble)(x) / 1000.0)
 
 typedef struct {
-        union {
-            gdouble freq;
-            gint64  time;
-        } abscissa;
-        gdouble	gain, noise;
-	union {
-	    struct {
-	        guint32 bNoiseInvalid        : 1;
-	        guint32 bGainInvalid         : 1;
-	        guint32 bNoiseOverflow       : 1;
-	        guint32 bGainOverflow        : 1;
-            guint32 bCalPoint            : 1;
-	    } each;
-	    guint32 all;
-	} flags;
+    union {
+        gdouble freq;
+        gint64 time;
+    } abscissa;
+    gdouble gain, noise;
+    union {
+        struct {
+            guint32 bNoiseInvalid :1;
+            guint32 bGainInvalid :1;
+            guint32 bNoiseOverflow :1;
+            guint32 bGainOverflow :1;
+            guint32 bCalPoint :1;
+        } each;
+        guint32 all;
+    } flags;
 } tNoiseAndGain;
 
 typedef struct {
     gdouble lower;          // lower grid line
     gdouble upper;          // upper grid line
     gdouble decadeRange;    // range 0.1, 1.0, 10.0 etc
-    gint    expandRange;    // expanded range ( 1, 2 or 5)
+    gint expandRange;    // expanded range ( 1, 2 or 5)
 } tGridRange;
 
 typedef enum {
-    eFreqAbscissa=0, eTimeAbscissa=1
+    eFreqAbscissa = 0, eTimeAbscissa = 1
 } tAbscissa;
 
-typedef enum {
-    eFreqOrTime=0, eTime=0, eFreq=0, eNoise=1, eGain=2, eMAX_AXES=3
-} tGridAxes;
+enum freqRanges{
+    eBaseRange = 0, eMixerRange = 1, eMAX_RANGES = 2
+};
 
+typedef enum {
+    eFreqOrTime = 0, eTime = 0, eFreq = 0, eNoise = 1, eGain = 2, eMAX_AXES = 3
+} tGridAxes;
 
 typedef union {
     struct {    // remember to change ALL_FUNCTIONS if an 'each' is added
-        guint32 bSpotFrequency    : 1;
-        guint32 bStartFrequency   : 1;
-        guint32 bStopFrequency    : 1;
-        guint32 bStepFrequency    : 1;
-        guint32 bSmoothing        : 1;
-        guint32 bMode             : 1;
-        guint32 bNoiseUnits       : 1;
-        guint32 bColdTemperature  : 1;
-        guint32 bLossCompenstaion : 1;
-        guint32 bCorrection       : 1;
-        guint32 bExternalLO       : 1;
+        guint32 bSpotFrequency      :1;
+        guint32 bStartFrequency     :1;
+        guint32 bStopFrequency      :1;
+        guint32 bStepFrequency      :1;
+        guint32 bSmoothing          :1;
+        guint32 bMode               :1;
+        guint32 bNoiseUnits         :1;
+        guint32 bColdTemperature    :1;
+        guint32 bLossCompenstaion   :1;
+        guint32 bCorrection         :1;
+        guint32 bExternalLO         :1;
     } each;
 #define ALL_FUNCTIONS    0b11111111111
     guint32 all;
 } tUpdateFlags;
 
-typedef enum { ePage8970=0, ePageNotes=1, ePagePlot=2, ePageExtLO=3, ePageNoiseSource=4, ePageOptions=5, ePageGPIB=6 } tNoteBookPage;
-
-typedef enum { e8970A=0, e8970B=1, e8970Bopt20=2, e8970_MAXmodels=3 } tModels;
+typedef enum {
+    ePage8970 = 0, ePageNotes = 1, ePagePlot = 2, ePageExtLO = 3, ePageNoiseSource = 4, ePageOptions = 5, ePageGPIB = 6
+} tNoteBookPage;
 
 typedef enum {
-    eMode1_0=0, eMode1_1=1, eMode1_2=2, eMode1_3=3, eMode1_4=4, eMode_Max=5
+    e8970A = 0, e8970B = 1, e8970Bopt20 = 2, e8970_MAXmodels = 3
+} tModels;
+
+typedef enum {
+    eMode1_0 = 0, eMode1_1 = 1, eMode1_2 = 2, eMode1_3 = 3, eMode1_4 = 4, eMode_Max = 5
 } tMode;
 
 typedef enum {
-    eFdB=0, eF=1, eYdB=2, eY=3, eTeK=4, eMAX_NOISE_UNITS=5
+    eFdB = 0, eF = 1, eYdB = 2, eY = 3, eTeK = 4, eMAX_NOISE_UNITS = 5
 } tNoiseType;
 
 typedef enum {
-    eDSB=0, eLSB=1, eUSB=2, eMAX_SIDEBAND_TYPES=3
+    eDSB = 0, eLSB = 1, eUSB = 2, eMAX_SIDEBAND_TYPES = 3
 } tSideband;
 
 typedef struct {
@@ -131,25 +137,25 @@ typedef struct {
 } tCoordinate;
 
 typedef struct {
-    tNoiseAndGain  *measurementData;
+    tNoiseAndGain *measurementData;
     // tail is the index of the *next* item location (not the last one inserted)
     // i.e. the first item index is head, the last is tail-1
     // If there is nothing in the buffer, head == tail
-    guint   head, tail;
-    guint   size;
+    guint head, tail;
+    guint size;
 
     // index ( 0 to size of measurement that is (say) 60 seconds before the measurement at the tail
     gint idxTimeBeforeTail;
 
     // Current plot data extremes
-    gdouble     minNoise, maxNoise, minGain, maxGain;
-    union {
-      gdouble freq;
-      gint64  time;
+    gdouble minNoise, maxNoise, minGain, maxGain;
+    union     {
+        gdouble freq;
+        gint64 time;
     } minAbscissa, maxAbscissa;
 
-    struct {
-        guint32 bTime          : 1;
+    struct     {
+        guint32 bTime :1;
     } flags;
 } tCircularBuffer;
 
@@ -158,10 +164,11 @@ typedef struct {
 #define MAX_NOISE_SOURCE_CALDATA_LENGTH_A  27       // HP8970A has 27 points only
 #define MAX_NOISE_SOURCES                   5
 typedef struct {
-    gchar   name[ MAX_NOISE_SOURCE_NAME_LENGTH+1 ];                     // name of noise source
-    gdouble calibrationPoints[ MAX_NOISE_SOURCE_CALDATA_LENGTH ][2];    // freq / ENR
+    gchar name[MAX_NOISE_SOURCE_NAME_LENGTH + 1];                     // name of noise source
+    gdouble calibrationPoints[MAX_NOISE_SOURCE_CALDATA_LENGTH][2];    // freq / ENR
 } tNoiseSource;
 
+// Settings for HP8970
 typedef struct {
     struct {
         // Frequencies in MHz
@@ -170,38 +177,40 @@ typedef struct {
         gdouble freqStopMHz;
         gdouble freqStepCalMHz;
         gdouble freqStepSweepMHz;
-    } range[ 2 ];
+    } range[ eMAX_RANGES ];
 
     tUpdateFlags updateFlags;
-    GMutex mUpdate;
 
     struct {
-        guint32 bCorrectedNFAndGain     : 1;
-        guint32 bLossCompensation       : 1;
-        guint32 bSpotFrequency          : 1;
+        guint32 bCorrectedNFAndGain :1;
+        guint32 bLossCompensation   :1;
+        guint32 bSpotFrequency      :1;
+        guint32 bAutoScaling        :1;
     } switches;
 
-	gint	smoothingFactor;
+    gint smoothingFactor;
 
-	tNoiseType noiseUnits;
+    tNoiseType noiseUnits;
 
-	// Mode 0 - no external mixer
-	// Mode 1 - (DUT - amplifier) external mixer / variable external LO / Fixed IF
-	// Mode 2 - (DUT - amplifier) external mixer / fixed LO / variable IF (USB or LSB + filtering)
-	// Mode 3 - (DUT - mixer or receiver) external mixer / variable external LO / Fixed IF
+    // Mode 0 - no external mixer
+    // Mode 1 - (DUT - amplifier) external mixer / variable external LO / Fixed IF
+    // Mode 2 - (DUT - amplifier) external mixer / fixed LO / variable IF (USB or LSB + filtering)
+    // Mode 3 - (DUT - mixer or receiver) external mixer / variable external LO / Fixed IF
     // Mode 4 - (DUT - mixer or receiver) external mixer / variable fixed LO / variable IF
-	tMode mode;
-	gint    extLOfreqIF, extLOfreqLO, settlingTime_ms; // for modes 1-4
-    // External LO
-    gchar   *sExtLOsetup, *sExtLOsetFreq;
-	tSideband extLOsideband;
+    tMode mode;
 
-	gdouble  lossBeforeDUT, lossAfterDUT, lossTemp, coldTemp;
+    // External mixer modes
+    gint extLOfreqIF, extLOfreqLO, settlingTime_ms; // for modes 1-4
+    gchar *sExtLOsetup, *sExtLOsetFreq;
+    tSideband extLOsideband;
 
-	tNoiseSource noiseSources[ MAX_NOISE_SOURCES ];
-	gint activeNoiseSource;
-	tNoiseSource noiseSourceCache;
+    gdouble lossBeforeDUT, lossAfterDUT, lossTemp, coldTemp;
 
+    // If the grid is not auto-ranging, these are the boundaries
+    gdouble fixedGridFreq[2], // Unused ... placeholder
+            fixedGridNoise[eMAX_NOISE_UNITS][2], fixedGridGain[2];
+
+    gchar *sConfigurationName;
 } tHP8970settings;
 
 typedef struct {
@@ -210,111 +219,117 @@ typedef struct {
     gdouble min, max, offset, perDiv;
 } tAxis;
 
+// This structure holds the data and metadata for the plot.
+// When data is read from the HP8970 it is placed in a circular buffer.
+// This is so when in spot frequency mode an unknown length number of points
+// are read and it is not necessary to move around data to accommodate.
 typedef struct {
+    tCircularBuffer measurementBuffer;
+    gdouble spotFrequency;
 
-	struct {
-		guint32 bRunning         		    : 1;
-		guint32 bbDebug					    : 3;
-		guint32 bGPIBcommsActive		    : 1;
-		guint32 bGPIB_UseCardNoAndPID       : 1;
-        guint32 bGPIB_extLO_usePID          : 1;
-		guint32 bNoGPIBtimeout			    : 1;
-		guint32 bShowTime                   : 1;
-		guint32 bShowTitle                  : 1;
-        guint32 bShowHPlogo                 : 1;
-        guint32 bAutoScaling                : 1;
-        guint32 bLiveMarkerActive           : 1;
-        guint32 bHoldLiveMarker             : 1;
-        guint32 bPreviewModeDiagram         : 1;
-        guint32 bNoLOcontrol                : 1;
-        guint32 bCalibrationNotPossible     : 1;
+    tNoiseType noiseUnits;
+    gint smoothingFactor;
+
+    // These are required to plot the data correctly
+    struct     {
+        guint32 bValidNoiseData         :1;
+        guint32 bValidGainData          :1;
+        guint32 bSpotFrequencyPlot      :1;
+        guint32 bCalibrationPlot        :1;
+        guint32 bDataCorrectedNFAndGain :1;
+        guint32 bLossCompensation       :1;
+        guint32 bHighResolution         :1;
+        guint32 bbHP8970Bmodel          :2;
+    } flags;
+
+    tAxis axis[eMAX_AXES];
+
+    gchar *sTitle, *sNotes, *sDateTime;
+
+    // Snapshot of HP8973 settings when the plot was taken
+    // These values are stored with the plot and will be used to set the
+    // state of the meter when the plot is recalled.
+    //
+    gdouble freqSpotMHz;
+    gdouble freqStartMHz;
+    gdouble freqStopMHz;
+    gdouble freqStepCalMHz;
+    gdouble freqStepSweepMHz;
+    tMode mode;
+
+    gint extLOfreqIF, extLOfreqLO, settlingTime_ms; // for modes 1-4
+    // External LO
+    gchar *sExtLOsetup, *sExtLOsetFreq;
+    tSideband extLOsideband;
+
+    gdouble lossBeforeDUT, lossAfterDUT, lossTemp, coldTemp;
+
+// End of snapshot
+
+} tPlotData;
+
+typedef struct {
+    struct {
+        guint32 bRunning                :1;
+        guint32 bbDebug                 :3;
+        guint32 bGPIBcommsActive        :1;
+        guint32 bGPIB_UseCardNoAndPID   :1;
+        guint32 bGPIB_extLO_usePID      :1;
+        guint32 bNoGPIBtimeout          :1;
+        guint32 bShowTime               :1;
+        guint32 bShowTitle              :1;
+        guint32 bShowHPlogo             :1;
+        guint32 bLiveMarkerActive       :1;
+        guint32 bHoldLiveMarker         :1;
+        guint32 bPreviewModeDiagram     :1;
+        guint32 bNoLOcontrol            :1;
+        guint32 bCalibrationNotPossible :1;
 #define N_VARIANTS 3
-		guint32 bbHP8970Bmodel              : 2;
-	} flags;
+        guint32 bbHP8970Bmodel          :2;
+    } flags;
 
-	tHP8970settings HP8970settings;
+    // Configuration of HP8970
+    tHP8970settings HP8970settings;
 
-	// This structure holds the data and metadata for the plot.
-	// When data is read from the HP8970 it is placed in a circular buffer.
-	// This is so when in spot frequency mode an unknown length number of points
-	// are read and it is not necessary to move around data to accomodate.
-	struct {
-	    tCircularBuffer measurementBuffer;
-	    gdouble         spotFrequency;
+    // Plot data ... captured when the plot data is acquired
+    tPlotData plot;
 
-        tNoiseType      noiseUnits;
-        gint            smoothingFactor;
+    GMutex mUpdate;
 
-	    // These are required to plot the data correctly
-        struct {
-            guint32 bValidNoiseData             : 1;
-            guint32 bValidGainData              : 1;
-            guint32 bSpotFrequencyPlot          : 1;
-            guint32 bCalibrationPlot            : 1;
-            guint32 bDataCorrectedNFAndGain     : 1;
-            guint32 bLossCompensation           : 1;
-            guint32 bHighResolution             : 1;
-            guint32 bbHP8970Bmodel              : 2;
-        } flags;
+    tNoiseSource noiseSources[MAX_NOISE_SOURCES];
+    gint activeNoiseSource;
+    tNoiseSource noiseSourceCache;
 
-        tAxis axis[ eMAX_AXES ];
-
-        gchar           *sTitle, *sNotes, *sDateTime;
-
-        // Snapshot of HP8973 settings when the plot was taken
-        // These values are stored with the plot and will be used to set the
-        // state of the meter when the plot is recalled.
-        //
-        gdouble freqSpotMHz;
-        gdouble freqStartMHz;
-        gdouble freqStopMHz;
-        gdouble freqStepCalMHz;
-        gdouble freqStepSweepMHz;
-        tMode   mode;
-
-        gint      extLOfreqIF, extLOfreqLO, settlingTime_ms; // for modes 1-4
-        // External LO
-        gchar    *sExtLOsetup, *sExtLOsetFreq;
-        tSideband extLOsideband;
-
-        gdouble   lossBeforeDUT, lossAfterDUT, lossTemp, coldTemp;
-
-        // End of snapshot
-
-	} plot;
-
-    tCoordinate     liveMarkerPosnRatio;
-
-	// If the grid is not auto-ranging, these are the boundaries
-	gdouble         fixedGridFreq[2], // Unused ... placeholder
-	                fixedGridNoise[eMAX_NOISE_UNITS][2], fixedGridGain[2];
+    tCoordinate liveMarkerPosnRatio;
 
 #define N_PAPER_SIZES 4
-	gint		    PDFpaperSize;
+    gint PDFpaperSize;
 
-    gint            GPIBcontrollerIndex,  GPIBdevicePID, GPIB_extLO_PID;
-    gchar           *sGPIBdeviceName, *sGPIBextLOdeviceName;
-    gint            GPIBversion;
+    gint GPIBcontrollerIndex, GPIBdevicePID, GPIB_extLO_PID;
+    gchar *sGPIBdeviceName, *sGPIBextLOdeviceName;
+    gint GPIBversion;
 
     GtkPrintSettings *printSettings;
-    GtkPageSetup    *pageSetup;
-    gchar           *sLastDirectory;
+    GtkPageSetup *pageSetup;
+    gchar *sLastDirectory;
 
-	GHashTable      *widgetHashTable;
+    GHashTable *widgetHashTable;
 
-	GSource         *messageEventSource;
-	GAsyncQueue     *messageQueueToMain;
-	GAsyncQueue     *messageQueueToGPIB;
+    GSource *messageEventSource;
+    GAsyncQueue *messageQueueToMain;
+    GAsyncQueue *messageQueueToGPIB;
 
-	gchar           *sUsersJSONfilename;	// filename chose by user for saving HPGL file
-	gchar           *sUsersPDFImageFilename;	// filename chosen by user for PDF file
-	gchar           *sUsersPNGImageFilename;	// filename chosen by user for PNG file
-	gchar           *sUsersSVGImageFilename;	// filename chosen by user for SVG file
-    gchar           *sUsersCSVfilename;    // filename chosen by user for SVG file
+    gchar *sUsersJSONfilename;	    // filename chose by user for saving JSON file
+    gchar *sUsersPDFImageFilename;	// filename chosen by user for PDF file
+    gchar *sUsersPNGImageFilename;	// filename chosen by user for PNG file
+    gchar *sUsersSVGImageFilename;	// filename chosen by user for SVG file
+    gchar *sUsersCSVfilename;         // filename chosen by user for SVG file
 
-    gpointer         widgets[ eW_N_WIDGETS ];
+    GList *configurationList;
 
-	GThread         *pGThread;
+    gpointer widgets[eW_N_WIDGETS];
+
+    GThread *pGThread;
 
 } tGlobal;
 
@@ -338,103 +353,118 @@ typedef struct {
     cairo_matrix_t initialMatrix;
 } tGridParameters;
 
-typedef enum {  eColorNoise = 0, eColorGain = 1, eColorFrequency = 2,
-                eColorGrid = 3, eColorGridGain = 4, eColorTitle = 5,
-                eColorTBD1 = 6, eColorTBD2 = 7, eColorTBD3 = 8,
-                eColorTBD4 = 9, eColorTBD5 = 10, eColorTBD6 = 11,
-                eMAX_COLORS = 12
+typedef enum {
+    eColorNoise     = 0,
+    eColorGain      = 1,
+    eColorFrequency = 2,
+    eColorGrid      = 3,
+    eColorGridGain  = 4,
+    eColorTitle     = 5,
+    eColorTBD1      = 6,
+    eColorTBD2      = 7,
+    eColorTBD3      = 8,
+    eColorTBD4      = 9,
+    eColorTBD5      = 10,
+    eColorTBD6      = 11,
+    eMAX_COLORS     = 12
 } tElementColor;
 
-typedef enum { eA4 = 0, eLetter = 1, eA3 = 2, eTabloid = 3, eNumPaperSizes = 4 } tPaperSize;
+typedef enum {
+    eA4 = 0, eLetter = 1, eA3 = 2, eTabloid = 3, eNumPaperSizes = 4
+} tPaperSize;
+
 typedef struct {
-    gint   height, width;
+    gint height, width;
     gdouble margin;
 } tPaperDimensions;
 
+extern tGlobal globalData;
+
 extern tPaperDimensions paperDimensions[];
-
-
-#define LABEL_FONT "Noto Sans"
-#define MODE_DIAGRAM_FONT "Noto Sans"
-#define MODE_DIAGRAM_FONT_CONDENSED "Noto Sans Condensed"
 
 extern GdkRGBA plotElementColors[ eMAX_COLORS ];
 extern GdkRGBA plotElementColorsFactory[ eMAX_COLORS ];
 
-extern gchar *sNoiseLabel[ eMAX_NOISE_UNITS ];
-extern gchar *sNoiseUnits[ eMAX_NOISE_UNITS ];
+extern gchar  *sNoiseLabel[ eMAX_NOISE_UNITS ];
+extern gchar  *sNoiseUnits[ eMAX_NOISE_UNITS ];
+
+extern gdouble maxInputFreq[ e8970_MAXmodels ];
+extern gchar  *sHP89709models[];
 
 #define UPDATE_8970_SETTING( pGlobal, flag ) ({ \
-        g_mutex_lock ( &pGlobal->HP8970settings.mUpdate ); \
+        g_mutex_lock ( &pGlobal->mUpdate ); \
         gboolean bUpdate = (pGlobal->HP8970settings.updateFlags.all == 0); \
         flag = TRUE; \
-        g_mutex_unlock ( &pGlobal->HP8970settings.mUpdate ); \
+        g_mutex_unlock ( &pGlobal->mUpdate ); \
         if( bUpdate ) \
                 postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL); \
     })
 
-gboolean addItemToCircularBuffer    (tCircularBuffer *, tNoiseAndGain *, gboolean );
-void buildWidgetList                (tGlobal *,  GtkBuilder *);
-void CB_edit_Title                  (GtkEditable*, gpointer);
-void CB_notes_changed               (GtkTextBuffer*, gpointer);
-gboolean calibrateHP8970            (tGlobal *, gint, gint, gint *);
-void cairo_renderHewlettPackardLogo (cairo_t *, gboolean, gboolean, gdouble, gdouble );
-void catalogWidgets                 (tGlobal *);
-void centreJustifiedCairoText       (cairo_t *, gchar *, gdouble, gdouble, gdouble);
-gboolean determineTimeExtremesInCircularBuffer( tCircularBuffer * );
-gint createNoiseFigureColumnView    (GtkColumnView *, tGlobal * );
-void drawHPlogo 					(cairo_t *, gdouble, gdouble, gdouble, gboolean );
-void drawModeDiagram                (cairo_t *, tMode, gint, gdouble, gdouble, gdouble);
-void enablePageExtLOwidgets         (tGlobal *, tMode);
-gint findTimeDeltaInCircularBuffer  (tCircularBuffer *, gdouble);
-void freeSVGhandles                 (void);
-tNoiseAndGain *getItemFromCircularBuffer(tCircularBuffer *, guint);
-gint getTimeStamp                   (gchar **);
-void initCircularBuffer             (tCircularBuffer *, guint, tAbscissa);
-void initializeMainDialog           (tGlobal *);
-void initializePageExtLO            (tGlobal *);
-void initializePageGPIB             (tGlobal *);
-void initializePageHP8970           (tGlobal *);
-void initializePageOptions          (tGlobal *);
-void initializePageNotes            (tGlobal *);
-void initializePagePlot             (tGlobal *);
-void initializePageSource           (tGlobal *);
-gdouble LOfrequency                 (tGlobal *, gdouble);
-void leftJustifiedCairoText         (cairo_t *, gchar *, gdouble, gdouble, gboolean);
-void logVersion						(void);
-gchar *msTimeToString               (gint64, gboolean);
-gint nItemsInCircularBuffer         (tCircularBuffer *);
-gboolean plotNoiseFigureAndGain     (cairo_t *, gint, gint, tGlobal *, gboolean);
-void quarantineControlsOnSweep      (tGlobal *, gboolean, gboolean);
-gint recoverSettings                (tGlobal *);
-void refreshMainDialog              (tGlobal *);
-void refreshPageHP8970              (tGlobal *);
-void rightJustifiedCairoText        (cairo_t *, gchar *, gdouble, gdouble, gboolean);
-gint savePlot                       (gchar *filePath, tGlobal *);
-gint saveSettings                   (tGlobal *);
-void setFixedRangePlotWidgets       (tGlobal *);
-void setPageExtLOwidgets            (tGlobal *);
-void setSpinGainRange               (tGlobal *);
-void setSpinNoiseRange              (tGlobal *);
-void snapshotSettings               (tGlobal *);
-gint splashCreate 					(tGlobal *);
-gint splashDestroy 					(tGlobal *);
-gboolean spotFrequencyHP8970        (tGlobal *, gint, gint, gint *);
-gboolean sweepHP8970                (tGlobal *, gint, gint, gint *);
-gpointer threadGPIB					(gpointer);
-void updateBoundaries               ( gdouble, gdouble *, gdouble * );
-void validateCalibrationOperation   (tGlobal *);
-void warnFrequencyRangeOutOfBounds  (tGlobal *);
+gboolean    addItemToCircularBuffer         (tCircularBuffer *, tNoiseAndGain *, gboolean );
+void        buildWidgetList                 (tGlobal *,  GtkBuilder *);
+void        CB_edit_Title                   (GtkEditable*, gpointer);
+void        CB_notes_changed                (GtkTextBuffer*, gpointer);
+gboolean    calibrateHP8970                 (tGlobal *, gint, gint, gint *);
+void        cairo_renderHewlettPackardLogo  (cairo_t *, gboolean, gboolean, gdouble, gdouble );
+void        catalogWidgets                  (tGlobal *);
+void        centreJustifiedCairoText        (cairo_t *, gchar *, gdouble, gdouble, gdouble);
+gint        compareSortConfiguration        (gconstpointer, gconstpointer);
+gint        createNoiseFigureColumnView     (GtkColumnView *, tGlobal * );
+gboolean    determineTimeExtremesInCircularBuffer
+                                            (tCircularBuffer *);
+void        drawHPlogo 					    (cairo_t *, gdouble, gdouble, gdouble, gboolean );
+void        drawModeDiagram                 (cairo_t *, tMode, gint, gdouble, gdouble, gdouble);
+void        enablePageExtLOwidgets          (tGlobal *, tMode);
+gint        findTimeDeltaInCircularBuffer   (tCircularBuffer *, gdouble);
+void        freeConfigationItemContent      (gpointer);
+void        freeSVGhandles                  (void);
+tNoiseAndGain *
+            getItemFromCircularBuffer       (tCircularBuffer *, guint);
+gint        getTimeStamp                    (gchar **);
+void        initCircularBuffer              (tCircularBuffer *, guint, tAbscissa);
+void        initializeMainDialog            (tGlobal *);
+void        initializePageExtLO             (tGlobal *);
+void        initializePageGPIB              (tGlobal *);
+void        initializePageHP8970            (tGlobal *);
+void        initializePageOptions           (tGlobal *);
+void        initializePageNotes             (tGlobal *);
+void        initializePagePlot              (tGlobal *);
+void        initializePageSource            (tGlobal *);
+gdouble     LOfrequency                     (tGlobal *, gdouble);
+void        leftJustifiedCairoText          (cairo_t *, gchar *, gdouble, gdouble, gboolean);
+void        logVersion						(void);
+gchar *     msTimeToString                  (gint64, gboolean);
+gint        nItemsInCircularBuffer          (tCircularBuffer *);
+gboolean    plotNoiseFigureAndGain          (cairo_t *, gint, gint, tGlobal *, gboolean);
+void        quarantineControlsOnSweep       (tGlobal *, gboolean, gboolean);
+gint        recoverConfigurations           (tGlobal *);
+gint        recoverSettings                 (tGlobal *);
+void        refreshMainDialog               (tGlobal *);
+void        refreshPageHP8970               (tGlobal *);
+void         rightJustifiedCairoText        (cairo_t *, gchar *, gdouble, gdouble, gboolean);
+gint        savePlot                        (gchar *filePath, tGlobal *);
+gint        saveConfigurations              (tGlobal *);
+gint        saveSettings                    (tGlobal *);
+void        setFixedRangePlotWidgets        (tGlobal *);
+void        setPageExtLOwidgets             (tGlobal *);
+void        setSpinGainRange                (tGlobal *);
+void        setSpinNoiseRange               (tGlobal *);
+void        snapshotSettings                (tGlobal *);
+gint        splashCreate 					(tGlobal *);
+gint        splashDestroy 					(tGlobal *);
+gboolean    spotFrequencyHP8970             (tGlobal *, gint, gint, gint *);
+gboolean    sweepHP8970                     (tGlobal *, gint, gint, gint *);
+gpointer    threadGPIB					    (gpointer);
+void        updateBoundaries                (gdouble, gdouble *, gdouble *);
+void        validateCalibrationOperation    (tGlobal *);
+void        warnFrequencyRangeOutOfBounds   (tGlobal *);
 
-extern gdouble maxInputFreq[ e8970_MAXmodels ];
-extern gchar *sHP89709models[];
+
 
 #define LOCAL_DELAYms   50              // Delay after going to local from remote
 #define SHORT_STRING    25
 #define MEDIUM_STRING   50
 #define LONG_STRING     256
-
-extern tGlobal globalData;
 
 #define MODE_PREVIEW_TIME   6
 
@@ -508,6 +538,10 @@ extern tGlobal globalData;
 
 #define DEFAULT_HP8970_GPIB_DEVICE_ID 8
 #define DEFAULT_GPIB_CONTROLLER_INDEX 1
+
+#define LABEL_FONT "Noto Sans"
+#define MODE_DIAGRAM_FONT "Noto Sans"
+#define MODE_DIAGRAM_FONT_CONDENSED "Noto Sans Condensed"
 
 #define GSETTINGS_SCHEMA    "us.heterodyne.hp8970"
 

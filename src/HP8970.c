@@ -167,20 +167,20 @@ initializeData (tGlobal *pGlobal) {
     pGlobal->plot.measurementBuffer.minGain  =  0.0;
     pGlobal->plot.measurementBuffer.maxGain  = 10.0;
 
-    bzero( pGlobal->HP8970settings.noiseSources, sizeof( tNoiseSource ) * MAX_NOISE_SOURCES );
+    bzero( pGlobal->noiseSources, sizeof( tNoiseSource ) * MAX_NOISE_SOURCES );
     n = sizeof( Eaton7618E_SM104 ) / (2 * sizeof( gdouble ));
-    g_snprintf( pGlobal->HP8970settings.noiseSources[ 0 ].name, MAX_NOISE_SOURCE_NAME_LENGTH+1, "Eaton7618E S/N 104" );
+    g_snprintf( pGlobal->noiseSources[ 0 ].name, MAX_NOISE_SOURCE_NAME_LENGTH+1, "Eaton7618E S/N 104" );
     for( j = 0; j < n; j++ ) {
-        pGlobal->HP8970settings.noiseSources[ 0 ].calibrationPoints[ j ][ 0 ] = Eaton7618E_SM104[j][0];
-        pGlobal->HP8970settings.noiseSources[ 0 ].calibrationPoints[ j ][ 1 ] = Eaton7618E_SM104[j][1];
+        pGlobal->noiseSources[ 0 ].calibrationPoints[ j ][ 0 ] = Eaton7618E_SM104[j][0];
+        pGlobal->noiseSources[ 0 ].calibrationPoints[ j ][ 1 ] = Eaton7618E_SM104[j][1];
     }
 
     n = sizeof( HP3463 ) / (2 * sizeof( gdouble ));
     for( i = 1; i < MAX_NOISE_SOURCES; i++  ) {
-        g_snprintf( pGlobal->HP8970settings.noiseSources[ i ].name, MAX_NOISE_SOURCE_NAME_LENGTH+1, "HP 346C %d", i );
+        g_snprintf( pGlobal->noiseSources[ i ].name, MAX_NOISE_SOURCE_NAME_LENGTH+1, "HP 346C %d", i );
         for( j = 0; j < n; j++ ) {
-            pGlobal->HP8970settings.noiseSources[ i ].calibrationPoints[ j ][ 0 ] = HP3463[j][0];
-            pGlobal->HP8970settings.noiseSources[ i ].calibrationPoints[ j ][ 1 ] = HP3463[j][1];
+            pGlobal->noiseSources[ i ].calibrationPoints[ j ][ 0 ] = HP3463[j][0];
+            pGlobal->noiseSources[ i ].calibrationPoints[ j ][ 1 ] = HP3463[j][1];
         }
     }
 
@@ -323,8 +323,9 @@ on_startup (GApplication *app, gpointer udata) {
     setenv ("IB_NO_ERROR", "1", 0);	// no noise
     logVersion ();
 
-    initializeData (pGlobal);
+    initializeData ( pGlobal );
     recoverSettings( pGlobal );
+    recoverConfigurations( pGlobal );
 
     pGlobal->flags.bNoGPIBtimeout = bOptNoGPIBtimeout;
     pGlobal->flags.bbDebug = optDebug;
@@ -347,7 +348,7 @@ on_startup (GApplication *app, gpointer udata) {
     }
 
     // Initialize the settings update mutex
-    g_mutex_init( &pGlobal->HP8970settings.mUpdate );
+    g_mutex_init( &pGlobal->mUpdate );
 
 //    pGlobal->flags.bValidGainData = FALSE;
 //    pGlobal->flags.bValidNoiseData = TRUE;
@@ -355,6 +356,7 @@ on_startup (GApplication *app, gpointer udata) {
     if (bAbort)
         g_application_quit (G_APPLICATION(app));
 }
+
 
 /*!     \brief  on_shutdown (shutdown signal callback)
  *
@@ -368,6 +370,7 @@ on_shutdown (GApplication *app, gpointer userData) {
     tGlobal *pGlobal __attribute__((unused)) = (tGlobal*) userData;
 
     saveSettings( pGlobal );
+    saveConfigurations( pGlobal );
 
     // cleanup
     messageEventData *messageData = g_malloc0( sizeof(messageEventData) );
@@ -385,12 +388,14 @@ on_shutdown (GApplication *app, gpointer userData) {
     g_source_destroy (pGlobal->messageEventSource);
     g_source_unref (pGlobal->messageEventSource);
 
-    g_mutex_clear( &pGlobal->HP8970settings.mUpdate );
+    g_mutex_clear( &pGlobal->mUpdate );
 
     g_free (pGlobal->sUsersJSONfilename);
     g_free (pGlobal->sUsersPDFImageFilename);
     g_free (pGlobal->sUsersPNGImageFilename);
     g_free (pGlobal->sUsersSVGImageFilename);
+
+    g_list_free_full ( pGlobal->configurationList, freeConfigationItemContent );
 
     freeSVGhandles();
 

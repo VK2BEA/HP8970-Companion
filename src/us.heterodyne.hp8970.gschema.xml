@@ -18,72 +18,7 @@
       <description>Last directory used to save PDF, PNG or SVG</description>
     </key>
 
-    <key name="corrected-noise-gain" type="b">
-      <default>false</default>
-      <summary>Obtain the corrected noise figure and gain</summary>
-      <description>Obtain the corrected noise figure and gain</description>
-    </key>
-    <key name="smoothing" type="i">
-      <default>0</default>
-      <summary>Smoothing factor</summary>
-      <description>Smoothing factor (log)</description>
-    </key>
-    <key name="mode" type="i">
-      <default>0</default>
-      <summary>Mode</summary>
-      <description>Mode (direct or with external mixer)</description>
-    </key>
-    <key name="frequency" type="i">
-      <default>30</default>
-      <summary>Frequency (MHz)</summary>
-      <description>Frequency (MHz)</description>
-    </key>
-    <key name="frequency-r2" type="i">
-      <default>12000</default>
-      <summary>Frequency (MHz)</summary>
-      <description>Frequency (MHz)</description>
-    </key>
-    <key name="sweep-start" type="i">
-      <default>10</default>
-      <summary>Sweep start frequency (MHz)</summary>
-      <description>Sweep start frequency (MHz)</description>
-    </key>
-    <key name="sweep-stop" type="i">
-      <default>1500</default>
-      <summary>Sweep stop frequency (MHz)</summary>
-      <description>Sweep stop frequency (MHz)</description>
-    </key>
-    <key name="sweep-step-sweep" type="i">
-      <default>20</default>
-      <summary>Sweep step frequency (MHz)</summary>
-      <description>Sweep step frequency (MHz)</description>
-    </key>
-    <key name="sweep-step-cal" type="i">
-      <default>20</default>
-      <summary>Sweep step calibration frequency (MHz)</summary>
-      <description>Sweep step calibration frequency (MHz)</description>
-    </key>
-    <key name="sweep-start-r2" type="i">
-      <default>8000</default>
-      <summary>Sweep start frequency (MHz)</summary>
-      <description>Sweep start frequency (MHz)</description>
-    </key>
-    <key name="sweep-stop-r2" type="i">
-      <default>12000</default>
-      <summary>Sweep stop frequency (MHz)</summary>
-      <description>Sweep stop frequency (MHz)</description>
-    </key>
-    <key name="sweep-step-cal-r2" type="i">
-      <default>200</default>
-      <summary>Sweep step calibration frequency (MHz)</summary>
-      <description>Sweep step calibration frequency (MHz)</description>
-    </key>
-    <key name="sweep-step-sweep-r2" type="i">
-      <default>200</default>
-      <summary>Sweep step frequency (MHz)</summary>
-      <description>Sweep step frequency (MHz)</description>
-    </key>
-    
+ 
     <!-- Page GPIB -->
     <key name="gpib-controller-index" type="i">
       <default>0</default>
@@ -176,95 +111,19 @@
     </key>
     
     <!-- Page Plot -->
-    <key name="grid-gain-range" type="a(dd)">
-      <default>[]</default>
-      <summary>Gain range grid</summary>
-      <description>Gain minimum for set grid</description>
-    </key>
-    <key name="grid-noise-range" type="a(dd)">
-      <default>[]</default>
-      <summary>Noise range for fixed grid</summary>
-      <description>Noise range for fixed grid</description>
-    </key>
-    <key name="grid-freq-range" type="a(dd)">
-      <default>[]</default>
-      <summary>Frequency maximum for set grid</summary>
-      <description>Frequency maximum for set grid</description>
-    </key>
     <key name="trace-colors" type="a(dddd)">
       <default>[]</default>
       <summary>trace colors</summary>
       <description>Trace &amp; grid pen colors (RGBA)</description>
     </key>
-    <key name="plot-autoscaling" type="b">
-      <default>true</default>
-      <summary>Autoscale plot</summary>
-      <description>Autoscale plot</description>
+
+	<!--  Named and unnamed configurations. Unnamed is the default loaded upon restart -->
+    <key name="configurations" type="a{sv}">
+      <default>{}</default>
+      <summary>Saved Configurations</summary>
+      <description>Saved Configurations</description>
     </key>
-    
-    <!-- Page External L.O. -->
-    <key name="extlo-setup" type="s">
-      <default>''</default>
-      <summary>Setup sequence for external L.O.</summary>
-      <description>Setup sequence for external L.O.</description>
-    </key>    
-    <key name="extlo-set-freq" type="s">
-      <default>''</default>
-      <summary>Set frequency format for external L.O.</summary>
-      <description>Set frequency format for external L.O.</description>
-    </key>
-    <key name="extlo-if-freq" type="i">
-      <default>20</default>
-      <summary>I.F. frequency for modes using external L.O. with fixed I.F. frequency</summary>
-      <description>I.F. frequency for modes using external L.O. with fixed I.F. frequency</description>
-    </key>
-    <key name="extlo-lo-freq" type="i">
-      <default>2000</default>
-      <summary>L.O. frequency for modes using fixed freq external L.O.</summary>
-      <description>L.O. frequency for modes using fixed freq external L.O.</description>
-    </key>
-    <key name="extlo-sideband" type="i">
-      <default>0</default>
-      <summary>Sideband when using external L.O.</summary>
-      <description>Sideband when using external L.O.</description>
-    </key>
-    <key name="extlo-settling-time" type="i">
-      <default>0</default>
-      <summary>Sideband when using external L.O.</summary>
-      <description>Sideband when using external L.O.</description>
-    </key>
-    
-    <!-- Page HP8970 -->
-    <key name="noise-units" type="i">
-      <default>0</default>
-      <summary>Units for noise plot</summary>
-      <description>Units for noise plots</description>
-    </key>
-    <key name="option-t-cold" type="d">
-      <default>296.5</default>
-      <summary>Tcold in (K)</summary>
-      <description>Tcold in (K)</description>
-    </key>
-    <key name="option-loss-comp-on" type="b">
-      <default>false</default>
-      <summary>Compensate for losses</summary>
-      <description>Compensate for losses</description>
-    </key>
-    <key name="option-loss-before" type="d">
-      <default>296.5</default>
-      <summary>Loss before DUT (in dB)</summary>
-      <description>Loss after DUT (in dB)</description>
-    </key>
-    <key name="option-loss-after" type="d">
-      <default>296.5</default>
-      <summary>Loss after DUT (in dB)</summary>
-      <description>Loss after DUT (in dB)</description>
-    </key>
-    <key name="option-t-loss" type="d">
-      <default>0</default>
-      <summary>Loss temperature (K)</summary>
-      <description>Loss temperature (K)</description>
-    </key>
+
   </schema>
 </schemalist>
 

@@ -432,7 +432,7 @@ createNoiseFigureColumnView (GtkColumnView *wNoiseFigure, tGlobal *pGlobal )
 	GtkColumnViewColumn *colNoise = gtk_column_view_column_new ("ENR   (dB)", factoryENR);
 	gtk_column_view_column_set_id ( colNoise, "enr" );
 
-	initializeNoiseSourceCalPoints (noiseSourceListStore, &pGlobal->HP8970settings.noiseSources[ 0 ]);
+	initializeNoiseSourceCalPoints (noiseSourceListStore, &pGlobal->noiseSources[ 0 ]);
 	g_object_set_data( G_OBJECT( wNoiseFigure ), "list", noiseSourceListStore );
 
 	gtk_column_view_append_column (GTK_COLUMN_VIEW(wNoiseFigure), colFreq);
@@ -457,7 +457,7 @@ CB_NS_btn_Upload ( GtkButton* wNSsaveBtn, gpointer user_data ) {
     GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW( pGlobal->widgets[ eW_CV_NoiseSource ] );
     GListModel *listModel = G_LIST_MODEL( gtk_column_view_get_model( wCVnoiseSource) );
 
-    bzero( &pGlobal->HP8970settings.noiseSourceCache, sizeof(tNoiseSource) );
+    bzero( &pGlobal->noiseSourceCache, sizeof(tNoiseSource) );
     gint nCalPoints = g_list_model_get_n_items( listModel );
     for( int i = 0; i < nCalPoints && i < MAX_NOISE_SOURCE_CALDATA_LENGTH; i++ ) {
 
@@ -466,8 +466,8 @@ CB_NS_btn_Upload ( GtkButton* wNSsaveBtn, gpointer user_data ) {
 
         g_object_get( pNoiseTuple, "frequency", &sFreq, "enr", &sENR, NULL );
 
-        pGlobal->HP8970settings.noiseSourceCache.calibrationPoints[i][0] = g_ascii_strtod( sFreq, NULL );
-        pGlobal->HP8970settings.noiseSourceCache.calibrationPoints[i][1] = g_ascii_strtod( sENR, NULL );
+        pGlobal->noiseSourceCache.calibrationPoints[i][0] = g_ascii_strtod( sFreq, NULL );
+        pGlobal->noiseSourceCache.calibrationPoints[i][1] = g_ascii_strtod( sENR, NULL );
 
         g_free( sFreq );
         g_free( sENR );
@@ -491,12 +491,12 @@ CB_NS_btn_Save ( GtkButton* wNSsaveBtn, gpointer user_data ) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     // const gchar *activeID = gtk_combo_box_get_active_id( GTK_COMBO_BOX( wNSselect ));
-    gint activeNoiseSource = pGlobal->HP8970settings.activeNoiseSource;
+    gint activeNoiseSource = pGlobal->activeNoiseSource;
 
     gchar    *sNewName = gtk_combo_box_text_get_active_text( wNSselect );
-    g_strlcpy( pGlobal->HP8970settings.noiseSources[ activeNoiseSource ].name, sNewName, MAX_NOISE_SOURCE_NAME_LENGTH+1 );
+    g_strlcpy( pGlobal->noiseSources[ activeNoiseSource ].name, sNewName, MAX_NOISE_SOURCE_NAME_LENGTH+1 );
     gtk_combo_box_text_remove( wNSselect, activeNoiseSource );
-    gtk_combo_box_text_insert_text( wNSselect, activeNoiseSource, pGlobal->HP8970settings.noiseSources[ activeNoiseSource ].name );
+    gtk_combo_box_text_insert_text( wNSselect, activeNoiseSource, pGlobal->noiseSources[ activeNoiseSource ].name );
 #pragma GCC diagnostic pop
 
     GtkColumnView *wCVnoiseSource = GTK_COLUMN_VIEW( pGlobal->widgets[ eW_CV_NoiseSource ] );
@@ -511,8 +511,8 @@ CB_NS_btn_Save ( GtkButton* wNSsaveBtn, gpointer user_data ) {
 
         g_object_get( pNoiseTuple, "frequency", &sFreq, "enr", &sENR, NULL );
 
-        pGlobal->HP8970settings.noiseSources[ pGlobal->HP8970settings.activeNoiseSource ].calibrationPoints[ i ][ 0 ] = g_ascii_strtod( sFreq, NULL );
-        pGlobal->HP8970settings.noiseSources[ pGlobal->HP8970settings.activeNoiseSource ].calibrationPoints[ i ][ 1 ] = g_ascii_strtod( sENR, NULL );
+        pGlobal->noiseSources[ pGlobal->activeNoiseSource ].calibrationPoints[ i ][ 0 ] = g_ascii_strtod( sFreq, NULL );
+        pGlobal->noiseSources[ pGlobal->activeNoiseSource ].calibrationPoints[ i ][ 1 ] = g_ascii_strtod( sENR, NULL );
 
         g_free( sFreq );
         g_free( sENR );
@@ -619,11 +619,11 @@ CB_NS_combo_Source_changed ( GtkComboBox* wNSselect, gpointer gpGlobal ) {
     whichNoiseSource = gtk_combo_box_get_active ( wNSselect );
 
     if( whichNoiseSource >= 0 && whichNoiseSource < MAX_NOISE_SOURCES ) {
-        initializeNoiseSourceCalPoints (listStore, &pGlobal->HP8970settings.noiseSources[ whichNoiseSource ]);
+        initializeNoiseSourceCalPoints (listStore, &pGlobal->noiseSources[ whichNoiseSource ]);
         gtk_widget_grab_focus( GTK_WIDGET( wNSentry ));
         gtk_editable_select_region( GTK_EDITABLE(wNSentry), -1, -1);
         gtk_widget_grab_focus( pGlobal->widgets[ eW_NS_btn_Upload ] );
-        pGlobal->HP8970settings.activeNoiseSource = whichNoiseSource;
+        pGlobal->activeNoiseSource = whichNoiseSource;
     }
 
     gtk_widget_set_sensitive( pGlobal->widgets[ eW_NS_btn_Save ], whichNoiseSource == INVALID );
@@ -657,10 +657,10 @@ initializePageSource( tGlobal *pGlobal ) {
     g_signal_connect(wSelectNoiseSource, "changed", G_CALLBACK( CB_NS_combo_Source_changed ), pGlobal);
 
     for( int i = 0; i < MAX_NOISE_SOURCES; i++ ) {
-        gtk_combo_box_text_append_text( wSelectNoiseSource, pGlobal->HP8970settings.noiseSources[ i ].name );
+        gtk_combo_box_text_append_text( wSelectNoiseSource, pGlobal->noiseSources[ i ].name );
     }
 
     gtk_entry_set_input_hints( GTK_ENTRY( gtk_combo_box_get_child(GTK_COMBO_BOX(wSelectNoiseSource))), GTK_INPUT_HINT_NO_EMOJI );
-    gtk_combo_box_set_active( GTK_COMBO_BOX( wSelectNoiseSource ), pGlobal->HP8970settings.activeNoiseSource );
+    gtk_combo_box_set_active( GTK_COMBO_BOX( wSelectNoiseSource ), pGlobal->activeNoiseSource );
 #pragma GCC diagnostic pop
 }

@@ -84,7 +84,7 @@ CB_ColorReset ( GtkButton* wBtnColorReset, gpointer user_data ) {
 void CB_chk_AutoScale ( GtkCheckButton *wChkAutoScale, gpointer user_data
 ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wChkAutoScale), "data");
-    pGlobal->flags.bAutoScaling = gtk_check_button_get_active( pGlobal->widgets[ eW_chk_AutoScale ] );
+    pGlobal->HP8970settings.switches.bAutoScaling = gtk_check_button_get_active( pGlobal->widgets[ eW_chk_AutoScale ] );
 
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
@@ -109,13 +109,13 @@ CB_spin_GainMax(  GtkSpinButton* wSpinGainMax, gpointer udata ) {
         g_signal_handlers_block_by_func( G_OBJECT(wSpinGainMax), CB_spin_GainMax, udata );
         gtk_spin_button_set_value( wSpinGainMax, MIN_GAIN_RANGE );
         g_signal_handlers_unblock_by_func( G_OBJECT(wSpinGainMax), CB_spin_GainMax, udata );
-        pGlobal->fixedGridGain[ 1 ] = MIN_GAIN_RANGE;
+        pGlobal->HP8970settings.fixedGridGain[ 1 ] = MIN_GAIN_RANGE;
     } else {
-        pGlobal->fixedGridGain[ 1 ] = gainMax;
+        pGlobal->HP8970settings.fixedGridGain[ 1 ] = gainMax;
     }
 
-    if( pGlobal->fixedGridGain[ 1 ] - MIN_GAIN_RANGE < pGlobal->fixedGridGain[ 0 ] ) {
-        gtk_spin_button_set_value( wSpinGainMin, pGlobal->fixedGridGain[ 1 ] - MIN_GAIN_RANGE );
+    if( pGlobal->HP8970settings.fixedGridGain[ 1 ] - MIN_GAIN_RANGE < pGlobal->HP8970settings.fixedGridGain[ 0 ] ) {
+        gtk_spin_button_set_value( wSpinGainMin, pGlobal->HP8970settings.fixedGridGain[ 1 ] - MIN_GAIN_RANGE );
     }
 
     gtk_check_button_set_active( wChkAuto, FALSE );
@@ -142,13 +142,13 @@ CB_spin_GainMin(  GtkSpinButton* wSpinGainMin, gpointer udata ) {
         g_signal_handlers_block_by_func( G_OBJECT(wSpinGainMax), CB_spin_GainMin, udata );
         gtk_spin_button_set_value( wSpinGainMax, MAX_GAIN - MIN_GAIN_RANGE );
         g_signal_handlers_unblock_by_func( G_OBJECT(wSpinGainMax), CB_spin_GainMin, udata );
-        pGlobal->fixedGridGain[ 0 ] = MAX_GAIN - MIN_GAIN_RANGE;
+        pGlobal->HP8970settings.fixedGridGain[ 0 ] = MAX_GAIN - MIN_GAIN_RANGE;
     } else {
-        pGlobal->fixedGridGain[ 0 ] = gainMin;
+        pGlobal->HP8970settings.fixedGridGain[ 0 ] = gainMin;
     }
 
-    if( pGlobal->fixedGridGain[ 1 ]  < pGlobal->fixedGridGain[ 0 ] + MIN_GAIN_RANGE )
-        gtk_spin_button_set_value( wSpinGainMax, pGlobal->fixedGridGain[ 0 ] + MIN_GAIN_RANGE );
+    if( pGlobal->HP8970settings.fixedGridGain[ 1 ]  < pGlobal->HP8970settings.fixedGridGain[ 0 ] + MIN_GAIN_RANGE )
+        gtk_spin_button_set_value( wSpinGainMax, pGlobal->HP8970settings.fixedGridGain[ 0 ] + MIN_GAIN_RANGE );
 
     gtk_check_button_set_active( wChkAuto, FALSE );
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
@@ -178,7 +178,7 @@ CB_spin_NoiseMax(  GtkSpinButton* wSpinNoiseMax, gpointer udata ) {
         gtk_spin_button_set_value( wSpinNoiseMin, noise - step );
     }
 
-    pGlobal->fixedGridNoise[ noiseUnits ][ 1 ] = noise;
+    pGlobal->HP8970settings.fixedGridNoise[ noiseUnits ][ 1 ] = noise;
 
     gtk_check_button_set_active( wChkAuto, FALSE );
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
@@ -207,7 +207,7 @@ CB_spin_NoiseMin(  GtkSpinButton* wSpinNoiseMin, gpointer udata ) {
         gtk_spin_button_set_value( wSpinNoiseMax, noise + step );
     }
 
-    pGlobal->fixedGridNoise[ noiseUnits ][ 0 ] = noise;
+    pGlobal->HP8970settings.fixedGridNoise[ noiseUnits ][ 0 ] = noise;
 
     gtk_check_button_set_active( wChkAuto, FALSE );
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
@@ -266,13 +266,13 @@ setFixedRangePlotWidgets( tGlobal *pGlobal ) {
     setSpinNoiseRange( pGlobal );
     setSpinGainRange( pGlobal );
 
-    gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_NoiseMin ], pGlobal->fixedGridNoise[ pGlobal->plot.noiseUnits ][ 0 ] );
-    gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_NoiseMax ], pGlobal->fixedGridNoise[ pGlobal->plot.noiseUnits ][ 1 ] );
+    gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_NoiseMin ], pGlobal->HP8970settings.fixedGridNoise[ pGlobal->plot.noiseUnits ][ 0 ] );
+    gtk_spin_button_set_value( pGlobal->widgets[ eW_spin_NoiseMax ], pGlobal->HP8970settings.fixedGridNoise[ pGlobal->plot.noiseUnits ][ 1 ] );
 
-    gtk_spin_button_set_value( GTK_SPIN_BUTTON( pGlobal->widgets[ eW_spin_GainMin ] ),  pGlobal->fixedGridGain[ 0 ] );
-    gtk_spin_button_set_value( GTK_SPIN_BUTTON( pGlobal->widgets[ eW_spin_GainMax ] ),  pGlobal->fixedGridGain[ 1 ] );
+    gtk_spin_button_set_value( GTK_SPIN_BUTTON( pGlobal->widgets[ eW_spin_GainMin ] ),  pGlobal->HP8970settings.fixedGridGain[ 0 ] );
+    gtk_spin_button_set_value( GTK_SPIN_BUTTON( pGlobal->widgets[ eW_spin_GainMax ] ),  pGlobal->HP8970settings.fixedGridGain[ 1 ] );
 
-    gtk_check_button_set_active( pGlobal->widgets[ eW_chk_AutoScale ], pGlobal->flags.bAutoScaling );
+    gtk_check_button_set_active( pGlobal->widgets[ eW_chk_AutoScale ], pGlobal->HP8970settings.switches.bAutoScaling );
 }
 
 /*!     \brief  Initialize the widgets on the Plot page

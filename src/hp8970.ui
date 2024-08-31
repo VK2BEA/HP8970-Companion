@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.91.2 -->
+<!-- Created with Cambalache 0.91.3 -->
 <interface>
   <!-- interface-name hp8970.ui -->
   <requires lib="gtk" version="4.12"/>
@@ -1180,9 +1180,55 @@ bottomBorderOnly</property>
                             <child>
                               <object class="GtkFrame">
                                 <property name="css-classes">square
+bottomBorderOnly</property>
+                                <property name="label">Configurations</property>
+                                <property name="margin-bottom">4</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkComboBoxText" id="WID_combo_SettingsConfigurations">
+                                        <property name="has-entry">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="homogeneous">True</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-top">4</property>
+                                        <property name="spacing">8</property>
+                                        <child>
+                                          <object class="GtkButton" id="WID_btn_SettingsRestore">
+                                            <property name="label">Restore</property>
+                                            <property name="valign">center</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="WID_btn_SettingsSave">
+                                            <property name="label">Save</property>
+                                            <property name="valign">center</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="WID_btn_SettingsDelete">
+                                            <property name="label">Delete</property>
+                                            <property name="valign">center</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">square
 bottomBorderOnly
 </property>
-                                <property name="label">PDF/SVG Page Stze</property>
+                                <property name="label">PDF/SVG Page Size</property>
                                 <child>
                                   <object class="GtkBox">
                                     <property name="homogeneous">True</property>

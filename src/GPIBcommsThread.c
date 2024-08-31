@@ -733,12 +733,12 @@ threadGPIB (gpointer _pGlobal) {
                         gboolean bExtLO;
 
                         // snapshot of the settings we need to send
-                        g_mutex_lock ( &pGlobal->HP8970settings.mUpdate );
+                        g_mutex_lock ( &pGlobal->mUpdate );
                         updateFlags = pGlobal->HP8970settings.updateFlags;
                         pGlobal->HP8970settings.updateFlags.all = 0;
                         mode = pGlobal->HP8970settings.mode;
                         bExtLO = !(mode == eMode1_0 || mode == eMode1_4);
-                        g_mutex_unlock ( &pGlobal->HP8970settings.mUpdate );
+                        g_mutex_unlock ( &pGlobal->mUpdate );
 
                         // Set the external signal generator (LO) for higher modes
                         if( (updateFlags.each.bSpotFrequency || updateFlags.each.bStartFrequency || updateFlags.each.bStopFrequency)
@@ -811,9 +811,9 @@ threadGPIB (gpointer _pGlobal) {
                             break;
                         g_string_free ( pstCommands, TRUE );
                         pstCommands = NULL;
-                        g_mutex_lock ( &pGlobal->HP8970settings.mUpdate );
+                        g_mutex_lock ( &pGlobal->mUpdate );
                         bNewSettings = ( pGlobal->HP8970settings.updateFlags.all != 0 );
-                        g_mutex_unlock ( &pGlobal->HP8970settings.mUpdate );
+                        g_mutex_unlock ( &pGlobal->mUpdate );
                     } while ( bNewSettings );
 
                     if( pstCommands )
@@ -850,12 +850,12 @@ threadGPIB (gpointer _pGlobal) {
                             g_string_printf( pstCommands, "NDNR" );
                         for( gint i=0; i < (pGlobal->flags.bbHP8970Bmodel == 0 ?
                                 MAX_NOISE_SOURCE_CALDATA_LENGTH_A : MAX_NOISE_SOURCE_CALDATA_LENGTH); i++ ) {
-                            if( pGlobal->HP8970settings.noiseSourceCache.calibrationPoints[i][0] == 0.0 )
+                            if( pGlobal->noiseSourceCache.calibrationPoints[i][0] == 0.0 )
                                 continue;
 
                             g_string_append_printf( pstCommands, "%.0lfEN%.3lfEN",
-                                                    pGlobal->HP8970settings.noiseSourceCache.calibrationPoints[i][0],
-                                                    pGlobal->HP8970settings.noiseSourceCache.calibrationPoints[i][1] );
+                                                    pGlobal->noiseSourceCache.calibrationPoints[i][0],
+                                                    pGlobal->noiseSourceCache.calibrationPoints[i][1] );
                         }
                         g_string_append_printf( pstCommands, "FR" );
                         if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, &GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
