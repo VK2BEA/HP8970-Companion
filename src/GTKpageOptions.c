@@ -183,6 +183,9 @@ void
 sensitizeConfigurationButtons( tGlobal *pGlobal, gchar *sConfigurationName ) {
     GList* configItem = g_list_find_custom ( pGlobal->configurationList, (gconstpointer)sConfigurationName, compareFindConfiguration );
 
+    if( configItem )
+        pGlobal->selectedConfiguration = g_list_position( pGlobal->configurationList, configItem );
+
     gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SettingsDelete ], configItem != NULL );
     gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SettingsRestore ], configItem != NULL );
 }
@@ -298,6 +301,7 @@ CB_combo_SettingsConfigurations ( GtkComboBox* wSelect, gpointer gpGlobal ) {
     GtkEntryBuffer __attribute__((unused)) *wNSentryBuffer = gtk_entry_get_buffer( wConfigEntry );
     const gchar    *sNewName = gtk_entry_buffer_get_text( wNSentryBuffer );
 
+    pGlobal->selectedConfiguration = gtk_combo_box_get_active( GTK_COMBO_BOX( pGlobal->widgets[ eW_combo_SettingsConfigurations ] ));
     sensitizeConfigurationButtons( pGlobal, (gchar *)sNewName );
 
 #pragma GCC diagnostic pop
@@ -337,7 +341,7 @@ initializePageOptions( tGlobal *pGlobal ) {
     gtk_check_button_set_active (  pGlobal->widgets[ PDFpageSizeWidgetNames[ pGlobal->PDFpaperSize % N_PAPER_SIZES ] ], TRUE );
     gtk_check_button_set_active ( pGlobal->widgets[ VariantWidgetNames[ pGlobal->flags.bbHP8970Bmodel % N_VARIANTS ] ], TRUE );
 
-    gtk_combo_box_set_active( GTK_COMBO_BOX( pGlobal->widgets[ eW_combo_SettingsConfigurations ] ), 0 );
+    gtk_combo_box_set_active( GTK_COMBO_BOX( pGlobal->widgets[ eW_combo_SettingsConfigurations ] ), pGlobal->selectedConfiguration );
 
     for( gint i=0; i < N_PAPER_SIZES; i++ )
         g_signal_connect( pGlobal->widgets[ PDFpageSizeWidgetNames[ i ] ], "toggled", G_CALLBACK( CB_chk_PDFpageSize ), GINT_TO_POINTER(i));

@@ -326,6 +326,7 @@ typedef struct {
     gchar *sUsersCSVfilename;         // filename chosen by user for SVG file
 
     GList *configurationList;
+    gint   selectedConfiguration;
 
     gpointer widgets[eW_N_WIDGETS];
 

@@ -106,6 +106,7 @@ saveSettings( tGlobal *pGlobal ) {
     g_settings_set_boolean( gs, "show-time", (gint)pGlobal->flags.bShowTime );
     g_settings_set_int( gs, "model-variant", pGlobal->flags.bbHP8970Bmodel );
     g_settings_set_int    ( gs, "pdf-paper-size", pGlobal->PDFpaperSize );
+    g_settings_set_int    ( gs, "selected-configuration", pGlobal->selectedConfiguration );
 
     // GUI notebook page source
     // Noise Source freq/ENR tables (array of bytes)
@@ -175,6 +176,7 @@ recoverSettings( tGlobal *pGlobal ) {
     pGlobal->flags.bShowHPlogo = g_settings_get_boolean( gs, "show-hp-logo" );
     pGlobal->flags.bbHP8970Bmodel = g_settings_get_int( gs, "model-variant" );
     pGlobal->PDFpaperSize = g_settings_get_int( gs, "pdf-paper-size" );
+    pGlobal->selectedConfiguration = g_settings_get_int( gs, "selected-configuration" );
 
     // GUI notebook page GPIB
     pGlobal->sGPIBdeviceName = g_settings_get_string( gs, "gpib-device-name" );

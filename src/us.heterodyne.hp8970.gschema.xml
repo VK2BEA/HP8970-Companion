@@ -109,6 +109,12 @@
       <summary>Size of the page when creating PDF or SVG pages</summary>
       <description>Size of the page when creating PDF or SVG pages</description>
     </key>
+    <key name="selected-configuration" type="i">
+      <default>0</default>
+      <summary>Configuration number (alphabetic order)</summary>
+      <description>Last configuration selected in configuration combobox</description>
+    </key>
+
     
     <!-- Page Plot -->
     <key name="trace-colors" type="a(dddd)">
