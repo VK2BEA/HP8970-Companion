@@ -228,6 +228,7 @@ CB_btn_DeleteRestoreSaveConfiguration ( GtkButton *wBtn, gpointer eOperation ) {
             setPageExtLOwidgets( pGlobal );
             refreshPageHP8970( pGlobal );
             refreshMainDialog( pGlobal );
+            setFixedRangePlotWidgets( pGlobal );
             break;
 
         case eSaveConfig:
@@ -310,7 +311,8 @@ CB_combo_SettingsConfigurations ( GtkComboBox* wSelect, gpointer gpGlobal ) {
  */
 void
 initializePageOptions( tGlobal *pGlobal ) {
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     g_signal_connect( pGlobal->widgets[ eW_btn_SettingsRestore ],  "clicked", G_CALLBACK( CB_btn_DeleteRestoreSaveConfiguration ), GINT_TO_POINTER( eRestoreConfig ));
     g_signal_connect( pGlobal->widgets[ eW_btn_SettingsSave ],  "clicked", G_CALLBACK( CB_btn_DeleteRestoreSaveConfiguration ), GINT_TO_POINTER( eSaveConfig ));
     g_signal_connect( pGlobal->widgets[ eW_btn_SettingsDelete ],  "clicked", G_CALLBACK( CB_btn_DeleteRestoreSaveConfiguration ), GINT_TO_POINTER( eDeleteConfig ));
@@ -332,10 +334,9 @@ initializePageOptions( tGlobal *pGlobal ) {
 
     gtk_check_button_set_active (  pGlobal->widgets[ PDFpageSizeWidgetNames[ pGlobal->PDFpaperSize % N_PAPER_SIZES ] ], TRUE );
     gtk_check_button_set_active ( pGlobal->widgets[ VariantWidgetNames[ pGlobal->flags.bbHP8970Bmodel % N_VARIANTS ] ], TRUE );
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
     gtk_combo_box_set_active( GTK_COMBO_BOX( pGlobal->widgets[ eW_combo_SettingsConfigurations ] ), 0 );
-#pragma GCC diagnostic pop
+
     for( gint i=0; i < N_PAPER_SIZES; i++ )
         g_signal_connect( pGlobal->widgets[ PDFpageSizeWidgetNames[ i ] ], "toggled", G_CALLBACK( CB_chk_PDFpageSize ), GINT_TO_POINTER(i));
     for( gint i=0; i < N_VARIANTS; i++ )
@@ -343,4 +344,5 @@ initializePageOptions( tGlobal *pGlobal ) {
 
     g_signal_connect(pGlobal->widgets[ eW_chk_SettingsHPlogo ],   "toggled", G_CALLBACK( CB_chk_SettingsHPlogo ), NULL);
     g_signal_connect(pGlobal->widgets[ eW_chk_SettingsTime ],   "toggled", G_CALLBACK( CB_chk_SettingsTime ), NULL);
+#pragma GCC diagnostic pop
 }
