@@ -33,6 +33,64 @@
 #include <json-glib/json-builder.h>
 #include <json-glib/json-generator.h>
 
+/*!     \brief  Suggest a filename based on previous filenames or a synthesized one
+ *
+ * Suggest a filename based on previous filenames or a synthesized one & save previously selected name
+ *
+ * \param  pGlobal          pointer to global data
+ * \param  chosenFileName   filename to strip suffix and save or NULL if asking for a suggestion
+ * \param  suffix of filename (i.e. .json, .pdf, .svg, .png
+ * \return pointer to filename string (caller must free)
+ */
+gchar *
+suggestFilename( tGlobal *pGlobal, gchar *chosenFileName, gchar *suffix ) {
+    static gchar *selected = NULL;
+    static gchar *synthesized = NULL;
+    gchar *filename = NULL;
+
+    // Saving a selected filename
+    if( chosenFileName != NULL ) {
+        GString *filenameLower = g_string_ascii_down( g_string_new( chosenFileName ) );
+        gchar *dot = strrchr( filenameLower->str, '.' );
+
+        // If we used the synthesized name .. then don't save it as a selected name
+        if( synthesized != NULL
+                && g_ascii_strncasecmp( chosenFileName, synthesized, strlen( synthesized) ) != 0 ) {
+            g_free( selected );
+            selected = g_strdup( chosenFileName );
+            if( dot ) {
+                if( g_strcmp0( dot+1, suffix ) == 0 ) {
+                    selected[ dot - filenameLower->str ] = 0;
+                }
+            }
+        }
+        g_string_free( filenameLower, TRUE );
+    } else {
+        // We are asking for a name .. if already selected, give that
+        // otherwise synthesize one (adding suffix)
+        GDateTime *now = g_date_time_new_now_local ();
+        g_free( synthesized );
+        synthesized = g_date_time_format( now, pGlobal->flags.bbHP8970Bmodel ?
+                    "HP8970B.%d%b%y.%H%M%S" : "HP8970A.%d%b%y.%H%M%S" );
+        g_date_time_unref (now);
+        if( selected != NULL )
+            filename = g_strdup_printf( "%s.%s", selected, suffix );
+        else
+            filename = g_strdup_printf( "%s.%s", synthesized, suffix );
+    }
+
+    // This must be freed by the calling program
+    return filename;
+}
+
+/*!     \brief  Retrieve plot in JSON form from a file
+ *
+ * Retrieve plot in JSON form from a file
+ *
+ * \param  filePath         pointer to the filename and path
+ * \param  pGlobal          pointer to global data
+ * \return 0 if OK or ERROR
+ */
 gint
 retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
     gboolean bOK = FALSE;
@@ -288,6 +346,14 @@ retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
     return bOK ? 0 : ERROR;
 }
 
+/*!     \brief  Save plot in JSON form to a file
+ *
+ * Save plot in JSON form to a file
+ *
+ * \param  filePath         pointer to the filename and path
+ * \param  pGlobal          pointer to global data
+ * \return 0 if OK or ERROR
+ */
 gint
 savePlot( gchar *filePath, tGlobal *pGlobal ) {
     gboolean bOK = TRUE;
@@ -444,6 +510,14 @@ savePlot( gchar *filePath, tGlobal *pGlobal ) {
 
 static gchar *sSuggestedHPGLfilename = NULL;
 
+/*!     \brief  Callback when saving file from system file selection dialog
+ *
+ * Callback when saving file from system file selection dialog
+ *
+ * \param  source_object     GtkFileDialog object
+ * \param  res               result of opening file for write
+ * \param  gpGlobal          pointer to global data
+ */
 // Call back when file is selected
 static void
 CB_JSONsave( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
@@ -468,13 +542,7 @@ CB_JSONsave( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
             g_object_unref (alert_dialog);
         }
 
-        // If the user chose a specific filename .. then remember it for the next time
-        if( strcmp( selectedFileBasename, sSuggestedHPGLfilename ) ) {
-            g_free( pGlobal->sUsersJSONfilename );
-            pGlobal->sUsersJSONfilename = selectedFileBasename;
-        } else {
-            g_free( selectedFileBasename );
-        }
+        suggestFilename( pGlobal, selectedFileBasename, "json" );
         g_free( sSuggestedHPGLfilename );
 
         GFile *dir = g_file_get_parent( file );
@@ -495,13 +563,19 @@ CB_JSONsave( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
    }
 }
 
-
+/*!     \brief  Callback for save JSON plot button
+ *
+ * Callback for save JSON plot button
+ *
+ * \param  wBtnRecallJSONplot   GtkFileDialog object
+ * \param  user_data            user data (unused)
+ */
 void
-CB_btn_SaveJSON ( GtkButton* wBtnSaveHPGL, gpointer gpRightClick ) {
-    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT( wBtnSaveHPGL ), "data");
+CB_btn_SaveJSON ( GtkButton* wBtnSaveJSONplot, gpointer gpRightClick ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT( wBtnSaveJSONplot ), "data");
 
     GtkFileDialog *fileDialogSave = gtk_file_dialog_new ();
-    GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (wBtnSaveHPGL), GTK_TYPE_WINDOW);
+    GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (wBtnSaveJSONplot), GTK_TYPE_WINDOW);
     GDateTime *now = g_date_time_new_now_local ();
 
     // If this was a right click, copy over the settings to the plot and exit
@@ -529,12 +603,13 @@ CB_btn_SaveJSON ( GtkButton* wBtnSaveHPGL, gpointer gpRightClick ) {
 
     gtk_file_dialog_set_filters (fileDialogSave, G_LIST_MODEL (filters));
 
-    GFile *fPath =  g_file_new_for_path( pGlobal->sLastDirectory );
-    gtk_file_dialog_set_initial_folder( fileDialogSave, fPath );
-    gtk_file_dialog_set_initial_name( fileDialogSave, pGlobal->sUsersJSONfilename != NULL ? pGlobal->sUsersJSONfilename : sSuggestedHPGLfilename );
+    gchar *fn = suggestFilename( pGlobal, NULL, "json" );
+    GFile *fPath = g_file_new_build_filename( pGlobal->sLastDirectory, fn, NULL );
+    gtk_file_dialog_set_initial_file( fileDialogSave, fPath );
 
     gtk_file_dialog_save ( fileDialogSave, GTK_WINDOW (win), NULL, CB_JSONsave, pGlobal);
 
+    g_free( fn );
     g_object_unref (fileDialogSave);
     g_object_unref( fPath );
     g_date_time_unref( now );
@@ -547,7 +622,14 @@ CB_rightClickGesture_SaveJSON (GtkGesture *gesture, int n_press, double x, doubl
     CB_btn_SaveJSON ( GTK_BUTTON( wBtnSaveHPGL ), GINT_TO_POINTER(1) );
 }
 
-// Call back when open/recall file is selected
+/*!     \brief  Callback when opening file from system file selection dialog
+ *
+ * Callback when opening file from system file selection dialog
+ *
+ * \param  source_object     GtkFileDialog object
+ * \param  res               result of opening file for write
+ * \param  gpGlobal          pointer to global data
+ */
 static void
 CB_JSONopen( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
@@ -639,9 +721,7 @@ CB_JSONopen( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
             refreshPageHP8970( pGlobal );
             refreshMainDialog( pGlobal );
 
-            // If the user chose a specific filename .. then remember it for the next time
-            g_free( pGlobal->sUsersJSONfilename );
-            pGlobal->sUsersJSONfilename = selectedFileBasename;
+            suggestFilename( pGlobal, selectedFileBasename, "json" );
 
         } else {
             alert_dialog = gtk_alert_dialog_new ("Cannot open file for reading:\n%s", sChosenFilename);
@@ -665,14 +745,21 @@ CB_JSONopen( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
    }
 }
 
+/*!     \brief  Callback for restore JSON plot button
+ *
+ * Callback for restore JSON plot button
+ *
+ * \param  wBtnRecallJSONplot   GtkFileDialog object
+ * \param  user_data            user data (unused)
+ */
 void
-CB_btn_RestoreJSON ( GtkButton* wBtnRecallHPGL, gpointer user_data ) {
-    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT( wBtnRecallHPGL ), "data");
+CB_btn_RestoreJSON ( GtkButton* wBtnRecallJSONplot, gpointer user_data ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT( wBtnRecallJSONplot ), "data");
 
     pGlobal->flags.bPreviewModeDiagram = FALSE;
 
     GtkFileDialog *fileDialogRecall = gtk_file_dialog_new ();
-    GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (wBtnRecallHPGL), GTK_TYPE_WINDOW);
+    GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (wBtnRecallJSONplot), GTK_TYPE_WINDOW);
     GDateTime *now = g_date_time_new_now_local ();
 
     g_autoptr (GListModel) filters = (GListModel *)g_list_store_new (GTK_TYPE_FILE_FILTER);
@@ -690,11 +777,13 @@ CB_btn_RestoreJSON ( GtkButton* wBtnRecallHPGL, gpointer user_data ) {
 
     gtk_file_dialog_set_filters (fileDialogRecall, G_LIST_MODEL (filters));
 
-    GFile *fPath =  g_file_new_for_path( pGlobal->sLastDirectory );
-    gtk_file_dialog_set_initial_folder( fileDialogRecall, fPath );
+    gchar *fn = suggestFilename( pGlobal, NULL, "json" );
+    GFile *fPath = g_file_new_build_filename( pGlobal->sLastDirectory, fn, NULL );
+    gtk_file_dialog_set_initial_file( fileDialogRecall, fPath );
 
     gtk_file_dialog_open ( fileDialogRecall, GTK_WINDOW (win), NULL, CB_JSONopen, pGlobal);
 
+    g_free( fn );
     g_object_unref (fileDialogRecall);
     g_object_unref( fPath );
     g_date_time_unref( now );

@@ -393,11 +393,6 @@ on_shutdown (GApplication *app, gpointer userData) {
 
     g_mutex_clear( &pGlobal->mUpdate );
 
-    g_free (pGlobal->sUsersJSONfilename);
-    g_free (pGlobal->sUsersPDFImageFilename);
-    g_free (pGlobal->sUsersPNGImageFilename);
-    g_free (pGlobal->sUsersSVGImageFilename);
-
     g_list_free_full ( pGlobal->configurationList, freeConfigationItemContent );
 
     freeSVGhandles();

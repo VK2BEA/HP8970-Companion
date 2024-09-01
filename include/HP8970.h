@@ -319,12 +319,6 @@ typedef struct {
     GAsyncQueue *messageQueueToMain;
     GAsyncQueue *messageQueueToGPIB;
 
-    gchar *sUsersJSONfilename;	    // filename chose by user for saving JSON file
-    gchar *sUsersPDFImageFilename;	// filename chosen by user for PDF file
-    gchar *sUsersPNGImageFilename;	// filename chosen by user for PNG file
-    gchar *sUsersSVGImageFilename;	// filename chosen by user for SVG file
-    gchar *sUsersCSVfilename;         // filename chosen by user for SVG file
-
     GList *configurationList;
     gint   selectedConfiguration;
 
@@ -454,6 +448,7 @@ void        snapshotSettings                (tGlobal *);
 gint        splashCreate 					(tGlobal *);
 gint        splashDestroy 					(tGlobal *);
 gboolean    spotFrequencyHP8970             (tGlobal *, gint, gint, gint *);
+gchar *     suggestFilename                 (tGlobal *, gchar *, gchar *);
 gboolean    sweepHP8970                     (tGlobal *, gint, gint, gint *);
 gpointer    threadGPIB					    (gpointer);
 void        updateBoundaries                (gdouble, gdouble *, gdouble *);

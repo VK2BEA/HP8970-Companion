@@ -70,7 +70,6 @@ plotAndSaveFile( GObject *source_object, GAsyncResult *res, gpointer gpGlobal, e
     if (((file = gtk_file_dialog_save_finish (dialog, res, &err)) != NULL) ) {
         gchar *sChosenFilename = g_file_get_path( file );
         gchar *selectedFileBasename =  g_file_get_basename( file );
-        gchar **pUserFileName;
         switch( fileType ) {
         case ePDF:
         default:
@@ -78,30 +77,24 @@ plotAndSaveFile( GObject *source_object, GAsyncResult *res, gpointer gpGlobal, e
             height = paperDimensions[pGlobal->PDFpaperSize].height;
             cs = cairo_pdf_surface_create ( sChosenFilename, width, height );
             cairo_pdf_surface_set_metadata (cs, CAIRO_PDF_METADATA_CREATOR, "Linux HP8970 Noise Figure Meter");
-            pUserFileName = &pGlobal->sUsersPDFImageFilename;
+            suggestFilename( pGlobal, selectedFileBasename, "pdf" );
             break;
         case eSVG:
             width  = paperDimensions[pGlobal->PDFpaperSize].width;
             height = paperDimensions[pGlobal->PDFpaperSize].height;
             cs = cairo_svg_surface_create ( sChosenFilename, width, height );
-            pUserFileName = &pGlobal->sUsersSVGImageFilename;
+            suggestFilename( pGlobal, selectedFileBasename, "svg" );
             break;
         case ePNG:
             width  = PNG_WIDTH;
             height = PNG_WIDTH / sqrt( 2.0 );
             cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-            pUserFileName = &pGlobal->sUsersPNGImageFilename;
+            suggestFilename( pGlobal, selectedFileBasename, "png" );
             break;
         }
         cr = cairo_create (cs);
 
-        // If the user chose a specific filename .. then remember it for the next time
-        if( strcmp( selectedFileBasename, sSuggestedFilename ) ) {
-            g_free( *pUserFileName );
-            *pUserFileName = selectedFileBasename;
-        } else {
-            g_free( selectedFileBasename );
-        }
+        g_free( selectedFileBasename );
 
         // Letter and Tabloid size are not in the ratio of our data ( height = width / sqrt( 2 ) )
         // we need to adjust
@@ -184,17 +177,10 @@ CB_CSVsave( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
     if (((file = gtk_file_dialog_save_finish (dialog, res, &err)) != NULL) ) {
         gchar *sChosenFilename = g_file_get_path( file );
         gchar *selectedFileBasename =  g_file_get_basename( file );
-        gchar **pUserFileName;
 
-        pUserFileName = &pGlobal->sUsersCSVfilename;
+        suggestFilename( pGlobal, selectedFileBasename, "pdf" );
+        g_free( selectedFileBasename );
 
-        // If the user chose a specific filename .. then remember it for the next time
-        if( strcmp( selectedFileBasename, sSuggestedFilename ) ) {
-            g_free( *pUserFileName );
-            *pUserFileName = selectedFileBasename;
-        } else {
-            g_free( selectedFileBasename );
-        }
 
 // Open file and save....
 
@@ -264,7 +250,7 @@ presentFileSaveDialog ( GtkButton *wBtn, gpointer user_data, enum eFileType file
     GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (wBtn), GTK_TYPE_WINDOW);
 
     GDateTime *now = g_date_time_new_now_local ();
-    gchar **pUserFileName = NULL;
+    gchar *pUserFileName = NULL;
 
     g_autoptr (GListModel) filters = (GListModel *)g_list_store_new (GTK_TYPE_FILE_FILTER);
 
@@ -276,26 +262,22 @@ presentFileSaveDialog ( GtkButton *wBtn, gpointer user_data, enum eFileType file
     case ePDF:
         gtk_file_filter_add_mime_type (filter, "application/pdf");
         gtk_file_filter_set_name (filter, "PDF");
-        sSuggestedFilename = g_date_time_format( now, "HP8970.%d%b%y.%H%M%S.pdf");
-        pUserFileName = &pGlobal->sUsersPDFImageFilename;
+        pUserFileName = suggestFilename( pGlobal, NULL, "pdf" );
         break;
     case eSVG:
         gtk_file_filter_add_mime_type (filter, "image/svg+xml");
         gtk_file_filter_set_name (filter, "SVG");
-        sSuggestedFilename = g_date_time_format( now, "HP8970.%d%b%y.%H%M%S.svg");
-        pUserFileName = &pGlobal->sUsersSVGImageFilename;
+        pUserFileName = suggestFilename( pGlobal, NULL, "svg" );
         break;
     case ePNG:
         gtk_file_filter_add_mime_type (filter, "image/png");
         gtk_file_filter_set_name (filter, "PNG");
-        sSuggestedFilename = g_date_time_format( now, "HP8970.%d%b%y.%H%M%S.png");
-        pUserFileName = &pGlobal->sUsersPNGImageFilename;
+        pUserFileName = suggestFilename( pGlobal, NULL, "png" );
         break;
     case eCSV:
         gtk_file_filter_add_mime_type (filter, "text/csv");
         gtk_file_filter_set_name (filter, "CSV");
-        sSuggestedFilename = g_date_time_format( now, "HP8970.%d%b%y.%H%M%S.csv");
-        pUserFileName = &pGlobal->sUsersCSVfilename;
+        pUserFileName = suggestFilename( pGlobal, NULL, "csv" );
         break;
     default: break;
     }
@@ -310,10 +292,8 @@ presentFileSaveDialog ( GtkButton *wBtn, gpointer user_data, enum eFileType file
 
     gtk_file_dialog_set_filters (fileDialogSave, G_LIST_MODEL (filters));
 
-    GFile *fPath =  g_file_new_for_path( pGlobal->sLastDirectory );
-    gtk_file_dialog_set_initial_folder( fileDialogSave, fPath );
-
-    gtk_file_dialog_set_initial_name( fileDialogSave, *pUserFileName != NULL ? *pUserFileName : sSuggestedFilename );
+    GFile *fPath = g_file_new_build_filename( pGlobal->sLastDirectory, pUserFileName, NULL );
+    gtk_file_dialog_set_initial_file( fileDialogSave, fPath );
 
     switch( fileType ) {
     case ePDF:
@@ -332,6 +312,7 @@ presentFileSaveDialog ( GtkButton *wBtn, gpointer user_data, enum eFileType file
         break;
     }
 
+    g_free( pUserFileName );
     g_object_unref (fileDialogSave);
     g_object_unref( fPath );
     g_date_time_unref( now );
