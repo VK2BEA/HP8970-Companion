@@ -147,17 +147,20 @@ initializeData (tGlobal *pGlobal) {
     }
 
     pGlobal->HP8970settings = (tHP8970settings){
-        .range[0].freqSpotMHz = HP8970A_DEFAULT_FREQ,
-        .range[0].freqStartMHz = HP8970A_START_SWEEP_DEFAULT,
-        .range[0].freqStopMHz = HP8970A_STOP_SWEEP_DEFAULT,
-        .range[0].freqStepCalMHz = HP8970A_STEP_SWEEP_DEFAULT,
-        .range[0].freqStepSweepMHz = HP8970A_STEP_SWEEP_DEFAULT,
+        .range[eBaseRange].freqSpotMHz       = HP8970A_DEFAULT_FREQ,
+        .range[eBaseRange].freqStartMHz      = HP8970A_START_SWEEP_DEFAULT,
+        .range[eBaseRange].freqStopMHz       = HP8970A_STOP_SWEEP_DEFAULT,
+        .range[eBaseRange].freqStepCalMHz    = HP8970A_STEP_SWEEP_DEFAULT,
+        .range[eBaseRange].freqStepSweepMHz  = HP8970A_STEP_SWEEP_DEFAULT,
 
-        .range[1].freqSpotMHz = HP8970A_DEFAULT_FREQ_R2,
-        .range[1].freqStartMHz = HP8970A_START_SWEEP_DEFAULT_R2,
-        .range[1].freqStopMHz = HP8970A_STOP_SWEEP_DEFAULT_R2,
-        .range[1].freqStepCalMHz = HP8970A_PageStep_FREQ_R2,
-        .range[1].freqStepSweepMHz = HP8970A_PageStep_FREQ_R2
+        .range[eMixerRange].freqSpotMHz      = HP8970A_DEFAULT_FREQ_R2,
+        .range[eMixerRange].freqStartMHz     = HP8970A_START_SWEEP_DEFAULT_R2,
+        .range[eMixerRange].freqStopMHz      = HP8970A_STOP_SWEEP_DEFAULT_R2,
+        .range[eMixerRange].freqStepCalMHz   = HP8970A_PageStep_FREQ_R2,
+        .range[eMixerRange].freqStepSweepMHz = HP8970A_PageStep_FREQ_R2,
+
+        .extLOfreqIF = HP8970A_DEFAULT_IF_FREQ,
+        .extLOfreqLO = HP8970A_DEFAULT_LO_FREQ
     };
 
     pGlobal->plot.measurementBuffer.maxAbscissa.freq = HP8970A_STOP_SWEEP_DEFAULT_R2 * MHz(1.0);

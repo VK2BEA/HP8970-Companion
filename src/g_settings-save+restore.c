@@ -288,7 +288,9 @@ configurationBuilder( tHP8970settings *configuration ){
     // (qqqssy)
     g_variant_builder_add(configBuilder, "(qqqssy)",
             configuration->extLOfreqIF, configuration->extLOfreqLO, configuration->settlingTime_ms,
-            configuration->sExtLOsetup, configuration->sExtLOsetFreq, configuration->extLOsideband );
+            configuration->sExtLOsetup != NULL ? configuration->sExtLOsetup : "",
+            configuration->sExtLOsetFreq != NULL ? configuration->sExtLOsetFreq : "",
+            configuration->extLOsideband );
     // dddd
     g_variant_builder_add(configBuilder, "(dddd)",
             configuration->lossBeforeDUT, configuration->lossAfterDUT, configuration->lossTemp, configuration->coldTemp );

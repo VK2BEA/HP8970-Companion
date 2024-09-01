@@ -535,6 +535,9 @@ void        warnFrequencyRangeOutOfBounds   (tGlobal *);
 #define HP8970A_START_SWEEP_DEFAULT_R2  8000.0
 #define HP8970A_STEP_SWEEP_DEFAULT_R2    200.0
 
+#define HP8970A_DEFAULT_IF_FREQ         1000
+#define HP8970A_DEFAULT_LO_FREQ         3000
+
 #define UNINITIALIZED_DOUBLE	 1.60217663e-19
 
 #define DEFAULT_HP8970_GPIB_DEVICE_ID 8

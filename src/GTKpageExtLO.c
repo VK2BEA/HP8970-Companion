@@ -415,8 +415,8 @@ setPageExtLOwidgets( tGlobal *pGlobal ) {
 
     g_signal_handlers_unblock_by_func( G_OBJECT( wLO_Setup ), G_CALLBACK( CB_edit_LO_Setup ), NULL );
     g_signal_handlers_unblock_by_func( G_OBJECT( wLO_Freq ),  G_CALLBACK( CB_edit_LO_Freq ), NULL );
-    gtk_spin_button_set_value( wIFfreq, pGlobal->HP8970settings.extLOfreqIF );
 
+    gtk_spin_button_set_value( wIFfreq, pGlobal->HP8970settings.extLOfreqIF );
     gtk_spin_button_set_value( wLOfreq, pGlobal->HP8970settings.extLOfreqLO );
     gtk_spin_button_set_value( wSettlingTime, pGlobal->HP8970settings.settlingTime_ms );
 
