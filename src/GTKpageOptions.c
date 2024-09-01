@@ -238,6 +238,13 @@ CB_btn_DeleteRestoreSaveConfiguration ( GtkButton *wBtn, gpointer eOperation ) {
             refreshPageHP8970( pGlobal );
             refreshMainDialog( pGlobal );
             setFixedRangePlotWidgets( pGlobal );
+
+            g_mutex_lock ( &pGlobal->mUpdate );
+            pGlobal->HP8970settings.updateFlags.all |= ALL_FUNCTIONS;
+            g_mutex_unlock ( &pGlobal->mUpdate );
+            postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL);
+            gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
+
             break;
 
         case eSaveConfig:
