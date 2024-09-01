@@ -404,8 +404,11 @@ setPageExtLOwidgets( tGlobal *pGlobal ) {
 
     g_signal_handlers_block_by_func( G_OBJECT( wLO_Setup ), G_CALLBACK( CB_edit_LO_Setup ), NULL );
     g_signal_handlers_block_by_func( G_OBJECT( wLO_Freq ), G_CALLBACK( CB_edit_LO_Freq ), NULL );
-    gtk_editable_set_text( wLO_Setup, pGlobal->HP8970settings.sExtLOsetup );
-    gtk_editable_set_text( wLO_Freq, pGlobal->HP8970settings.sExtLOsetFreq );
+
+    if( pGlobal->HP8970settings.sExtLOsetup )
+        gtk_editable_set_text( wLO_Setup, pGlobal->HP8970settings.sExtLOsetup );
+    if( pGlobal->HP8970settings.sExtLOsetFreq )
+        gtk_editable_set_text( wLO_Freq, pGlobal->HP8970settings.sExtLOsetFreq );
 
     pGlobal->flags.bNoLOcontrol = (pGlobal->HP8970settings.sExtLOsetFreq == NULL
                             || strlen( pGlobal->HP8970settings.sExtLOsetFreq ) == 0);

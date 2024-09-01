@@ -325,7 +325,7 @@ initializePageOptions( tGlobal *pGlobal ) {
 
     gtk_combo_box_text_remove_all( pGlobal->widgets[ eW_combo_SettingsConfigurations ] );
 
-    for( GList *item = g_list_first( pGlobal->configurationList ); ; item = item->next ) {
+    for( GList *item = g_list_first( pGlobal->configurationList ); item != NULL ; item = item->next ) {
         gtk_combo_box_text_append( pGlobal->widgets[ eW_combo_SettingsConfigurations ], NULL,
                 ((tHP8970settings *)item->data)->sConfigurationName );
         if( item->next == NULL )
