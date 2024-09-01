@@ -95,6 +95,8 @@ CB_chk_Variants(GtkCheckButton *wVariant, gpointer identifier) {
         gtk_spin_button_set_range( pGlobal->widgets[ eW_LO_spin_FixedIF_Freq ], HP8970A_MIN_FREQ, maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ] );
         gtk_spin_button_set_range( pGlobal->widgets[ eW_spin_FrStop ], HP8970A_MIN_FREQ, maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ] );
     }
+    gtk_window_set_title( pGlobal->widgets[ eW_HP8970_application ],
+                          pGlobal->flags.bbHP8970Bmodel ? "HP 8970B Noise Figure Meter" : "HP 8970A Noise Figure Meter");
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
@@ -360,5 +362,8 @@ initializePageOptions( tGlobal *pGlobal ) {
 
     g_signal_connect(pGlobal->widgets[ eW_chk_SettingsHPlogo ],   "toggled", G_CALLBACK( CB_chk_SettingsHPlogo ), NULL);
     g_signal_connect(pGlobal->widgets[ eW_chk_SettingsTime ],   "toggled", G_CALLBACK( CB_chk_SettingsTime ), NULL);
+
+    gtk_window_set_title( pGlobal->widgets[ eW_HP8970_application ],
+                          pGlobal->flags.bbHP8970Bmodel ? "HP 8970B Noise Figure Meter" : "HP 8970A Noise Figure Meter");
 #pragma GCC diagnostic pop
 }
