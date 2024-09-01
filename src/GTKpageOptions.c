@@ -188,6 +188,8 @@ sensitizeConfigurationButtons( tGlobal *pGlobal, gchar *sConfigurationName ) {
 
     gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SettingsDelete ], configItem != NULL );
     gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SettingsRestore ], configItem != NULL );
+
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SettingsSave ], g_strcmp0( sConfigurationName, "" ) != 0 );
 }
 
 
@@ -342,6 +344,7 @@ initializePageOptions( tGlobal *pGlobal ) {
     gtk_check_button_set_active ( pGlobal->widgets[ VariantWidgetNames[ pGlobal->flags.bbHP8970Bmodel % N_VARIANTS ] ], TRUE );
 
     gtk_combo_box_set_active( GTK_COMBO_BOX( pGlobal->widgets[ eW_combo_SettingsConfigurations ] ), pGlobal->selectedConfiguration );
+    sensitizeConfigurationButtons( pGlobal, gtk_combo_box_text_get_active_text( pGlobal->widgets[ eW_combo_SettingsConfigurations ] ) );
 
     for( gint i=0; i < N_PAPER_SIZES; i++ )
         g_signal_connect( pGlobal->widgets[ PDFpageSizeWidgetNames[ i ] ], "toggled", G_CALLBACK( CB_chk_PDFpageSize ), GINT_TO_POINTER(i));
