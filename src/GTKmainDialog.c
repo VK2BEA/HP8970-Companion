@@ -155,7 +155,7 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
             break;
         }
 
-    return TRUE;
+    return FALSE;
 }
 
 static gboolean

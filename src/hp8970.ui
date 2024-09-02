@@ -210,10 +210,10 @@
                     <child>
                       <object class="GtkBox">
                         <property name="homogeneous">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkBox">
                             <property name="homogeneous">True</property>
-                            <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkFrame">
                                 <property name="css-classes">noborder</property>
@@ -240,13 +240,13 @@
                             <child>
                               <object class="GtkFrame">
                                 <property name="css-classes">noborder</property>
-                                <property name="label">Step Freq. (sweep)</property>
+                                <property name="label">Stop Frequency</property>
                                 <child>
-                                  <object class="GtkSpinButton" id="WID_spin_FrStep_Sweep">
+                                  <object class="GtkSpinButton" id="WID_spin_FrStop">
                                     <property name="adjustment">
-                                      <object class="GtkAdjustment" id="WID_adj_FrStep_Sweep">
-                                        <property name="lower">1.0</property>
-                                        <property name="page-increment">5.0</property>
+                                      <object class="GtkAdjustment" id="WID_adj_FrStop">
+                                        <property name="lower">10.0</property>
+                                        <property name="page-increment">50.0</property>
                                         <property name="step-increment">1.0</property>
                                         <property name="upper">1500.0</property>
                                         <property name="value">20.0</property>
@@ -269,20 +269,19 @@ The resolution may be smaller than is possible when calibrating (as this is limi
                         <child>
                           <object class="GtkBox">
                             <property name="homogeneous">True</property>
-                            <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkFrame">
                                 <property name="css-classes">noborder</property>
-                                <property name="label">Stop Frequency</property>
+                                <property name="label">Step Freq. (sweep)</property>
                                 <child>
-                                  <object class="GtkSpinButton" id="WID_spin_FrStop">
+                                  <object class="GtkSpinButton" id="WID_spin_FrStep_Sweep">
                                     <property name="adjustment">
-                                      <object class="GtkAdjustment" id="WID_adj_FrStop">
+                                      <object class="GtkAdjustment" id="WID_adj_FrStep_Sweep">
                                         <property name="lower">1.0</property>
-                                        <property name="page-increment">20.0</property>
+                                        <property name="page-increment">5.0</property>
                                         <property name="step-increment">1.0</property>
                                         <property name="upper">1500.0</property>
-                                        <property name="value">1500.0</property>
+                                        <property name="value">10.0</property>
                                       </object>
                                     </property>
                                     <property name="margin-end">4</property>
