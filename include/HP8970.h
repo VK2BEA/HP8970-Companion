@@ -22,7 +22,7 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.01-1"
+   #define VERSION "1.01-2"
 #endif
 
 
@@ -89,6 +89,11 @@ typedef enum {
 enum freqRanges{
     eBaseRange = 0, eMixerRange = 1, eMAX_RANGES = 2
 };
+
+enum limits{
+    eMinLimit = 0, eMaxLimit = 1, eMAX_LIMITS = 2
+};
+
 
 typedef enum {
     eFreqOrTime = 0, eTime = 0, eFreq = 0, eNoise = 1, eGain = 2, eMAX_AXES = 3
@@ -207,8 +212,8 @@ typedef struct {
     gdouble lossBeforeDUT, lossAfterDUT, lossTemp, coldTemp;
 
     // If the grid is not auto-ranging, these are the boundaries
-    gdouble fixedGridFreq[2], // Unused ... placeholder
-            fixedGridNoise[eMAX_NOISE_UNITS][2], fixedGridGain[2];
+    gdouble fixedGridFreq[eMAX_LIMITS], // Unused ... placeholder
+            fixedGridNoise[eMAX_NOISE_UNITS][eMAX_LIMITS], fixedGridGain[eMAX_LIMITS];
 
     gchar *sConfigurationName;
 } tHP8970settings;

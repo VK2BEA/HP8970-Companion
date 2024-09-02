@@ -89,11 +89,21 @@ CB_chk_PDFpageSize(GtkCheckButton *wPDFpageSize, gpointer identifier) {
 static void
 CB_chk_Variants(GtkCheckButton *wVariant, gpointer identifier) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wVariant), "data");
+    gdouble min, max;
+    gboolean bExtLO = !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4);
 
     if( gtk_check_button_get_active (wVariant) ) {
         pGlobal->flags.bbHP8970Bmodel = GPOINTER_TO_INT( identifier );
+        min = bExtLO ? HP8970A_MIN_FREQ_R2 : HP8970A_MIN_FREQ;
+        max = bExtLO ? HP8970A_MAX_FREQ_R2 : maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ];
         gtk_spin_button_set_range( pGlobal->widgets[ eW_LO_spin_FixedIF_Freq ], HP8970A_MIN_FREQ, maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ] );
-        gtk_spin_button_set_range( pGlobal->widgets[ eW_spin_FrStop ], HP8970A_MIN_FREQ, maxInputFreq[ pGlobal->flags.bbHP8970Bmodel ] );
+
+        gtk_spin_button_set_range( pGlobal->widgets[ eW_spin_FrStart ], min, max );
+        gtk_spin_button_set_range( pGlobal->widgets[ eW_spin_FrStop ], min, max );
+        gtk_spin_button_set_range( pGlobal->widgets[ eW_spin_Frequency ], min, max );
+
+        gtk_spin_button_set_range( pGlobal->widgets[ eW_spin_FrStep_Cal ], 1.0, max );
+        gtk_spin_button_set_range( pGlobal->widgets[ eW_spin_FrStep_Sweep ], 1.0, max );
     }
     gtk_window_set_title( pGlobal->widgets[ eW_HP8970_application ],
                           pGlobal->flags.bbHP8970Bmodel ? "HP 8970B Noise Figure Meter" : "HP 8970A Noise Figure Meter");

@@ -714,6 +714,8 @@ refreshMainDialog( tGlobal *pGlobal )
     g_signal_handlers_unblock_by_func( G_OBJECT( wFrequency ), CB_spin_Frequency, NULL );
 
     gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.flags.bValidNoiseData );
+
     enablePageExtLOwidgets( pGlobal, pGlobal->HP8970settings.mode );
     warnFrequencyRangeOutOfBounds( pGlobal );
 }

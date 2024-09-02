@@ -467,6 +467,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
 
     ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
     gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.flags.bValidNoiseData );
 
     return completionStatus;
 }
@@ -667,6 +668,8 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
     ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
 
     gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.flags.bValidNoiseData );
+
     return completionStatus;
 }
 

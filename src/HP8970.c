@@ -136,6 +136,16 @@ gchar *sHP89709models[] = { "HP8970A", "HP8970B", "HP8970B opt 20" };
 static void
 initializeData (tGlobal *pGlobal) {
     gint n, i, j;
+    struct {
+        gdouble min, max;
+    } noiseInitalManualPlotLimits[ eMAX_NOISE_UNITS ] = {
+            [eFdB]      = {0.0,   6.0},
+            [eF]        = {1.0,   4.0},
+            [eYdB]      = {0.0,   6.0},
+            [eY]        = {1.0,   4.0},
+            [eTeK]      = {0.0, 883.9}
+    };
+
     pGlobal->sGPIBdeviceName = NULL;
     pGlobal->flags.bGPIB_UseCardNoAndPID = TRUE;
 
@@ -169,6 +179,17 @@ initializeData (tGlobal *pGlobal) {
     pGlobal->plot.measurementBuffer.maxNoise = 10.0;
     pGlobal->plot.measurementBuffer.minGain  =  0.0;
     pGlobal->plot.measurementBuffer.maxGain  = 10.0;
+
+    pGlobal->HP8970settings.switches.bAutoScaling = TRUE;
+    pGlobal->plot.noiseUnits = eFdB;
+    for( i=0; i < eMAX_NOISE_UNITS; i++ ) {
+        pGlobal->HP8970settings.fixedGridNoise[ i ][ eMinLimit ] = noiseInitalManualPlotLimits[i].min;
+        pGlobal->HP8970settings.fixedGridNoise[ i ][ eMaxLimit ] = noiseInitalManualPlotLimits[i].max;
+    }
+
+
+    pGlobal->HP8970settings.fixedGridGain[ eMinLimit ] = 0.0;
+    pGlobal->HP8970settings.fixedGridGain[ eMaxLimit ] = 20.0;
 
     bzero( pGlobal->noiseSources, sizeof( tNoiseSource ) * MAX_NOISE_SOURCES );
     n = sizeof( Eaton7618E_SM104 ) / (2 * sizeof( gdouble ));

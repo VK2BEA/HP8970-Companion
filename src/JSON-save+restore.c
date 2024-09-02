@@ -342,6 +342,7 @@ retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
         pGlobal->plot.measurementBuffer.idxTimeBeforeTail = 0;
 
     gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.flags.bValidNoiseData );
 
     return bOK ? 0 : ERROR;
 }
