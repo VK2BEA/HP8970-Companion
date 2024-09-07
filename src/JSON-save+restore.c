@@ -341,8 +341,8 @@ retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
     else
         pGlobal->plot.measurementBuffer.idxTimeBeforeTail = 0;
 
-    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
-    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.measurementBuffer.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.measurementBuffer.flags.bValidNoiseData );
 
     return bOK ? 0 : ERROR;
 }
@@ -456,7 +456,7 @@ savePlot( gchar *filePath, tGlobal *pGlobal ) {
 
 
 
-        if( pGlobal->plot.flags.bValidNoiseData ) {
+        if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData ) {
             json_builder_set_member_name (builder, "points");
             json_builder_begin_array(builder);      // begin points array
             gint  nPoints = nItemsInCircularBuffer( &pGlobal->plot.measurementBuffer );
@@ -535,7 +535,7 @@ CB_JSONsave( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
 
         // If there is no plot, copy the settings and save that with the NULL plot
         // so that the settings will be saved.
-        if( pGlobal->plot.flags.bValidNoiseData == FALSE && pGlobal->plot.flags.bValidGainData == FALSE )
+        if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData == FALSE && pGlobal->plot.measurementBuffer.flags.bValidGainData == FALSE )
             snapshotSettings( pGlobal );
         if( savePlot( sChosenFilename, pGlobal  ) != 0 )  {
             alert_dialog = gtk_alert_dialog_new ("Cannot open file for writing:\n%s", sChosenFilename);
@@ -646,17 +646,17 @@ CB_JSONopen( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
 
 #define TBUF_SIZE   10000
         initCircularBuffer( &pGlobal->plot.measurementBuffer, 0, eTimeAbscissa );
-        pGlobal->plot.flags.bValidGainData = FALSE;
-        pGlobal->plot.flags.bValidNoiseData = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidGainData = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
 
         if( retrievePlot( sChosenFilename, pGlobal ) == 0 ) {
             gint  nPoints = nItemsInCircularBuffer( &pGlobal->plot.measurementBuffer );
             for( int i=0; i < nPoints; i++ ) {
                 tNoiseAndGain *pMeasurement = getItemFromCircularBuffer( &pGlobal->plot.measurementBuffer, i );
                 if( !pMeasurement->flags.each.bGainInvalid )
-                    pGlobal->plot.flags.bValidGainData = TRUE;
+                    pGlobal->plot.measurementBuffer.flags.bValidGainData = TRUE;
                 if( !pMeasurement->flags.each.bNoiseInvalid )
-                    pGlobal->plot.flags.bValidNoiseData = TRUE;
+                    pGlobal->plot.measurementBuffer.flags.bValidNoiseData = TRUE;
                 // Update the minimum and maximum values
                 updateBoundaries( pMeasurement->abscissa.freq,  &pGlobal->plot.measurementBuffer.minAbscissa.freq,
                                   &pGlobal->plot.measurementBuffer.maxAbscissa.freq );

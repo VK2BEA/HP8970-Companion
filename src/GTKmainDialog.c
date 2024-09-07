@@ -45,8 +45,8 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
                     postDataToGPIBThread (TG_ABORT_CLEAR, NULL);
                     break;
                 case GDK_ALT_MASK:
-                    pGlobal->plot.flags.bValidNoiseData = FALSE;
-                    pGlobal->plot.flags.bValidGainData  = FALSE;
+                    pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
+                    pGlobal->plot.measurementBuffer.flags.bValidGainData  = FALSE;
                     initCircularBuffer( &pGlobal->plot.measurementBuffer, 0, eTimeAbscissa );
                     gtk_text_buffer_set_text( gtk_text_view_get_buffer(GTK_TEXT_VIEW( pGlobal->widgets[ eW_textView_Notes ] )), "", -1 );
                     gtk_editable_set_text( GTK_EDITABLE( pGlobal->widgets[ eW_entry_Title ] ), "" );
@@ -641,7 +641,7 @@ void on_PlotMouseMotion ( GtkEventControllerMotion* eventGesture, gdouble x,  gd
         pGlobal->liveMarkerPosnRatio.x = x / gtk_widget_get_width( GTK_WIDGET( wDrawingArea ) );
         pGlobal->liveMarkerPosnRatio.y = y / gtk_widget_get_height( GTK_WIDGET( wDrawingArea ) );
 
-        if( pGlobal->plot.flags.bValidNoiseData || pGlobal->plot.flags.bValidGainData )
+        if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData || pGlobal->plot.measurementBuffer.flags.bValidGainData )
             gtk_widget_queue_draw ( GTK_WIDGET( wDrawingArea ) );
     }
 }
@@ -669,7 +669,7 @@ on_PlotLeftMouse_1_press ( GtkGestureClick* eventGesture, gint n_press, gdouble 
     pGlobal->flags.bHoldLiveMarker = FALSE;
     pGlobal->liveMarkerPosnRatio.x = x / gtk_widget_get_width( GTK_WIDGET( wDrawingArea ) );
     pGlobal->liveMarkerPosnRatio.y = y / gtk_widget_get_height( GTK_WIDGET( wDrawingArea ) );
-    if( pGlobal->plot.flags.bValidNoiseData || pGlobal->plot.flags.bValidGainData )
+    if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData || pGlobal->plot.measurementBuffer.flags.bValidGainData )
         gtk_widget_queue_draw ( GTK_WIDGET( wDrawingArea ) );
 }
 
@@ -702,7 +702,7 @@ CB_PlotMouse_3_press_1_release ( GtkGestureClick* eventGesture, gint n_press, gd
         pGlobal->flags.bHoldLiveMarker = FALSE;
         pGlobal->liveMarkerPosnRatio.x = x / gtk_widget_get_width( GTK_WIDGET( wDrawingArea ) );
         pGlobal->liveMarkerPosnRatio.y = y / gtk_widget_get_height( GTK_WIDGET( wDrawingArea ) );
-        if( pGlobal->plot.flags.bValidNoiseData || pGlobal->plot.flags.bValidGainData )
+        if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData || pGlobal->plot.measurementBuffer.flags.bValidGainData )
             gtk_widget_queue_draw ( GTK_WIDGET( wDrawingArea ) );
     }
 }
@@ -780,8 +780,8 @@ refreshMainDialog( tGlobal *pGlobal )
     g_signal_handlers_unblock_by_func( G_OBJECT( wFrStepSweep ), CB_spin_FrStep_Sweep, NULL );
     g_signal_handlers_unblock_by_func( G_OBJECT( wFrequency ), CB_spin_Frequency, NULL );
 
-    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
-    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.measurementBuffer.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.measurementBuffer.flags.bValidNoiseData );
 
     enablePageExtLOwidgets( pGlobal, pGlobal->HP8970settings.mode );
     warnFrequencyRangeOutOfBounds( pGlobal );

@@ -48,8 +48,8 @@ GdkRGBA plotElementColorsFactory[ eMAX_COLORS ] = {
         [eColorTBD2]       = {0.00, 0.00, 1.00, 1.0},
         [eColorTBD3]       = {1.00, 0.00, 0.00, 1.0},
         [eColorTBD4]       = {1.00, 0.00, 0.00, 1.0},
-        [eColorTBD5]       = {1.00, 0.00, 0.00, 1.0},
-        [eColorTBD6]       = {0.00, 0.00, 1.00, 1.0}
+        [eColorNoiseMem]   = {0.00, 0.00, 0.40, 0.5},
+        [eColorGainMem]    = {0.00, 0.40, 0.00, 0.5}
 };
 GdkRGBA plotElementColors[ eMAX_COLORS ];
 
@@ -640,7 +640,7 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
 
 // Y (right) gain grid
 
-        if( pGlobal->plot.flags.bValidGainData ) {
+        if( pGlobal->plot.measurementBuffer.flags.bValidGainData ) {
             if( pGainAxis->perDiv < 0.1 )
                 dp = 2;
             else if ( pGainAxis->perDiv < 1.0 )
@@ -961,6 +961,62 @@ clipData( gdouble data, gdouble minimum, gdouble maximum ) {
 #define UNIT_OFFSET_TEK 1.5
 #define UNIT_OFFSET_FdB 2
 
+
+/*!     \brief  Draw trace
+ *
+ * Plot gain vs frequency onto drawing area
+ *
+ * \param cr            pointer to cairo structure
+ * \param pGlobal       pointer to the global data structure
+ * \param pDataBuffer   pointer to data circular buffer
+ * \param width         width of grid space
+ * \param height        height of grid space
+ * \param axis          which axis
+ */
+void
+drawTrace( cairo_t *cr, tGlobal * pGlobal, tCircularBuffer *pDataBuffer,
+           gdouble gridWidth, gdouble gridHeight, tGridAxes axis ) {
+
+    tNoiseAndGain *pMeasurement;
+    gdouble xPos;
+    gboolean bRestartTrace = TRUE;
+    gint nMeasurements = nItemsInCircularBuffer( pDataBuffer );
+    gboolean bSpotFrequency = pGlobal->plot.flags.bSpotFrequencyPlot;
+    tAxis *pFreqOrTimeAxis = &pGlobal->plot.axis[ eFreqOrTime ];
+
+    tAxis *pCoordinateAxis = &pGlobal->plot.axis[ axis ];
+    gdouble ordinateScaling  = gridWidth / ( pFreqOrTimeAxis->max - pFreqOrTimeAxis->min );
+    gdouble scale = gridHeight /( pCoordinateAxis->max - pCoordinateAxis->min );
+    gdouble coordinate;
+
+    cairo_new_path( cr );
+
+    for( int i=0; i < nMeasurements; i++ ) {
+        pMeasurement = getItemFromCircularBuffer( pDataBuffer, i );
+        coordinate = axis == eNoise ? pMeasurement->noise: pMeasurement->gain;
+
+        if( bSpotFrequency )
+            xPos = ( GINT_MSTIME_TO_DOUBLE( pMeasurement->abscissa.time) - pFreqOrTimeAxis->min ) * ordinateScaling;
+        else
+            xPos = (pMeasurement->abscissa.freq/MHz(1.0) - pFreqOrTimeAxis->min ) * ordinateScaling;
+
+        // Ignore what is off screen ...
+        if( bRestartTrace || xPos <= 0.0 ) {
+            cairo_move_to( cr, xPos,
+                           (clipData( coordinate, pCoordinateAxis->min, pCoordinateAxis->max ) - pCoordinateAxis->min ) * scale );
+            bRestartTrace = FALSE;
+            continue;
+        }
+
+        if( pMeasurement->noise < ERROR_INDICATOR_HP8970)
+            cairo_line_to( cr, xPos,
+                           (clipData( coordinate, pCoordinateAxis->min, pCoordinateAxis->max ) - pCoordinateAxis->min ) * scale );
+        else
+            bRestartTrace = TRUE;
+    }
+    cairo_stroke( cr );
+}
+
 /*!     \brief  Plot gain vs frequency onto drawing area
  *
  * Plot gain vs frequency onto drawing area
@@ -978,48 +1034,23 @@ plotGainTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
     gdouble freqOrTimeScale  = pGrid->gridWidth / ( pFreqOrTimeAxis->max - pFreqOrTimeAxis->min );
     gdouble gainScale = pGrid->gridHeight /( pGainAxis->max - pGainAxis->min );
 
-    tCircularBuffer *pDataBuffer = &pGlobal->plot.measurementBuffer;
-
-    gboolean bSpotFreqency = pGlobal->plot.flags.bSpotFrequencyPlot;
+    gboolean bSpotFrequency = pGlobal->plot.flags.bSpotFrequencyPlot;
 
     cairo_save(cr);
     {
         setCairoFontSize(cr, pGrid->fontSize);
 
         // box containing grid
-        cairo_new_path( cr );
-
-        gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorGain   ] );
-        cairo_set_line_width (cr, pGrid->areaWidth / 1000.0 );
-
         cairo_rectangle( cr, pGrid->leftGridPosn, 0.0, pGrid->gridWidth, pGrid->areaHeight );
         cairo_clip( cr );
 
         cairo_translate(cr, pGrid->leftGridPosn, pGrid->bottomGridPosn);
 
-        tNoiseAndGain *pMeasurement;
-        gint nMeasurements = nItemsInCircularBuffer( pDataBuffer );
-
-        gdouble xPos;
-
-        // plot the gain trace
-
-        for( gint i=0; i < nMeasurements; i++ ) {
-            pMeasurement = getItemFromCircularBuffer( pDataBuffer, i );
-            if( bSpotFreqency )
-                xPos = ( ((gdouble)pMeasurement->abscissa.time) / 1000.0 - pFreqOrTimeAxis->min ) * freqOrTimeScale;
-            else
-                xPos = (pMeasurement->abscissa.freq/MHz( 1.0 ) - pFreqOrTimeAxis->min ) * freqOrTimeScale;
-            // Ignore what is off screen ...
-            if( i == 0 || xPos <= 0.0 ) {
-                cairo_move_to( cr, xPos, (clipData( pMeasurement->gain, pGainAxis->min, pGainAxis->max ) - pGainAxis->min ) * gainScale );
-                continue;
-            }
-
-        	if( pMeasurement->gain < ERROR_INDICATOR_HP8970)
-        		cairo_line_to( cr, xPos, (clipData( pMeasurement->gain, pGainAxis->min, pGainAxis->max ) - pGainAxis->min ) * gainScale );
-        }
-        cairo_stroke( cr );
+        gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorGain   ] );
+        cairo_set_line_width (cr, pGrid->areaWidth / 1000.0 );
+        drawTrace( cr, pGlobal, &pGlobal->plot.measurementBuffer,
+                   pGrid->gridWidth, pGrid->gridHeight,
+                   eGain );
 
         if( pGlobal->flags.bLiveMarkerActive && (pGlobal->flags.bHoldLiveMarker || !pGrid->bSuppressLiveMarker) ) {
             cairo_reset_clip( cr );
@@ -1027,7 +1058,7 @@ plotGainTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
             gdouble yLM = (pGrid->areaHeight - pGlobal->liveMarkerPosnRatio.y * pGrid->areaHeight ) - pGrid->bottomGridPosn;
 
             if( xLM > 0.0 && xLM < pGrid->gridWidth ) {
-                tCoordinate intercept = interpolate( pGlobal, xLM, freqOrTimeScale, bSpotFreqency ? eTimeAbscissa : eFreqAbscissa, eGain  );
+                tCoordinate intercept = interpolate( pGlobal, xLM, freqOrTimeScale, bSpotFrequency ? eTimeAbscissa : eFreqAbscissa, eGain  );
 
                 if( intercept.x != INVALID ) {
                     // The x position of the live marker was already calculated, so no need to change it
@@ -1087,8 +1118,6 @@ plotNoiseTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
     gdouble ordinateScaling  = pGrid->gridWidth / ( pFreqOrTimeAxis->max - pFreqOrTimeAxis->min );
     gdouble noiseScale = pGrid->gridHeight /( pNoiseAxis->max - pNoiseAxis->min );
 
-    tCircularBuffer *pDataBuffer = &pGlobal->plot.measurementBuffer;
-
     gboolean bSpotFreqency = pGlobal->plot.flags.bSpotFrequencyPlot;
 
     cairo_save(cr);
@@ -1096,39 +1125,19 @@ plotNoiseTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
         setCairoFontSize(cr, pGrid->fontSize);
 
         // box containing grid
-        cairo_new_path( cr );
-
-        gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorNoise   ] );
-        cairo_set_line_width (cr, pGrid->areaWidth / 1000.0 );
-
         cairo_rectangle( cr, pGrid->leftGridPosn, 0.0, pGrid->gridWidth, pGrid->areaHeight );
         cairo_clip( cr );
 
         // origin at the bottom of the grid (not screen)
         cairo_translate(cr, pGrid->leftGridPosn, pGrid->bottomGridPosn);
 
-        tNoiseAndGain *pMeasurement;
-        gint nMeasurements = nItemsInCircularBuffer( pDataBuffer );
+        cairo_set_line_width (cr, pGrid->areaWidth / 1000.0 );
 
-        gdouble xPos;
-        // plot the noise trace
-        for( int i=0; i < nMeasurements; i++ ) {
-            pMeasurement = getItemFromCircularBuffer( pDataBuffer, i );
-            if( bSpotFreqency )
-                xPos = ( GINT_MSTIME_TO_DOUBLE( pMeasurement->abscissa.time) - pFreqOrTimeAxis->min ) * ordinateScaling;
-            else
-                xPos = (pMeasurement->abscissa.freq/MHz(1.0) - pFreqOrTimeAxis->min ) * ordinateScaling;
-
-            // Ignore what is off screen ...
-            if( i == 0 || xPos <= 0.0 ) {
-                cairo_move_to( cr, xPos, (clipData( pMeasurement->noise, pNoiseAxis->min, pNoiseAxis->max ) - pNoiseAxis->min ) * noiseScale );
-                continue;
-            }
-
-        	if( pMeasurement->noise < ERROR_INDICATOR_HP8970)
-        		cairo_line_to( cr, xPos, (clipData( pMeasurement->noise, pNoiseAxis->min, pNoiseAxis->max ) - pNoiseAxis->min ) * noiseScale );
-        }
-        cairo_stroke( cr );
+        // Draw the Noise trace
+        gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorNoise   ] );
+        drawTrace( cr, pGlobal, &pGlobal->plot.measurementBuffer,
+                   pGrid->gridWidth, pGrid->gridHeight,
+                   eNoise );
 
         // Live marker
         if( pGlobal->flags.bLiveMarkerActive && (pGlobal->flags.bHoldLiveMarker || !pGrid->bSuppressLiveMarker) ) {
@@ -1241,16 +1250,16 @@ plotNoiseFigureAndGain (cairo_t *cr, gint areaWidth, gint areaHeight, tGlobal *p
 
     // clear the screen
     if( pGlobal->flags.bPreviewModeDiagram == FALSE
-            && (pGlobal->plot.flags.bValidNoiseData || pGlobal->plot.flags.bValidGainData) ) {
+            && (pGlobal->plot.measurementBuffer.flags.bValidNoiseData || pGlobal->plot.measurementBuffer.flags.bValidGainData) ) {
         cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 1.0 );
         cairo_paint( cr );
 
         flipVertical( cr, &grid );
         plotGrid( cr, &grid, pGlobal );
 
-        if( pGlobal->plot.flags.bValidNoiseData )
+        if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData )
             plotNoiseTrace( cr, &grid, pGlobal );
-        if( pGlobal->plot.flags.bValidGainData )
+        if( pGlobal->plot.measurementBuffer.flags.bValidGainData )
             plotGainTrace( cr, &grid, pGlobal );
 
     } else {

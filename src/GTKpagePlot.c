@@ -43,8 +43,16 @@ struct {
 
 void CB_ColorNotify ( GObject* self, GParamSpec* pspec, gpointer gpColor ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(self, "data");
+    tElementColor color = GPOINTER_TO_INT( gpColor );
     plotElementColors[ GPOINTER_TO_INT( gpColor ) ] = *gtk_color_dialog_button_get_rgba( GTK_COLOR_DIALOG_BUTTON( self ));
 
+    if( color == eColorNoise ) {
+        plotElementColors[ eColorNoiseMem ] = plotElementColors[ eColorNoise ];
+        plotElementColors[ eColorNoiseMem ].alpha /= 2.0;
+    } else if( color == eColorGain ) {
+        plotElementColors[ eColorGainMem ] = plotElementColors[ eColorGain ];
+        plotElementColors[ eColorGainMem ].alpha /= 2.0;
+    }
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 

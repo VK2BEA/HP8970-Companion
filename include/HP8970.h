@@ -160,6 +160,8 @@ typedef struct {
     } minAbscissa, maxAbscissa;
 
     struct     {
+        guint32 bValidNoiseData         :1;
+        guint32 bValidGainData          :1;
         guint32 bTime :1;
     } flags;
 } tCircularBuffer;
@@ -231,6 +233,8 @@ typedef struct {
 // are read and it is not necessary to move around data to accommodate.
 typedef struct {
     tCircularBuffer measurementBuffer;
+    tCircularBuffer memoryBuffer;
+
     gdouble spotFrequency;
 
     tNoiseType noiseUnits;
@@ -238,8 +242,6 @@ typedef struct {
 
     // These are required to plot the data correctly
     struct     {
-        guint32 bValidNoiseData         :1;
-        guint32 bValidGainData          :1;
         guint32 bSpotFrequencyPlot      :1;
         guint32 bCalibrationPlot        :1;
         guint32 bDataCorrectedNFAndGain :1;
@@ -365,8 +367,8 @@ typedef enum {
     eColorTBD2      = 7,
     eColorTBD3      = 8,
     eColorTBD4      = 9,
-    eColorTBD5      = 10,
-    eColorTBD6      = 11,
+    eColorNoiseMem  = 10,
+    eColorGainMem   = 11,
     eMAX_COLORS     = 12
 } tElementColor;
 

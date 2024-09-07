@@ -407,8 +407,8 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         enableSRQonDataReady (descGPIB_HP8970, pGPIBstatus);
         GPIBasyncWrite (descGPIB_HP8970, "W2", pGPIBstatus, 10 * TIMEOUT_RW_1SEC);
 
-        pGlobal->plot.flags.bValidNoiseData = FALSE;
-        pGlobal->plot.flags.bValidGainData = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidGainData = FALSE;
 
         getTimeStamp(&pGlobal->plot.sDateTime);
 
@@ -463,9 +463,9 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
                     IS_HP8970_OVERFLOW( measurement.gain );
 
             if( measurement.flags.each.bNoiseInvalid == FALSE )
-                pGlobal->plot.flags.bValidNoiseData = TRUE;
+                pGlobal->plot.measurementBuffer.flags.bValidNoiseData = TRUE;
             if( measurement.flags.each.bGainInvalid == FALSE )
-                pGlobal->plot.flags.bValidGainData = TRUE;
+                pGlobal->plot.measurementBuffer.flags.bValidGainData = TRUE;
 
             if( bInitialSweep )
             	addItemToCircularBuffer( &pGlobal->plot.measurementBuffer, &measurement, FALSE );
@@ -508,8 +508,8 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         } else {
             postError( "Communications failure with HP8790" );
         }
-        pGlobal->plot.flags.bValidNoiseData = FALSE;
-        pGlobal->plot.flags.bValidGainData  = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidGainData  = FALSE;
     } else if( HP8970error > 0 ) {
         gchar *sError = g_strdup_printf( "HP8970 error: %s", HP8970errorString( HP8970error ) );
         postError( sError );
@@ -524,8 +524,8 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         ibloc(descGPIB_HP8970);
 
     ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
-    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
-    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.measurementBuffer.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.measurementBuffer.flags.bValidNoiseData );
 
     return completionStatus;
 }
@@ -631,8 +631,8 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
         // Get data via SQR after trigger
         enableSRQonDataReady (descGPIB_HP8970, pGPIBstatus);
 
-        pGlobal->plot.flags.bValidNoiseData = FALSE;
-        pGlobal->plot.flags.bValidGainData = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidGainData = FALSE;
 
         getTimeStamp(&pGlobal->plot.sDateTime);
 
@@ -665,9 +665,9 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
                     IS_HP8970_OVERFLOW( measurement.gain );
 
             if( measurement.flags.each.bNoiseInvalid == FALSE )
-                pGlobal->plot.flags.bValidNoiseData = TRUE;
+                pGlobal->plot.measurementBuffer.flags.bValidNoiseData = TRUE;
             if( measurement.flags.each.bGainInvalid == FALSE )
-                pGlobal->plot.flags.bValidGainData = TRUE;
+                pGlobal->plot.measurementBuffer.flags.bValidGainData = TRUE;
 
             addItemToCircularBuffer( &pGlobal->plot.measurementBuffer, &measurement, TRUE );
 
@@ -701,8 +701,8 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
             } else {
                 postError( "Communications failure with HP8790" );
             }
-            pGlobal->plot.flags.bValidNoiseData = FALSE;
-            pGlobal->plot.flags.bValidGainData  = FALSE;
+            pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
+            pGlobal->plot.measurementBuffer.flags.bValidGainData  = FALSE;
         } else if( HP8970error > 0 ) {
             gchar sError[ MEDIUM_STRING ];
             g_snprintf( sError, MEDIUM_STRING, "HP8970 error: %s", HP8970errorString( HP8970error ) );
@@ -722,8 +722,8 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
     g_string_free ( pstCommands, TRUE );
     ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
 
-    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.flags.bValidNoiseData );
-    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], pGlobal->plot.measurementBuffer.flags.bValidNoiseData );
+    gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_SaveJSON ], pGlobal->plot.measurementBuffer.flags.bValidNoiseData );
 
     return completionStatus;
 }
@@ -838,8 +838,8 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
         *pGPIBstatus = ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
 
-        pGlobal->plot.flags.bValidNoiseData  = FALSE;
-        pGlobal->plot.flags.bValidGainData   = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidNoiseData  = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidGainData   = FALSE;
         pGlobal->plot.flags.bCalibrationPlot = TRUE;
         postMessageToMainLoop(TM_REFRESH_PLOT, NULL);
 
@@ -885,8 +885,8 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
                 initCircularBuffer( pCircularBuffer, (freqStopMHz - freqStartMHz) / freqStepMHz + 2, eFreqAbscissa );
                 pCircularBuffer->minAbscissa.freq  = freqStartMHz * MHz(1.0);
                 pCircularBuffer->maxAbscissa.freq  = freqStopMHz * MHz(1.0);
-                pGlobal->plot.flags.bValidNoiseData = FALSE;
-                pGlobal->plot.flags.bValidGainData  = FALSE;
+                pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
+                pGlobal->plot.measurementBuffer.flags.bValidGainData  = FALSE;
                 bRestartSweep = FALSE;
             }
             calDataPoint.flags.all = 0;
@@ -941,9 +941,9 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
                     IS_HP8970_OVERFLOW( calDataPoint.gain );
 
             if( calDataPoint.flags.each.bNoiseInvalid == FALSE )
-                pGlobal->plot.flags.bValidNoiseData = TRUE;
+                pGlobal->plot.measurementBuffer.flags.bValidNoiseData = TRUE;
             if( calDataPoint.flags.each.bGainInvalid == FALSE )
-                pGlobal->plot.flags.bValidGainData = TRUE;
+                pGlobal->plot.measurementBuffer.flags.bValidGainData = TRUE;
 
             gboolean bOverflow = (addItemToCircularBuffer( pCircularBuffer, &calDataPoint, FALSE ) == FALSE);
 
@@ -967,8 +967,8 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
             }
         }
 
-        pGlobal->plot.flags.bValidNoiseData = FALSE;
-        pGlobal->plot.flags.bValidGainData  = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidGainData  = FALSE;
         postMessageToMainLoop(TM_REFRESH_PLOT, NULL);
 
         // sweep off (in case we've interrupted the calibration .. according to the manual, this is the only way to stop the calibration)
@@ -988,8 +988,8 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
         } else {
             postError( "Communications failure with HP8790" );
         }
-        pGlobal->plot.flags.bValidNoiseData = FALSE;
-        pGlobal->plot.flags.bValidGainData  = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
+        pGlobal->plot.measurementBuffer.flags.bValidGainData  = FALSE;
     } else {
         if( HP8970error ) {
             sMessage = g_strdup_printf( "Calibration ☠️  %s",
