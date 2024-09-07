@@ -123,9 +123,13 @@ messageEventDispatch(GSource *source, GSourceFunc callback, gpointer udata) {
             break;
 
 		case TM_COMPLETE_GPIB:
+		    pGlobal->HP8970settings.switches.bAutoSweep = FALSE;
+		    pGlobal->HP8970settings.switches.bSpotFrequency = FALSE;
 		    quarantineControlsOnSweep( pGlobal, FALSE, TRUE );
             validateCalibrationOperation( pGlobal);
+            // Turn off both toggle buttons
             gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON( pGlobal->widgets[ eW_tgl_Spot ] ), FALSE );
+            gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON( pGlobal->widgets[ eW_tgl_Sweep ] ), FALSE);
 
 			break;
 

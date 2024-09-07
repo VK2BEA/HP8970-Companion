@@ -25,10 +25,9 @@
                 <property name="homogeneous">True</property>
                 <property name="spacing">4</property>
                 <child>
-                  <object class="GtkButton" id="WID_btn_Sweep">
+                  <object class="GtkToggleButton" id="WID_tgl_Sweep">
                     <property name="label">Sweep</property>
                     <property name="margin-top">4</property>
-                    <property name="valign">center</property>
                   </object>
                 </child>
                 <child>

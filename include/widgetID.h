@@ -23,7 +23,6 @@ typedef enum {
     eW_btn_SettingsRestore,
     eW_btn_SettingsSave,
     eW_btn_SVG,
-    eW_btn_Sweep,
     eW_cbutton_ControlerNameNotIdx,
     eW_chk_AutoScale,
     eW_chk_Correction,
@@ -109,6 +108,7 @@ typedef enum {
     eW_Splash,
     eW_textView_Notes,
     eW_tgl_Spot,
+    eW_tgl_Sweep,
     eW_N_WIDGETS
 } widgetIDs;
 

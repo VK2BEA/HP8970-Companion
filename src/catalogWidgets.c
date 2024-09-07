@@ -75,7 +75,6 @@ buildWidgetList( tGlobal *pGlobal,  GtkBuilder *builder ) {
             [ eW_btn_SettingsRestore ]          = "WID_btn_SettingsRestore",
             [ eW_btn_SettingsSave ]             = "WID_btn_SettingsSave",
             [ eW_btn_SVG ]                      = "WID_btn_SVG",
-            [ eW_btn_Sweep ]                    = "WID_btn_Sweep",
             [ eW_cbutton_ControlerNameNotIdx ]  = "WID_cbutton_ControlerNameNotIdx",
             [ eW_chk_AutoScale ]                = "WID_chk_AutoScale",
             [ eW_chk_Correction ]               = "WID_chk_Correction",
@@ -160,7 +159,8 @@ buildWidgetList( tGlobal *pGlobal,  GtkBuilder *builder ) {
             [ eW_spin_opt_GPIB_PID_LO ]         = "WID_spin_opt_GPIB_PID_LO",
             [ eW_Splash ]                       = "WID_Splash",
             [ eW_textView_Notes ]               = "WID_textView_Notes",
-            [ eW_tgl_Spot ]                     = "WID_tgl_Spot"
+            [ eW_tgl_Spot ]                     = "WID_tgl_Spot",
+            [ eW_tgl_Sweep ]                    = "WID_btn_Sweep"
     };
 
     for( int i=0; i < eW_N_WIDGETS; i++ )

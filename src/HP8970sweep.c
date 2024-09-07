@@ -83,6 +83,7 @@ initCircularBuffer( tCircularBuffer *pCircBuffer, guint size, tAbscissa abscissa
     pCircBuffer->measurementData = g_realloc( pCircBuffer->measurementData, size * sizeof( tNoiseAndGain ) );
     pCircBuffer->head = 0;
     pCircBuffer->tail = 0;
+    pCircBuffer->rewriteTail = 0;
     pCircBuffer->size = size;
 
     pCircBuffer->minNoise = UNINITIALIZED_DOUBLE;
@@ -97,35 +98,6 @@ initCircularBuffer( tCircularBuffer *pCircBuffer, guint size, tAbscissa abscissa
         pCircBuffer->minAbscissa.time  = 0;
         pCircBuffer->maxAbscissa.time  = 0;
     }
-}
-
-/*!     \brief  add item to a circular buffer
- *
- * add item to a circular buffer, possibly overwriting older data
- *
- * \param  pCircBuffer      pointer to the circular buffer structure
- * \param  pData            pointer to the data
- * \return TRUE if no overflow (or FALSE if full)
- */
-gboolean
-addItemToCircularBuffer( tCircularBuffer *pCircBuffer, tNoiseAndGain *pItem, gboolean bOverwrite ) {
-    // if we full, either return (if we are told not to overwrite)
-    // or move the head, discarding the first item
-    if( (pCircBuffer->tail + 1) % pCircBuffer->size  == pCircBuffer->head ) {
-        if( bOverwrite )
-            return FALSE;
-        else
-            pCircBuffer->head = (pCircBuffer->head + 1)  % pCircBuffer->size;
-    }
-
-    pCircBuffer->measurementData[ pCircBuffer->tail ] = *pItem;
-    pCircBuffer->tail = (pCircBuffer->tail + 1) % pCircBuffer->size;
-
-    // Update the minimum and maximum values
-    updateBoundaries( pItem->noise, &pCircBuffer->minNoise, &pCircBuffer->maxNoise );
-    updateBoundaries( pItem->gain,  &pCircBuffer->minGain,  &pCircBuffer->maxGain );
-
-    return TRUE;
 }
 
 /*!     \brief  get the number of items stored in a circular buffer
@@ -145,12 +117,89 @@ nItemsInCircularBuffer( tCircularBuffer *pCircBuffer ) {
     return( nItems );
 }
 
+/*!     \brief  recalculate extremes (min / max)
+ *
+ * recalculate extremes (min / max)
+ *
+ * \param  pCircBuffer      pointer to the circular buffer structure
+ */
+void
+recalculateBoundaries( tCircularBuffer *pCircBuffer ) {
+
+    gint i, n, ptr;
+
+    pCircBuffer->minNoise = UNINITIALIZED_DOUBLE;
+    pCircBuffer->maxNoise = UNINITIALIZED_DOUBLE;
+    pCircBuffer->minGain  = UNINITIALIZED_DOUBLE;
+    pCircBuffer->maxGain  = UNINITIALIZED_DOUBLE;
+
+    for( i=0, ptr = pCircBuffer->head, n = nItemsInCircularBuffer( pCircBuffer ); i < n; i++, ptr++ ) {
+        updateBoundaries( pCircBuffer->measurementData[ ptr ].noise, &pCircBuffer->minNoise, &pCircBuffer->maxNoise );
+        updateBoundaries( pCircBuffer->measurementData[ ptr ].gain,  &pCircBuffer->minGain,  &pCircBuffer->maxGain );
+    }
+
+}
+
+/*!     \brief  add item to a circular buffer
+ *
+ * add item to a circular buffer, possibly overwriting older data
+ *
+ * \param  pCircBuffer      pointer to the circular buffer structure
+ * \param  pItem            pointer to the data
+ * \param  bCircular        TRUE if we use the circular buffer property, overwiting old data
+ * \return TRUE if no overflow (or FALSE if full)
+ */
+gboolean
+addItemToCircularBuffer( tCircularBuffer *pCircBuffer, tNoiseAndGain *pItem, gboolean bCircular ) {
+    // if we full, either return (if we are told not to overwrite)
+    // or move the head, discarding the first item
+
+    gboolean bNeedRecalc = FALSE;
+
+    if( (pCircBuffer->tail + 1) % pCircBuffer->size  == pCircBuffer->head ) {
+        if( !bCircular )
+            return FALSE;
+        else
+            pCircBuffer->head = (pCircBuffer->head + 1)  % pCircBuffer->size;
+        bNeedRecalc = TRUE;
+    }
+    pCircBuffer->measurementData[ pCircBuffer->tail ] = *pItem;
+    pCircBuffer->tail = (pCircBuffer->tail + 1) % pCircBuffer->size;
+
+    // Update the minimum and maximum values
+    if( bNeedRecalc ) {
+        recalculateBoundaries( pCircBuffer );
+    } else {
+        updateBoundaries( pItem->noise, &pCircBuffer->minNoise, &pCircBuffer->maxNoise );
+        updateBoundaries( pItem->gain,  &pCircBuffer->minGain,  &pCircBuffer->maxGain );
+    }
+    return TRUE;
+}
+
+/*!     \brief  rewrite over populated circular buffer
+ *
+ * rewrite over populated circular buffer
+ *
+ * \param  pCircBuffer      pointer to the circular buffer structure
+ * \param  pItem            pointer to the data
+ * \return TRUE if no overflow (or FALSE if full)
+ */
+gboolean
+rewriteCircularBuffer( tCircularBuffer *pCircBuffer, tNoiseAndGain *pItem ) {
+
+    pCircBuffer->measurementData[ pCircBuffer->rewriteTail ] = *pItem;
+    pCircBuffer->rewriteTail = (pCircBuffer->rewriteTail + 1) % pCircBuffer->size;
+
+    recalculateBoundaries( pCircBuffer );
+    return TRUE;
+}
+
 /*!     \brief  get a particular item from a circular buffer
  *
  * get a particular item from a circular buffer
  *
  * \param  pCircBuffer      pointer to the circular buffer structure
- * \param  item             possition in the buffer of the data we want
+ * \param  item             position in the buffer of the data we want
  */
 
 tNoiseAndGain *
@@ -270,7 +319,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
     gint HP8970error;
     GString *pstCommands;
     gchar HP8970status, LOstatus;;
-    gboolean completionStatus = FALSE;
+    gboolean completionStatus = FALSE, bInitialSweep;
     gdouble LOfreq = 0.0;
     gboolean bLOerror = FALSE;
     tMode mode =  pGlobal->HP8970settings.mode;
@@ -364,7 +413,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
         getTimeStamp(&pGlobal->plot.sDateTime);
 
         // Sweep with the sweep step (may not be the same as the calibration step)
-        for( freqMHz = freqStartMHz, bContinue = TRUE;
+        for( freqMHz = freqStartMHz, bContinue = TRUE, bInitialSweep = TRUE;
                 GPIBsucceeded( *pGPIBstatus ) && bContinue && checkMessageQueue(NULL) != SEVER_DIPLOMATIC_RELATIONS; ) {
 
             tNoiseAndGain measurement;
@@ -417,8 +466,20 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
                 pGlobal->plot.flags.bValidNoiseData = TRUE;
             if( measurement.flags.each.bGainInvalid == FALSE )
                 pGlobal->plot.flags.bValidGainData = TRUE;
-;
-            addItemToCircularBuffer( &pGlobal->plot.measurementBuffer, &measurement, TRUE );
+
+            if( bInitialSweep )
+            	addItemToCircularBuffer( &pGlobal->plot.measurementBuffer, &measurement, FALSE );
+            else
+            	rewriteCircularBuffer( &pGlobal->plot.measurementBuffer, &measurement );
+
+            // We have reached the terminal frequency but do we need to loop (auto trigger)?
+            if( bContinue == FALSE && pGlobal->HP8970settings.switches.bAutoSweep ) {
+                bContinue = TRUE;
+                bInitialSweep = FALSE;
+                freqMHz = freqStartMHz;
+                pGlobal->plot.measurementBuffer.rewriteTail = pGlobal->plot.measurementBuffer.head;
+                GPIBasyncWrite (descGPIB_HP8970, "W2", pGPIBstatus, 10 * TIMEOUT_RW_1SEC);
+            }
 
             if( HP8970error ) {
                 sMessage = g_strdup_printf( "Sweep: %.0lf MHz ☠️  %s",
@@ -433,10 +494,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
             postMessageToMainLoop(TM_REFRESH_PLOT, NULL);
         }
 
-        // resume auto trigger & disable SRQ
         GPIBasyncWrite (descGPIB_HP8970, "T0Q0", pGPIBstatus, 10 * TIMEOUT_RW_1SEC);
-
-
         completionStatus = TRUE;
         // if( enableSRQonDataReady( descGPIB_HP8970, &GPIBstatus ) != eRDWT_OK )
         //    break;
@@ -504,7 +562,6 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
         pstCommands = g_string_new ( NULL );
         gtk_widget_set_sensitive( pGlobal->widgets[ eW_btn_CSV ], FALSE );
 
-        gboolean bContinue;
         gchar *sMessage;
 
         postInfo( "HP8970 spot frequency measurement");
@@ -580,9 +637,7 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
         getTimeStamp(&pGlobal->plot.sDateTime);
 
         // Standard resolution just sweep. This is faster than setting the frequency each time but less noticeable once we do smoothing.
-        for( bContinue = TRUE;
-                GPIBsucceeded( *pGPIBstatus )
-                    && bContinue
+        for(; GPIBsucceeded( *pGPIBstatus )
                     && checkMessageQueue(NULL) != SEVER_DIPLOMATIC_RELATIONS
                     && bLOerror == FALSE
                     && pGlobal->HP8970settings.switches.bSpotFrequency; ) {

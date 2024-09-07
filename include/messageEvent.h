@@ -44,6 +44,7 @@ enum _threadmessage
     TG_SPOT_HP8970,                     // Get Frequency, Gain, Noise Figure data from HP8970
 	TG_SEND_ENR_TABLE_TO_HP8970,        // Send ENR table to HP8970
     TG_CALIBRATE,                       // Run HP8970 calibration
+    TG_FREQUENCY_CALIBRATE,             // Run HP8970 frequency calibration
 
 	TG_UTILITY,
 	TG_ABORT,

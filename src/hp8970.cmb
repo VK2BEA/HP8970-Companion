@@ -34,7 +34,6 @@
 	(1,75,"GtkLabel",None,72,None,"tab",None,5,None,None),
 	(1,76,"GtkBox","WID_page_Plot",72,None,None,None,4,None,None),
 	(1,77,"GtkBox",None,7,None,None,None,0,None,None),
-	(1,78,"GtkButton","WID_btn_Sweep",77,None,None,None,0,None,None),
 	(1,79,"GtkButton","WID_btn_Calibrate",77,None,None,None,1,None,None),
 	(1,80,"GtkBox",None,7,None,None,None,1,None,None),
 	(1,81,"GtkButton","WID_btn_Print",80,None,None,None,0,None,None),
@@ -238,7 +237,8 @@
 	(1,423,"GtkButton","WID_btn_SettingsRestore",422,None,None,None,0,None,None),
 	(1,424,"GtkButton","WID_btn_SettingsSave",422,None,None,None,1,None,None),
 	(1,425,"GtkButton","WID_btn_SettingsDelete",422,None,None,None,2,None,None),
-	(1,426,"GtkComboBoxText","WID_combo_SettingsConfigurations",420,None,None,None,0,None,None)
+	(1,426,"GtkComboBoxText","WID_combo_SettingsConfigurations",420,None,None,None,0,None,None),
+	(1,427,"GtkToggleButton","WID_tgl_Sweep",77,None,None,None,0,None,None)
   </object>
   <object_property>
 	(1,1,"GtkWidget","focusable","True",None,None,None,None,None,None,None,None,None),
@@ -308,9 +308,6 @@
 	(1,77,"GtkBox","homogeneous","True",None,None,None,None,None,None,None,None,None),
 	(1,77,"GtkBox","spacing","4",None,None,None,None,None,None,None,None,None),
 	(1,77,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
-	(1,78,"GtkButton","label","Sweep",None,None,None,None,None,None,None,None,None),
-	(1,78,"GtkWidget","margin-top","4",None,None,None,None,None,None,None,None,None),
-	(1,78,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
 	(1,79,"GtkButton","label","Calibrate",None,None,None,None,None,None,None,None,None),
 	(1,79,"GtkWidget","margin-top","4",None,None,None,None,None,None,None,None,None),
 	(1,79,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
@@ -928,7 +925,9 @@
 	(1,424,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
 	(1,425,"GtkButton","label","Delete",None,None,None,None,None,None,None,None,None),
 	(1,425,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
-	(1,426,"GtkComboBox","has-entry","True",None,None,None,None,None,None,None,None,None)
+	(1,426,"GtkComboBox","has-entry","True",None,None,None,None,None,None,None,None,None),
+	(1,427,"GtkButton","label","Sweep",None,None,None,None,None,None,None,None,None),
+	(1,427,"GtkWidget","margin-top","4",None,None,None,None,None,None,None,None,None)
   </object_property>
   <object_signal>
 	(45,1,163,"GtkComboBox","changed","CB_combo_Smoothing",None,None,None,None,None)

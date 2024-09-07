@@ -22,14 +22,14 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.01-2"
+   #define VERSION "1.02-1"
 #endif
 
 
 
 #define LOG( level, message, ...) \
     g_log_structured (G_LOG_DOMAIN, level, \
-		  "SYSLOG_IDENTIFIER", "HPGLplotter", \
+		  "SYSLOG_IDENTIFIER", "hp8970", \
 		  "CODE_FUNC", __FUNCTION__, \
 		  "CODE_LINE", G_STRINGIFY(__LINE__), \
 		  "MESSAGE", message, ## __VA_ARGS__)
@@ -146,7 +146,7 @@ typedef struct {
     // tail is the index of the *next* item location (not the last one inserted)
     // i.e. the first item index is head, the last is tail-1
     // If there is nothing in the buffer, head == tail
-    guint head, tail;
+    guint head, tail, rewriteTail;
     guint size;
 
     // index ( 0 to size of measurement that is (say) 60 seconds before the measurement at the tail
@@ -165,12 +165,12 @@ typedef struct {
 } tCircularBuffer;
 
 #define MAX_NOISE_SOURCE_NAME_LENGTH       50
-#define MAX_NOISE_SOURCE_CALDATA_LENGTH    35
-#define MAX_NOISE_SOURCE_CALDATA_LENGTH_A  27       // HP8970A has 27 points only
+#define MAX_NOISE_SOURCE_ENR_DATA_LENGTH    35
+#define MAX_NOISE_SOURCE_ENR_DATA_LENGTH_A  27       // HP8970A has 27 points only
 #define MAX_NOISE_SOURCES                   5
 typedef struct {
     gchar name[MAX_NOISE_SOURCE_NAME_LENGTH + 1];                     // name of noise source
-    gdouble calibrationPoints[MAX_NOISE_SOURCE_CALDATA_LENGTH][2];    // freq / ENR
+    gdouble calibrationPoints[MAX_NOISE_SOURCE_ENR_DATA_LENGTH][2];    // freq / ENR
 } tNoiseSource;
 
 // Settings for HP8970
@@ -190,6 +190,7 @@ typedef struct {
         guint32 bCorrectedNFAndGain :1;
         guint32 bLossCompensation   :1;
         guint32 bSpotFrequency      :1;
+        guint32 bAutoSweep          :1;
         guint32 bAutoScaling        :1;
     } switches;
 

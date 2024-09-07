@@ -33,6 +33,7 @@
     <p>The plot window of the <app>HP8970 Companion</app> will display the readings taken during during the sweep. If the 8970 was 
     calibrated and the <gui>Correction</gui> checkbox was checked, the gain plot will also be displayed.</p>
     <p>While the sweep is occuring, most controls will be disabled.</p>
+    <p>Using the left mouse button to activate the <key>Sweep</key> function will result in a single sweep; however, if the right mouse button is used, the HP8970 will auto sweep, continuing to sweep until the <key>Sweep</key> toggle is unset.</p> 
   </section>
   <section>
     <title>Spot Frequency Measurements over Time</title>

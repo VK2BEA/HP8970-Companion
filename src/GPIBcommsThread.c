@@ -824,7 +824,17 @@ threadGPIB (gpointer _pGlobal) {
                     calibrateHP8970( pGlobal, descGPIB_HP8970, descGPIB_extLO, &GPIBstatus );
                     IBLOC(descGPIB_HP8970, datum, GPIBstatus);
                     ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
-                break;
+                    break;
+
+                case TG_FREQUENCY_CALIBRATE:
+                    postInfo( "Frequency calibration started");
+                    if( GPIBasyncWrite (descGPIB_HP8970, "Y2", &GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
+                        postError( "Frequency calibration error");
+                    } else {
+                        postInfo( "Frequency calibration complete");
+                    }
+                    IBLOC(descGPIB_HP8970, datum, GPIBstatus);
+                    ibrsp (descGPIB_HP8970, &HP8970status);    // Clear out status
                     break;
 
                 case TG_SWEEP_HP8970:
@@ -849,7 +859,7 @@ threadGPIB (gpointer _pGlobal) {
                         else
                             g_string_printf( pstCommands, "NDNR" );
                         for( gint i=0; i < (pGlobal->flags.bbHP8970Bmodel == 0 ?
-                                MAX_NOISE_SOURCE_CALDATA_LENGTH_A : MAX_NOISE_SOURCE_CALDATA_LENGTH); i++ ) {
+                                MAX_NOISE_SOURCE_ENR_DATA_LENGTH_A : MAX_NOISE_SOURCE_ENR_DATA_LENGTH); i++ ) {
                             if( pGlobal->noiseSourceCache.calibrationPoints[i][0] == 0.0 )
                                 continue;
 

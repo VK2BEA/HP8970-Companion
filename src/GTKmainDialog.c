@@ -218,7 +218,7 @@ CB_edit_changed(   GtkEditable* self, gpointer user_data ) {
 void
 quarantineControlsOnSweep( tGlobal *pGlobal, gboolean bSpot, gboolean bShow ) {
 
-    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_btn_Sweep ], bShow );
+    gtk_widget_set_sensitive ( pGlobal->widgets[ eW_tgl_Sweep ], pGlobal->HP8970settings.switches.bAutoSweep ? TRUE : bShow );
     gtk_widget_set_sensitive ( pGlobal->widgets[ eW_btn_Calibrate ], pGlobal->flags.bCalibrationNotPossible ? FALSE : bShow );
     gtk_widget_set_sensitive ( pGlobal->widgets[ eW_tgl_Spot ], bSpot ? TRUE : bShow );
     gtk_widget_set_sensitive ( pGlobal->widgets[ eW_chk_Correction ], bShow );
@@ -242,19 +242,70 @@ quarantineControlsOnSweep( tGlobal *pGlobal, gboolean bSpot, gboolean bShow ) {
  * \param  udata        user data
  */
 static void
-CB_btn_Sweep( GtkButton* wBtnGetData, gpointer udata ) {
-	tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wBtnGetData), "data");
+CB_tgl_Sweep (GtkToggleButton *wSweep, gpointer user_data) {
+    gboolean bSweep;
+	tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wSweep), "data");
 
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON( pGlobal->widgets[ eW_tgl_Spot ] ), FALSE );
+	bSweep = gtk_toggle_button_get_active (wSweep);
 
 	if( pGlobal->HP8970settings.switches.bSpotFrequency ) {
         postDataToGPIBThread (TG_ABORT, NULL);
         pGlobal->HP8970settings.switches.bSpotFrequency = FALSE;
 	}
 
-	postDataToGPIBThread (TG_SWEEP_HP8970, NULL);
+	// If we have pressed the button but we are not auto sweeping
+	// do a single sweep
+	if( bSweep && !pGlobal->HP8970settings.switches.bAutoSweep) {
+	    postDataToGPIBThread (TG_SWEEP_HP8970, NULL);
+	    g_signal_handlers_block_by_func( wSweep, CB_tgl_Sweep, NULL );
+	    gtk_toggle_button_set_active (wSweep, FALSE);
+        g_signal_handlers_unblock_by_func( wSweep, CB_tgl_Sweep, NULL );
+        quarantineControlsOnSweep( pGlobal, FALSE, FALSE );
+	} else {
+	    // Otherwise terminate the autosweep
+	    if( pGlobal->HP8970settings.switches.bAutoSweep ) {
+	        g_signal_handlers_block_by_func( wSweep, CB_tgl_Sweep, NULL );
+	        gtk_toggle_button_set_active (wSweep, FALSE);
+	        g_signal_handlers_unblock_by_func( wSweep, CB_tgl_Sweep, NULL );
+	        gtk_widget_set_sensitive ( GTK_WIDGET( wSweep ), FALSE );
+	    }
+	}
 
-	quarantineControlsOnSweep( pGlobal, FALSE, FALSE );
+	pGlobal->HP8970settings.switches.bAutoSweep = FALSE;
+}
+
+/*!     \brief  Callback for Sweep (right button) .. auto trigger
+ *
+ * Callback for Sweep (right button) .. auto trigger
+ *
+ * \param  wSweepGesture        pointer to GtkGesture widget
+ * \param  udata                user data (unused)
+ */
+static void
+CB_gesture_SweepRightButton( GtkGestureClick* wSweepGesture, gpointer udata ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wSweepGesture), "data");
+    GtkToggleButton *wSweep = GTK_TOGGLE_BUTTON( pGlobal->widgets[ eW_tgl_Sweep ] );
+
+    gboolean bSweep = gtk_toggle_button_get_active ( wSweep );
+    // If we are not sweeping, switch the toggle button on
+    // indicate the auto sweep & start the sweep
+    if( !bSweep ) {
+        pGlobal->HP8970settings.switches.bAutoSweep = TRUE;
+        postDataToGPIBThread (TG_SWEEP_HP8970, NULL);
+        g_signal_handlers_block_by_func( wSweep, CB_tgl_Sweep, NULL );
+        gtk_toggle_button_set_active (wSweep, TRUE);
+        g_signal_handlers_unblock_by_func( wSweep, CB_tgl_Sweep, NULL );
+        quarantineControlsOnSweep( pGlobal, FALSE, FALSE );
+    } else {
+        // If we are sweeping, switch off the toggle button and
+        // disable the auto sweep. The sweep will end and controls will be
+        // re-enabled
+        pGlobal->HP8970settings.switches.bAutoSweep = FALSE;
+        g_signal_handlers_block_by_func( wSweep, CB_tgl_Sweep, NULL );
+        gtk_toggle_button_set_active (wSweep, FALSE);
+        g_signal_handlers_unblock_by_func( wSweep, CB_tgl_Sweep, NULL );
+    }
 }
 
 /*!     \brief  Callback for Spot Frequency read
@@ -278,20 +329,36 @@ void CB_tgl_Spot (GtkToggleButton *wSpot, gpointer user_data) {
     }
 }
 
-/*!     \brief  Callback for Start Frequency spin button
+/*!     \brief  Callback for Calibration button
  *
- * Spin button for the start frequency
+ * Calibration
  *
- * \param  wFrStart  pointer to GtkSpinButton
- * \param  udata     user data
+ * \param  wBtnCalibrate        pointer to GtkButton for Calibrate
+ * \param  uData                user data (unused)
  */
 static void
-CB_btn_Calibrate( GtkButton* wBtnCalibrate, gpointer udata ) {
+CB_btn_Calibrate( GtkButton* wBtnCalibrate, gpointer uData ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wBtnCalibrate), "data");
 
-    postDataToGPIBThread (TG_CALIBRATE, NULL);
+    postDataToGPIBThread ( TG_CALIBRATE, NULL);
     quarantineControlsOnSweep( pGlobal, FALSE, FALSE );
 }
+
+/*!     \brief  Callback for Calibration button
+ *
+ * Calibration
+ *
+ * \param  wBtnCalibrate        pointer to GtkButton for Calibrate
+ * \param  udata                user data (unused)
+ */
+static void
+CB_btn_FrequencyCalibrate( GtkGestureClick* wFrequencyCalibrateGesture, gpointer udata ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wFrequencyCalibrateGesture), "data");
+
+    postDataToGPIBThread ( TG_FREQUENCY_CALIBRATE, NULL);
+    quarantineControlsOnSweep( pGlobal, FALSE, FALSE );
+}
+
 
 /*!     \brief  Callback for correction check button
  *
@@ -800,6 +867,7 @@ void
 initializeMainDialog( tGlobal *pGlobal )
 {
     GtkWidget *wDrawingArea, *wApplication, *wModeCombo, *wSaveJSON;
+    GtkGesture *gesture;
 
     wDrawingArea = pGlobal->widgets[ eW_drawing_Plot ];
     wApplication = pGlobal->widgets[ eW_HP8970_application ];
@@ -825,9 +893,23 @@ initializeMainDialog( tGlobal *pGlobal )
     g_signal_connect( pGlobal->widgets[ eW_spin_FrStep_Sweep ],    "value-changed", G_CALLBACK( CB_spin_FrStep_Sweep ),    NULL);
     g_signal_connect( pGlobal->widgets[ eW_combo_Smoothing ],  "changed", G_CALLBACK( CB_combo_Smoothing ), NULL);
     // Connect callbacks
-    g_signal_connect( pGlobal->widgets[ eW_btn_Sweep ],  "clicked", G_CALLBACK( CB_btn_Sweep ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_tgl_Sweep ],  "toggled", G_CALLBACK( CB_tgl_Sweep ), NULL);
+    // Right mouse button press
+    gesture = gtk_gesture_click_new ();
+    g_object_set_data(G_OBJECT(gesture), "data", pGlobal);
+    gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gesture), 3);
+    g_signal_connect( gesture, "pressed",  G_CALLBACK( CB_gesture_SweepRightButton ), pGlobal);
+    gtk_widget_add_controller ( pGlobal->widgets[ eW_tgl_Sweep ], GTK_EVENT_CONTROLLER (gesture) );
+
     g_signal_connect( pGlobal->widgets[ eW_tgl_Spot ],  "toggled", G_CALLBACK( CB_tgl_Spot ), NULL);
+    // Calibrate on Left mouse button release
     g_signal_connect( pGlobal->widgets[ eW_btn_Calibrate ], "clicked", G_CALLBACK( CB_btn_Calibrate ), NULL);
+    // Frequency calibrate on right mouse release
+    gesture = gtk_gesture_click_new ();
+    g_object_set_data(G_OBJECT(gesture), "data", pGlobal);
+    gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gesture), 3);
+    g_signal_connect (gesture, "released", G_CALLBACK (CB_btn_FrequencyCalibrate), NULL);
+    gtk_widget_add_controller (pGlobal->widgets[ eW_btn_Calibrate ], GTK_EVENT_CONTROLLER (gesture));
 
     g_signal_connect( pGlobal->widgets[ eW_btn_Print ],  "clicked", G_CALLBACK( CB_btn_Print ), NULL);
     g_signal_connect( pGlobal->widgets[ eW_btn_PDF ],  "clicked", G_CALLBACK( CB_btn_PDF ), NULL);
@@ -837,7 +919,7 @@ initializeMainDialog( tGlobal *pGlobal )
 
     // Connect a right click gesture to the 'save JSON' widget
     g_signal_connect( pGlobal->widgets[ eW_btn_SaveJSON ],  "clicked", G_CALLBACK( CB_btn_SaveJSON ), NULL);
-    GtkGesture *gesture = gtk_gesture_click_new ();
+    gesture = gtk_gesture_click_new ();
     gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gesture), 3);
     g_signal_connect (gesture, "released", G_CALLBACK (CB_rightClickGesture_SaveJSON), wSaveJSON);
     gtk_widget_add_controller (wSaveJSON, GTK_EVENT_CONTROLLER (gesture));
@@ -864,14 +946,17 @@ initializeMainDialog( tGlobal *pGlobal )
     gtk_widget_add_controller (wDrawingArea, GTK_EVENT_CONTROLLER (eventMouseWheel));
 
     // Mouse button callbacks for freezing and releasing the live marker
+    // Left mouse button release
     GtkGesture *gestureMouseClick = gtk_gesture_click_new ();
     gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gestureMouseClick), 1);  // default .. so not necessary
     g_signal_connect( gestureMouseClick, "released",  G_CALLBACK( CB_PlotMouse_3_press_1_release ), pGlobal);
     gtk_widget_add_controller ( wDrawingArea, GTK_EVENT_CONTROLLER (gestureMouseClick) );
+    // Right mouse button press
     gestureMouseClick = gtk_gesture_click_new ();
     gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gestureMouseClick), 3);
     g_signal_connect( gestureMouseClick, "pressed",  G_CALLBACK( CB_PlotMouse_3_press_1_release ), pGlobal);
     gtk_widget_add_controller ( wDrawingArea, GTK_EVENT_CONTROLLER (gestureMouseClick) );
+    // Left mouse button press
     gestureMouseClick = gtk_gesture_click_new ();
     gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gestureMouseClick), 1);
     g_signal_connect( gestureMouseClick, "pressed",  G_CALLBACK( on_PlotLeftMouse_1_press ), pGlobal);

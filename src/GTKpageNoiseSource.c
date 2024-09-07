@@ -399,7 +399,7 @@ static void
 initializeNoiseSourceCalPoints (GListStore *store, tNoiseSource *noiseSource)
 {
     g_list_store_remove_all( store );
-	for ( gint i=0; i < MAX_NOISE_SOURCE_CALDATA_LENGTH; i++ ) {
+	for ( gint i=0; i < MAX_NOISE_SOURCE_ENR_DATA_LENGTH; i++ ) {
 	    if( noiseSource->calibrationPoints[ i ][ 0 ] != 0.0 ) {
             gchar *sFreq = g_strdup_printf( "%.0lf", noiseSource->calibrationPoints[ i ][ 0 ] );
             gchar *sENR  = g_strdup_printf( "%.2lf", noiseSource->calibrationPoints[ i ][ 1 ] );
@@ -459,7 +459,7 @@ CB_NS_btn_Upload ( GtkButton* wNSsaveBtn, gpointer user_data ) {
 
     bzero( &pGlobal->noiseSourceCache, sizeof(tNoiseSource) );
     gint nCalPoints = g_list_model_get_n_items( listModel );
-    for( int i = 0; i < nCalPoints && i < MAX_NOISE_SOURCE_CALDATA_LENGTH; i++ ) {
+    for( int i = 0; i < nCalPoints && i < MAX_NOISE_SOURCE_ENR_DATA_LENGTH; i++ ) {
 
         NoiseSourceTuple *pNoiseTuple = g_list_model_get_item ( listModel, i );
         gchar *sFreq, *sENR;
@@ -504,7 +504,7 @@ CB_NS_btn_Save ( GtkButton* wNSsaveBtn, gpointer user_data ) {
     GListModel *listModel = G_LIST_MODEL( gtk_column_view_get_model( wCVnoiseSource) );
 
     gint nCalPoints = g_list_model_get_n_items( listModel );
-    for( int i = 0; i < nCalPoints && i < MAX_NOISE_SOURCE_CALDATA_LENGTH; i++ ) {
+    for( int i = 0; i < nCalPoints && i < MAX_NOISE_SOURCE_ENR_DATA_LENGTH; i++ ) {
 
         NoiseSourceTuple *pNoiseTuple = g_list_model_get_item ( listModel, i );
         gchar *sFreq, *sENR;
