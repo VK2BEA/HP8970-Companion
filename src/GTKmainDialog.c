@@ -17,6 +17,8 @@ static gboolean
 CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType state, GtkEventControllerKey *event_controller) {
 
     tGlobal *pGlobal = (tGlobal*) g_object_get_data (dataObject, "data");
+    tCircularBuffer *pMemory = &pGlobal->plot.memoryBuffer;
+    tCircularBuffer *pMeasurement = &pGlobal->plot.measurementBuffer;
 
 //  if (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK))
 //      return FALSE;
@@ -94,18 +96,38 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
                     break;
                 }
             break;
-            case GDK_KEY_F3:
+            case GDK_KEY_F9:
                 switch (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK | GDK_SUPER_MASK))
                     {
                     case GDK_SHIFT_MASK:
+                        // Hide memory Shift F9
+                        gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_ShowMemory ], FALSE );
                         break;
                     case GDK_CONTROL_MASK:
+                        // Save measurement to memory Ctrl F9
+                        if( pMeasurement->flags.bValidNoiseData || pMeasurement->flags.bValidGainData ) {
+                            g_free( pMemory->measurementData );
+                            pMemory->measurementData = 0;
+                            *pMemory = *pMeasurement;
+                            pMemory->measurementData = g_memdup2( pMeasurement->measurementData, pMeasurement->size * sizeof(tNoiseAndGain) );
+                            gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_ShowMemory ], TRUE );
+                        }
                         break;
                     case GDK_ALT_MASK:
+                        // Clear the memory Alt F9
+                        g_free( pMemory->measurementData );
+                        bzero( pMemory, sizeof( tCircularBuffer ) );
+                        gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_ShowMemory ], FALSE );
                         break;
                     case GDK_SUPER_MASK:
+                        // Clear the measurement Win F9
+                        g_free( pMeasurement->measurementData );
+                        bzero( pMeasurement, sizeof( tCircularBuffer ) );
+                        gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
                         break;
                     case 0:
+                        // Show Memory F9
+                        gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_ShowMemory ], TRUE );
                         break;
                     }
                 break;
@@ -707,6 +729,40 @@ CB_PlotMouse_3_press_1_release ( GtkGestureClick* eventGesture, gint n_press, gd
     }
 }
 
+/*!     \brief  Save trace to memory
+ *
+ * Save trace to memory
+ *
+ * \param wBtnMemory    pointer to button widget
+ * \param udata         not used
+ */
+void
+CB_btn_Memory ( GtkButton *wBtnMemory, gpointer udata ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wBtnMemory), "data");
+    tCircularBuffer *pMemory = &pGlobal->plot.memoryBuffer;
+    tCircularBuffer *pMeasurement = &pGlobal->plot.measurementBuffer;
+
+    if( !pGlobal->plot.flags.bSpotFrequencyPlot &&
+            (pMeasurement->flags.bValidNoiseData || pMeasurement->flags.bValidGainData) ) {
+        g_free( pMemory->measurementData );
+        pMemory->measurementData = 0;
+        *pMemory = *pMeasurement;
+        pMemory->measurementData = g_memdup2( pMeasurement->measurementData, pMeasurement->size * sizeof(tNoiseAndGain) );
+        gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_ShowMemory ], TRUE );
+    }
+}
+
+
+// Right click on the save JSON button
+void
+CB_rightClickGesture_ClearMemory (GtkGesture *gesture, int n_press, double x, double y, gpointer udata) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(gesture), "data");
+    // Clear the memory Alt F9
+    g_free( pGlobal->plot.memoryBuffer.measurementData );
+    bzero( &pGlobal->plot.memoryBuffer, sizeof( tCircularBuffer ) );
+    gtk_widget_queue_draw ( GTK_WIDGET( pGlobal->widgets[ eW_drawing_Plot ] ) );
+}
+
 /*!     \brief  Refresh the controls on the main page
  *
  * Refresh the controls on the main page (like the spin buttons)
@@ -916,6 +972,13 @@ initializeMainDialog( tGlobal *pGlobal )
     g_signal_connect( pGlobal->widgets[ eW_btn_SVG ],  "clicked", G_CALLBACK( CB_btn_SVG ), NULL);
     g_signal_connect( pGlobal->widgets[ eW_btn_PNG ],  "clicked", G_CALLBACK( CB_btn_PNG ), NULL);
     g_signal_connect( pGlobal->widgets[ eW_btn_CSV ],  "clicked", G_CALLBACK( CB_btn_CSV ), NULL);
+
+    g_signal_connect( pGlobal->widgets[ eW_btn_Memory ],  "clicked", G_CALLBACK( CB_btn_Memory ), NULL);
+    gesture = gtk_gesture_click_new ();
+    g_object_set_data(G_OBJECT(gesture), "data", pGlobal);
+    gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gesture), 3);
+    g_signal_connect (gesture, "released", G_CALLBACK (CB_rightClickGesture_ClearMemory), NULL);
+    gtk_widget_add_controller (pGlobal->widgets[ eW_btn_Memory ], GTK_EVENT_CONTROLLER (gesture));
 
     // Connect a right click gesture to the 'save JSON' widget
     g_signal_connect( pGlobal->widgets[ eW_btn_SaveJSON ],  "clicked", G_CALLBACK( CB_btn_SaveJSON ), NULL);

@@ -47,9 +47,9 @@ GdkRGBA plotElementColorsFactory[ eMAX_COLORS ] = {
         [eColorTBD1]       = {0.51, 0.51, 0.84, 1.0},  // light blue
         [eColorTBD2]       = {0.00, 0.00, 1.00, 1.0},
         [eColorTBD3]       = {1.00, 0.00, 0.00, 1.0},
-        [eColorTBD4]       = {1.00, 0.00, 0.00, 1.0},
-        [eColorNoiseMem]   = {0.00, 0.00, 0.40, 0.5},
-        [eColorGainMem]    = {0.00, 0.40, 0.00, 0.5}
+        [eColorTBD4]       = {1.00, 1.00, 0.00, 1.0},
+        [eColorNoiseMem]   = {0.00, 0.00, 0.40, 1.0},
+        [eColorGainMem]    = {0.00, 0.40, 0.00, 1.0}
 };
 GdkRGBA plotElementColors[ eMAX_COLORS ];
 
@@ -320,13 +320,16 @@ msTimeToString( gint64 msTime, gboolean bShort ) {
 gint
 setPlotBoundaries( tGlobal *pGlobal ) {
     gint rtnStatus = 0;
-    tCircularBuffer *pCircularBuffer = &pGlobal->plot.measurementBuffer;
+    tCircularBuffer *pMeasurementBuffer = &pGlobal->plot.measurementBuffer;
+    tCircularBuffer *pMemoryBuffer = &pGlobal->plot.memoryBuffer;
+
+    gdouble minFreqMHz = G_MAXDOUBLE, maxFreqMHz = G_MINDOUBLE, minNoise = G_MAXDOUBLE, maxNoise = G_MINDOUBLE, minGain = G_MAXDOUBLE, maxGain = G_MINDOUBLE;
 
     if( pGlobal->plot.flags.bSpotFrequencyPlot ) {
         // the ord.time us a gint64 (milliseconds)
-        gdouble endTime = GINT_MSTIME_TO_DOUBLE( getItemFromCircularBuffer( pCircularBuffer, LAST_ITEM )->abscissa.time );    // in ms
+        gdouble endTime = GINT_MSTIME_TO_DOUBLE( getItemFromCircularBuffer( pMeasurementBuffer, LAST_ITEM )->abscissa.time );    // in ms
 
-        determineTimeExtremesInCircularBuffer( pCircularBuffer );
+        determineTimeExtremesInCircularBuffer( pMeasurementBuffer );
 
         // plot maximum is the last sample received
         // plot minimum is the maximum - TIME_PLOT_LENGTH
@@ -337,18 +340,45 @@ setPlotBoundaries( tGlobal *pGlobal ) {
                                                         - fmod( endTime, (TIME_PLOT_LENGTH / TIME_DIVISIONS_PER_GRID) * pGlobal->plot.smoothingFactor );
 
         pGlobal->plot.axis[ eFreqOrTime ].perDiv = (TIME_PLOT_LENGTH / TIME_DIVISIONS_PER_GRID) * pGlobal->plot.smoothingFactor;
-    } else
-        quantizePlotFrequencyRange( pGlobal, pCircularBuffer->minAbscissa.freq / MHz(1.0), pCircularBuffer->maxAbscissa.freq / MHz(1.0) );
+    } else {
+        if( pMeasurementBuffer->flags.bValidNoiseData || pMeasurementBuffer->flags.bValidGainData) {
+            minFreqMHz = MIN( minFreqMHz, pMeasurementBuffer->minAbscissa.freq / MHz(1.0) );
+            maxFreqMHz = MAX( maxFreqMHz, pMeasurementBuffer->maxAbscissa.freq / MHz(1.0) );
+        }
+        if( pGlobal->flags.bShowMemory &&
+                (pMemoryBuffer->flags.bValidNoiseData || pMemoryBuffer->flags.bValidGainData)) {
+            minFreqMHz = MIN( minFreqMHz, pMemoryBuffer->minAbscissa.freq / MHz(1.0) );
+            maxFreqMHz = MAX( maxFreqMHz, pMemoryBuffer->maxAbscissa.freq / MHz(1.0) );
+        }
+
+        quantizePlotFrequencyRange( pGlobal, minFreqMHz, maxFreqMHz );
+    }
 
     if( pGlobal->HP8970settings.switches.bAutoScaling || pGlobal->plot.flags.bCalibrationPlot ) {
-        quantizePlotRange( pGlobal, pCircularBuffer->minNoise, pCircularBuffer->maxNoise, eNoise );
-        quantizePlotRange( pGlobal, pCircularBuffer->minGain, pCircularBuffer->maxGain, eGain );
+        if( pMeasurementBuffer->flags.bValidNoiseData ) {
+            minNoise = MIN( minNoise, pMeasurementBuffer->minNoise );
+            maxNoise = MAX( maxNoise, pMeasurementBuffer->maxNoise );
+        }
+        if( !pGlobal->plot.flags.bSpotFrequencyPlot &&
+                pGlobal->flags.bShowMemory && pMemoryBuffer->flags.bValidNoiseData) {
+            minNoise = MIN( minNoise, pMemoryBuffer->minNoise );
+            maxNoise = MAX( maxNoise, pMemoryBuffer->maxNoise );
+        }
+        quantizePlotRange( pGlobal, minNoise, maxNoise, eNoise );
+
+        if( pMeasurementBuffer->flags.bValidGainData ) {
+            minGain = MIN( minGain, pMeasurementBuffer->minGain );
+            maxGain = MAX( maxGain, pMeasurementBuffer->maxGain );
+        }
+        if( !pGlobal->plot.flags.bSpotFrequencyPlot && pGlobal->flags.bShowMemory && pMemoryBuffer->flags.bValidGainData) {
+            minGain = MIN( minGain, pMemoryBuffer->minGain );
+            maxGain = MAX( maxGain, pMemoryBuffer->maxGain );
+        }
+        quantizePlotRange( pGlobal, minGain, maxGain, eGain );
     } else {
         determineFixedGridDivisions( pGlobal, eNoise );
         determineFixedGridDivisions( pGlobal, eGain );
     }
-
-
 
     return rtnStatus;
 }
@@ -640,7 +670,8 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
 
 // Y (right) gain grid
 
-        if( pGlobal->plot.measurementBuffer.flags.bValidGainData ) {
+        if( pGlobal->plot.measurementBuffer.flags.bValidGainData ||
+                (pGlobal->flags.bShowMemory && pGlobal->plot.memoryBuffer.flags.bValidGainData )) {
             if( pGainAxis->perDiv < 0.1 )
                 dp = 2;
             else if ( pGainAxis->perDiv < 1.0 )
@@ -1045,9 +1076,26 @@ plotGainTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
         cairo_clip( cr );
 
         cairo_translate(cr, pGrid->leftGridPosn, pGrid->bottomGridPosn);
-
-        gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorGain   ] );
         cairo_set_line_width (cr, pGrid->areaWidth / 1000.0 );
+
+        if( pGlobal->flags.bShowMemory && !pGlobal->plot.flags.bSpotFrequencyPlot &&
+                pGlobal->plot.memoryBuffer.flags.bValidGainData ) {
+            gdouble dash[] = { pGrid->gridHeight / 400.0, pGrid->gridHeight / 400.0 };
+        // Draw the memory Gain trace
+            gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorGainMem   ] );
+            cairo_set_dash( cr, dash, 1, 0.0 );
+            drawTrace( cr, pGlobal, &pGlobal->plot.memoryBuffer,
+                           pGrid->gridWidth, pGrid->gridHeight,
+                           eGain );
+            cairo_set_dash( cr, dash, 0, 0.0 );
+        }
+
+        // Draw the gain trace .. but not if it is invalid
+        if( !pGlobal->plot.measurementBuffer.flags.bValidGainData ) {
+            cairo_restore(cr);
+            return;
+        }
+        gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorGain   ] );
         drawTrace( cr, pGlobal, &pGlobal->plot.measurementBuffer,
                    pGrid->gridWidth, pGrid->gridHeight,
                    eGain );
@@ -1130,10 +1178,26 @@ plotNoiseTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
 
         // origin at the bottom of the grid (not screen)
         cairo_translate(cr, pGrid->leftGridPosn, pGrid->bottomGridPosn);
-
         cairo_set_line_width (cr, pGrid->areaWidth / 1000.0 );
 
-        // Draw the Noise trace
+        if( pGlobal->flags.bShowMemory && !pGlobal->plot.flags.bSpotFrequencyPlot &&
+                pGlobal->plot.memoryBuffer.flags.bValidNoiseData ) {
+            gdouble dash[] = { pGrid->gridHeight / 400.0, pGrid->gridHeight / 400.0 };
+        // Draw the memory Noise trace
+            gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorNoiseMem   ] );
+            cairo_set_dash( cr, dash, 1, 0.0 );
+            drawTrace( cr, pGlobal, &pGlobal->plot.memoryBuffer,
+                           pGrid->gridWidth, pGrid->gridHeight,
+                           eNoise );
+            cairo_set_dash( cr, dash, 0, 0.0 );
+        }
+
+        // Draw the Noise trace .. but not if it is invalid
+        if( !pGlobal->plot.measurementBuffer.flags.bValidNoiseData ){
+            cairo_restore(cr);
+            return;
+        }
+
         gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorNoise   ] );
         drawTrace( cr, pGlobal, &pGlobal->plot.measurementBuffer,
                    pGrid->gridWidth, pGrid->gridHeight,
@@ -1250,16 +1314,18 @@ plotNoiseFigureAndGain (cairo_t *cr, gint areaWidth, gint areaHeight, tGlobal *p
 
     // clear the screen
     if( pGlobal->flags.bPreviewModeDiagram == FALSE
-            && (pGlobal->plot.measurementBuffer.flags.bValidNoiseData || pGlobal->plot.measurementBuffer.flags.bValidGainData) ) {
+            && (pGlobal->plot.measurementBuffer.flags.bValidNoiseData || pGlobal->plot.measurementBuffer.flags.bValidGainData
+                    || (pGlobal->flags.bShowMemory && (pGlobal->plot.memoryBuffer.flags.bValidNoiseData || pGlobal->plot.memoryBuffer.flags.bValidGainData ))
+            ) ) {
         cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 1.0 );
         cairo_paint( cr );
 
         flipVertical( cr, &grid );
         plotGrid( cr, &grid, pGlobal );
 
-        if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData )
+        if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData || pGlobal->plot.memoryBuffer.flags.bValidNoiseData )
             plotNoiseTrace( cr, &grid, pGlobal );
-        if( pGlobal->plot.measurementBuffer.flags.bValidGainData )
+        if( pGlobal->plot.measurementBuffer.flags.bValidGainData || pGlobal->plot.memoryBuffer.flags.bValidGainData )
             plotGainTrace( cr, &grid, pGlobal );
 
     } else {

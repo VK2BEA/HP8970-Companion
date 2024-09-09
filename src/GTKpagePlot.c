@@ -51,7 +51,6 @@ void CB_ColorNotify ( GObject* self, GParamSpec* pspec, gpointer gpColor ) {
         plotElementColors[ eColorNoiseMem ].alpha /= 2.0;
     } else if( color == eColorGain ) {
         plotElementColors[ eColorGainMem ] = plotElementColors[ eColorGain ];
-        plotElementColors[ eColorGainMem ].alpha /= 2.0;
     }
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }

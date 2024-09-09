@@ -325,6 +325,46 @@ retrievePlot( gchar *filePath, tGlobal *pGlobal ) {
             json_reader_end_member (reader);    // points
         }
 
+        if( json_reader_read_member (reader, "memory_points")  ) {
+            // memory on;y works with frequency
+            gint nPoints = json_reader_count_elements( reader );
+            initCircularBuffer( &pGlobal->plot.memoryBuffer, nPoints+1, eFreqAbscissa );
+
+            for( int i=0; i < nPoints; i++ ) {
+                // point array 1 of N
+                // move to element i (array with four elements)
+                tNoiseAndGain measurement;
+                json_reader_read_element (reader, i);
+
+                // frequency
+                json_reader_read_element (reader, 0);
+
+                measurement.abscissa.freq = json_reader_get_double_value( reader );
+
+                json_reader_end_element (reader);
+
+                // gain
+                json_reader_read_element (reader, 1);
+                measurement.gain = json_reader_get_double_value( reader );
+                json_reader_end_element (reader);
+
+                // noise
+                json_reader_read_element (reader, 2);
+                measurement.noise = json_reader_get_double_value( reader );
+                json_reader_end_element (reader);
+
+                // flags
+                json_reader_read_element (reader, 3);
+                measurement.flags.all = (guint32)json_reader_get_int_value( reader );
+                json_reader_end_element (reader);
+                addItemToCircularBuffer( &pGlobal->plot.memoryBuffer, &measurement, TRUE );
+                // end of point
+                json_reader_end_element (reader);
+            }
+            json_reader_end_member (reader);    // points
+            gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_ShowMemory ], TRUE );
+        }
+
 
         json_reader_end_member (reader);    // HP8970
         bOK = TRUE;
@@ -456,7 +496,7 @@ savePlot( gchar *filePath, tGlobal *pGlobal ) {
 
 
 
-        if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData ) {
+        if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData || pGlobal->plot.measurementBuffer.flags.bValidGainData ) {
             json_builder_set_member_name (builder, "points");
             json_builder_begin_array(builder);      // begin points array
             gint  nPoints = nItemsInCircularBuffer( &pGlobal->plot.measurementBuffer );
@@ -467,6 +507,23 @@ savePlot( gchar *filePath, tGlobal *pGlobal ) {
                     json_builder_add_int_value ( builder, pMeasurement->abscissa.time );
                 else
                     json_builder_add_double_value ( builder, pMeasurement->abscissa.freq );
+                json_builder_add_double_value ( builder, pMeasurement->gain );
+                json_builder_add_double_value ( builder, pMeasurement->noise );
+                json_builder_add_int_value ( builder, pMeasurement->flags.all );
+                json_builder_end_array(builder);
+            }
+            json_builder_end_array(builder);        // end points array
+        }
+
+        // Memory buffer
+        if( pGlobal->plot.memoryBuffer.flags.bValidNoiseData || pGlobal->plot.memoryBuffer.flags.bValidGainData ) {
+            json_builder_set_member_name (builder, "memory_points");
+            json_builder_begin_array(builder);      // begin points array
+            gint  nPoints = nItemsInCircularBuffer( &pGlobal->plot.memoryBuffer );
+            for( int i=0; i < nPoints; i++ ) {
+                tNoiseAndGain *pMeasurement = getItemFromCircularBuffer( &pGlobal->plot.memoryBuffer, i );
+                json_builder_begin_array(builder);
+                json_builder_add_double_value ( builder, pMeasurement->abscissa.freq );
                 json_builder_add_double_value ( builder, pMeasurement->gain );
                 json_builder_add_double_value ( builder, pMeasurement->noise );
                 json_builder_add_int_value ( builder, pMeasurement->flags.all );
@@ -623,6 +680,7 @@ CB_rightClickGesture_SaveJSON (GtkGesture *gesture, int n_press, double x, doubl
     CB_btn_SaveJSON ( GTK_BUTTON( wBtnSaveHPGL ), GINT_TO_POINTER(1) );
 }
 
+
 /*!     \brief  Callback when opening file from system file selection dialog
  *
  * Callback when opening file from system file selection dialog
@@ -661,6 +719,19 @@ CB_JSONopen( GObject *source_object, GAsyncResult *res, gpointer gpGlobal ) {
                 updateBoundaries( pMeasurement->abscissa.freq,  &pGlobal->plot.measurementBuffer.minAbscissa.freq,
                                   &pGlobal->plot.measurementBuffer.maxAbscissa.freq );
             }
+
+            nPoints = nItemsInCircularBuffer( &pGlobal->plot.memoryBuffer );
+            for( int i=0; i < nPoints; i++ ) {
+                tNoiseAndGain *pMeasurement = getItemFromCircularBuffer( &pGlobal->plot.memoryBuffer, i );
+                if( !pMeasurement->flags.each.bGainInvalid )
+                    pGlobal->plot.memoryBuffer.flags.bValidGainData = TRUE;
+                if( !pMeasurement->flags.each.bNoiseInvalid )
+                    pGlobal->plot.memoryBuffer.flags.bValidNoiseData = TRUE;
+                // Update the minimum and maximum values
+                updateBoundaries( pMeasurement->abscissa.freq,  &pGlobal->plot.memoryBuffer.minAbscissa.freq,
+                                  &pGlobal->plot.memoryBuffer.maxAbscissa.freq );
+            }
+
             gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
             // This has the side effect of redrawing
             GtkEditable *wTitle = gtk_editable_get_delegate(GTK_EDITABLE( pGlobal->widgets[ eW_entry_Title ] ));

@@ -1,0 +1,48 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic" style="guide"
+      id="printing">
+
+  <info>
+    <link type="guide" xref="index#operations"/>
+    <revision pkgversion="2.00.1" date="2024-07-25" status="candidate" />
+
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email>michaelk@IEEE.org</email>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Printing, saving images and saving/recalling plots and data</desc>
+  </info>
+  
+  <title>Printing, Imaging, Saving &amp; Recalling Plots</title>
+  <p><media type="image" mime="image/png" src="media/save.png" /></p>
+  <section id="memory">
+  <title>Saving Traces to Memory</title>
+  <p>The current trace(s) may be saved to a memory by pressing the <key>📷</key> button. Both the current trace(s) and the memory trace(s) may be displayed simmultaneously. The memory trace(s) are displayed as a dotted lines whereas the measurement trace(s) are solid.</p>
+  <p>The memory trace is automatically enabled when the current trace is saved to memory but it may be hidden using the checkbox on the <gui>Options</gui> notebook page.</p>
+  <p>To erase the memory press the <key>📷</key> with the right mouse button.</p>
+  </section>
+  <section id="printing">
+  <title>Printing Plots</title>
+  <p>The displayed plots may be printed on Linux CUPS printers and devices. Press the <key>🖶</key> button to print the currently displayed plot.</p>
+  <p>Page configuration information set in the printer dialog box is retained and restored upon restart.</p> 
+  </section>
+  <section id="imaginging">
+  <title>Creating Plot Images</title>
+  <p>The plot may be saved as an image in either PDF, SVG or PNG formats. Press the <key>PDF</key>, <key>SVG</key> or <key>PNG</key> buttons to save the plot image.</p><p>The page size used for PDF and SVG images is set on the <gui>Options</gui> notebook page.</p>
+  </section>
+  
+  
+  <section id="CSV">
+    <title>CSV Data</title>
+    <p>Plot data may be saved to a CSV file. Press the <key>CSV</key>, when a plot is displayed, and choose the file into which the data will be saved.</p>
+  </section>
+  <section id="JSON">
+    <title>Saving and Restoring Plots</title>
+    <p>Plot data and configuration related to the plot may be saved to a JSON file. Press the <key>⭳</key> to save the plot and plot settings to a JSON file.</p>
+    <p>To recall a plot previously saved to a JSON file, use the <key>📁</key> button.</p>
+    <note style="information"><p>If trace(s) were saved to the memory, these are also saved and / or restored.</p></note>
+  </section>
+</page>

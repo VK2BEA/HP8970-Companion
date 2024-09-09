@@ -66,6 +66,7 @@ buildWidgetList( tGlobal *pGlobal,  GtkBuilder *builder ) {
             [ eW_btn_Calibrate ]                = "WID_btn_Calibrate",
             [ eW_btn_ColorReset ]               = "WID_btn_ColorReset",
             [ eW_btn_CSV ]                      = "WID_btn_CSV",
+            [ eW_btn_Memory ]                   = "WID_btn_Memory",
             [ eW_btn_PDF ]                      = "WID_btn_PDF",
             [ eW_btn_PNG ]                      = "WID_btn_PNG",
             [ eW_btn_Print ]                    = "WID_btn_Print",
@@ -75,7 +76,6 @@ buildWidgetList( tGlobal *pGlobal,  GtkBuilder *builder ) {
             [ eW_btn_SettingsRestore ]          = "WID_btn_SettingsRestore",
             [ eW_btn_SettingsSave ]             = "WID_btn_SettingsSave",
             [ eW_btn_SVG ]                      = "WID_btn_SVG",
-            [ eW_cbutton_ControlerNameNotIdx ]  = "WID_cbutton_ControlerNameNotIdx",
             [ eW_chk_AutoScale ]                = "WID_chk_AutoScale",
             [ eW_chk_Correction ]               = "WID_chk_Correction",
             [ eW_chk_LossOn ]                   = "WID_chk_LossOn",
@@ -89,6 +89,7 @@ buildWidgetList( tGlobal *pGlobal,  GtkBuilder *builder ) {
             [ eW_chk_Settings8970Bopt20 ]       = "WID_chk_Settings8970Bopt20",
             [ eW_chk_SettingsHPlogo ]           = "WID_chk_SettingsHPlogo",
             [ eW_chk_SettingsTime ]             = "WID_chk_SettingsTime",
+            [ eW_chk_ShowMemory]                = "WID_chk_ShowMemory",
             [ eW_chk_useGPIBdeviceName ]        = "WID_chk_useGPIBdeviceName",
             [ eW_chk_use_LO_GPIBdeviceName ]    = "WID_chk_use_LO_GPIBdeviceName",
             [ eW_color_Freq ]                   = "WID_color_Freq",
@@ -160,7 +161,7 @@ buildWidgetList( tGlobal *pGlobal,  GtkBuilder *builder ) {
             [ eW_Splash ]                       = "WID_Splash",
             [ eW_textView_Notes ]               = "WID_textView_Notes",
             [ eW_tgl_Spot ]                     = "WID_tgl_Spot",
-            [ eW_tgl_Sweep ]                    = "WID_btn_Sweep"
+            [ eW_tgl_Sweep ]                    = "WID_tgl_Sweep"
     };
 
     for( int i=0; i < eW_N_WIDGETS; i++ )

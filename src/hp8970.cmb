@@ -41,7 +41,7 @@
 	(1,83,"GtkButton","WID_btn_SVG",80,None,None,None,2,None,None),
 	(1,84,"GtkButton","WID_btn_PNG",80,None,None,None,3,None,None),
 	(1,85,"GtkButton","WID_btn_CSV",80,None,None,None,4,None,None),
-	(1,86,"GtkButton","WID_btn_SaveJSON",80,None,None,None,5,None,None),
+	(1,86,"GtkButton","WID_btn_SaveJSON",80,None,None,None,6,None,None),
 	(1,87,"GtkBox",None,7,None,None,None,2,None,None),
 	(1,88,"GtkLabel",None,87,None,None,None,0,None,None),
 	(1,89,"GtkEntry","WID_entry_Title",87,None,None,None,1,None,None),
@@ -75,7 +75,7 @@
 	(1,178,"GtkCheckButton","WID_chk_NoiseUnit_YdB",174,None,None,None,2,None,None),
 	(1,179,"GtkCheckButton","WID_chk_NoiseUnit_Y",174,None,None,None,3,None,None),
 	(1,180,"GtkCheckButton","WID_chk_NoiseUnit_TeK",175,None,None,None,0,None,None),
-	(1,184,"GtkButton","WID_btn_RestoreJSON",80,None,None,None,6,None,None),
+	(1,184,"GtkButton","WID_btn_RestoreJSON",80,None,None,None,7,None,None),
 	(1,185,"GtkSpinButton","WID_spin_FrStart",139,None,None,None,0,None,None),
 	(1,186,"GtkAdjustment",None,185,None,None,None,0,None,None),
 	(1,190,"GtkLabel",None,175,None,None,None,1,None,None),
@@ -221,7 +221,6 @@
 	(1,404,"GtkBox",None,402,None,None,None,1,None,None),
 	(1,405,"GtkCheckButton","WID_chk_SettingsHPlogo",404,None,None,None,0,None,None),
 	(1,406,"GtkCheckButton","WID_chk_SettingsTime",404,None,None,None,1,None,None),
-	(1,407,"GtkLabel",None,404,None,None,None,2,None,None),
 	(1,408,"GtkFrame",None,242,None,None,None,3,None,None),
 	(1,409,"GtkBox",None,408,None,None,None,0,None,None),
 	(1,410,"GtkCheckButton","WID_chk_Settings8970A",409,None,None,None,0,None,None),
@@ -238,7 +237,9 @@
 	(1,424,"GtkButton","WID_btn_SettingsSave",422,None,None,None,1,None,None),
 	(1,425,"GtkButton","WID_btn_SettingsDelete",422,None,None,None,2,None,None),
 	(1,426,"GtkComboBoxText","WID_combo_SettingsConfigurations",420,None,None,None,0,None,None),
-	(1,427,"GtkToggleButton","WID_tgl_Sweep",77,None,None,None,0,None,None)
+	(1,427,"GtkToggleButton","WID_tgl_Sweep",77,None,None,None,0,None,None),
+	(1,428,"GtkButton","WID_btn_Memory",80,None,None,None,5,None,None),
+	(1,429,"GtkCheckButton","WID_chk_ShowMemory",404,None,None,None,2,None,None)
   </object>
   <object_property>
 	(1,1,"GtkWidget","focusable","True",None,None,None,None,None,None,None,None,None),
@@ -330,6 +331,7 @@
 	(1,85,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
 	(1,86,"GtkButton","icon-name","document-save",None,None,None,None,None,None,None,None,None),
 	(1,86,"GtkWidget","margin-top","4",None,None,None,None,None,None,None,None,None),
+	(1,86,"GtkWidget","tooltip-text","Save trace to JSON file",None,None,None,None,None,None,None,None,None),
 	(1,86,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
 	(1,87,"GtkBox","spacing","4",None,None,None,None,None,None,None,None,None),
 	(1,88,"GtkLabel","label","Title:",None,None,None,None,None,None,None,None,None),
@@ -428,6 +430,7 @@
 	(1,180,"GtkCheckButton","label","Tₑ K",None,None,None,None,None,None,None,None,None),
 	(1,184,"GtkButton","icon-name","document-open",None,None,None,None,None,None,None,None,None),
 	(1,184,"GtkWidget","margin-top","4",None,None,None,None,None,None,None,None,None),
+	(1,184,"GtkWidget","tooltip-text","Load trace from JSON file",None,None,None,None,None,None,None,None,None),
 	(1,184,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
 	(1,185,"GtkEditable","xalign","1.0",None,None,None,None,None,None,None,None,None),
 	(1,185,"GtkSpinButton","adjustment",None,None,None,None,None,186,None,None,None,None),
@@ -874,7 +877,7 @@
 	(1,405,"GtkCheckButton","label","Instrument",None,None,None,None,None,None,None,None,None),
 	(1,405,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
 	(1,406,"GtkCheckButton","active","True",None,None,None,None,None,None,None,None,None),
-	(1,406,"GtkCheckButton","label","Date &amp; Time",None,None,None,None,None,None,None,None,None),
+	(1,406,"GtkCheckButton","label","Date / Time",None,None,None,None,None,None,None,None,None),
 	(1,406,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
 	(1,408,"GtkFrame","label","Instrument Variant",None,None,None,None,None,None,None,None,None),
 	(1,408,"GtkWidget","css-classes","square\nnoSideBorder",None,None,None,None,None,None,None,None,None),
@@ -927,7 +930,12 @@
 	(1,425,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
 	(1,426,"GtkComboBox","has-entry","True",None,None,None,None,None,None,None,None,None),
 	(1,427,"GtkButton","label","Sweep",None,None,None,None,None,None,None,None,None),
-	(1,427,"GtkWidget","margin-top","4",None,None,None,None,None,None,None,None,None)
+	(1,427,"GtkWidget","margin-top","4",None,None,None,None,None,None,None,None,None),
+	(1,428,"GtkButton","icon-name","camera-photo",None,None,None,None,None,None,None,None,None),
+	(1,428,"GtkWidget","margin-top","4",None,None,None,None,None,None,None,None,None),
+	(1,428,"GtkWidget","tooltip-text","Save trace to memory",None,None,None,None,None,None,None,None,None),
+	(1,429,"GtkCheckButton","active","True",None,None,None,None,None,None,None,None,None),
+	(1,429,"GtkCheckButton","label","Memory",None,None,None,None,None,None,None,None,None)
   </object_property>
   <object_signal>
 	(45,1,163,"GtkComboBox","changed","CB_combo_Smoothing",None,None,None,None,None)

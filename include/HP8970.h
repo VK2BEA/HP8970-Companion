@@ -22,7 +22,7 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.02-1"
+   #define VERSION "1.03-1"
 #endif
 
 
@@ -287,6 +287,7 @@ typedef struct {
         guint32 bShowTime               :1;
         guint32 bShowTitle              :1;
         guint32 bShowHPlogo             :1;
+        guint32 bShowMemory             :1;
         guint32 bLiveMarkerActive       :1;
         guint32 bHoldLiveMarker         :1;
         guint32 bPreviewModeDiagram     :1;

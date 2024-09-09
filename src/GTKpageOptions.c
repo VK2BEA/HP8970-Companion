@@ -64,6 +64,21 @@ CB_chk_SettingsTime(GtkCheckButton *wTime, gpointer udata) {
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
+/*!     \brief  Callback for the show memory trace(s)
+ *
+ * Callback for the show memory trace(s)
+ *
+ * \param  wTime            pointer to GtkCheckButton widget
+ * \param  identifier       which of the radio buttons is pressed
+ */
+static void
+CB_chk_ShowMemoryTrace(GtkCheckButton *wShowMemory, gpointer udata) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wShowMemory), "data");
+
+    pGlobal->flags.bShowMemory = gtk_check_button_get_active (wShowMemory);
+    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
+}
+
 /*!     \brief  Callback for the PDF page size radio check buttons
  *
  * Callback for the PDF page size radio check buttons
@@ -358,6 +373,7 @@ initializePageOptions( tGlobal *pGlobal ) {
 
     gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_SettingsHPlogo ], pGlobal->flags.bShowHPlogo );
     gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_SettingsTime ], pGlobal->flags.bShowTime );
+    gtk_check_button_set_active ( pGlobal->widgets[ eW_chk_ShowMemory ], pGlobal->flags.bShowMemory );
 
     gtk_check_button_set_active (  pGlobal->widgets[ PDFpageSizeWidgetNames[ pGlobal->PDFpaperSize % N_PAPER_SIZES ] ], TRUE );
     gtk_check_button_set_active ( pGlobal->widgets[ VariantWidgetNames[ pGlobal->flags.bbHP8970Bmodel % N_VARIANTS ] ], TRUE );
@@ -372,6 +388,7 @@ initializePageOptions( tGlobal *pGlobal ) {
 
     g_signal_connect(pGlobal->widgets[ eW_chk_SettingsHPlogo ],   "toggled", G_CALLBACK( CB_chk_SettingsHPlogo ), NULL);
     g_signal_connect(pGlobal->widgets[ eW_chk_SettingsTime ],   "toggled", G_CALLBACK( CB_chk_SettingsTime ), NULL);
+    g_signal_connect(pGlobal->widgets[ eW_chk_ShowMemory ],   "toggled", G_CALLBACK( CB_chk_ShowMemoryTrace ), NULL);
 
     gtk_window_set_title( pGlobal->widgets[ eW_HP8970_application ],
                           pGlobal->flags.bbHP8970Bmodel ? "HP 8970B Noise Figure Meter" : "HP 8970A Noise Figure Meter");

@@ -40,6 +40,7 @@
     <list>
       <item><p>The <gui>Instrument</gui> checkbox will enable or disable the display of the HP logo and instrument identifier on the plot.</p></item>
       <item><p>The <gui>Date &amp; Time</gui> checkbox will enable or disable the display of the time and date on the plot.</p></item>
+      <item><p>The <gui>Memory</gui> checkbox will enable or disable the traces saved to the mrmory.</p><p>This option is automatically set when saving a trace to the memory or when loading a JSON file containing a memory trace.</p></item>
     </list>
   </section>
   <section>

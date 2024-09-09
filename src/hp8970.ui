@@ -97,9 +97,17 @@
                   </object>
                 </child>
                 <child>
+                  <object class="GtkButton" id="WID_btn_Memory">
+                    <property name="icon-name">camera-photo</property>
+                    <property name="margin-top">4</property>
+                    <property name="tooltip-text">Save trace to memory</property>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkButton" id="WID_btn_SaveJSON">
                     <property name="icon-name">document-save</property>
                     <property name="margin-top">4</property>
+                    <property name="tooltip-text">Save trace to JSON file</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
@@ -107,6 +115,7 @@
                   <object class="GtkButton" id="WID_btn_RestoreJSON">
                     <property name="icon-name">document-open</property>
                     <property name="margin-top">4</property>
+                    <property name="tooltip-text">Load trace from JSON file</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
@@ -1299,12 +1308,15 @@ noborder
                                     <child>
                                       <object class="GtkCheckButton" id="WID_chk_SettingsTime">
                                         <property name="active">True</property>
-                                        <property name="label">Date &amp; Time</property>
+                                        <property name="label">Date / Time</property>
                                         <property name="valign">start</property>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel"/>
+                                      <object class="GtkCheckButton" id="WID_chk_ShowMemory">
+                                        <property name="active">True</property>
+                                        <property name="label">Memory</property>
+                                      </object>
                                     </child>
                                   </object>
                                 </child>

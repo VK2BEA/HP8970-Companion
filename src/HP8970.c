@@ -39,8 +39,7 @@
 #include "messageEvent.h"
 #include "GTKcallbacks.h"
 
-tGlobal globalData =
-    { 0 };
+tGlobal globalData = { 0 };
 
 static gint optDebug = 0;
 static gboolean bOptQuiet = 0;
@@ -179,6 +178,9 @@ initializeData (tGlobal *pGlobal) {
     pGlobal->plot.measurementBuffer.maxNoise = 10.0;
     pGlobal->plot.measurementBuffer.minGain  =  0.0;
     pGlobal->plot.measurementBuffer.maxGain  = 10.0;
+
+    pGlobal->plot.measurementBuffer.measurementData = NULL;
+    pGlobal->plot.memoryBuffer.measurementData = NULL;
 
     pGlobal->HP8970settings.switches.bAutoScaling = TRUE;
     pGlobal->plot.noiseUnits = eFdB;
@@ -415,6 +417,9 @@ on_shutdown (GApplication *app, gpointer userData) {
     g_mutex_clear( &pGlobal->mUpdate );
 
     g_list_free_full ( pGlobal->configurationList, freeConfigationItemContent );
+
+    g_free( pGlobal->plot.measurementBuffer.measurementData );
+    g_free( pGlobal->plot.memoryBuffer.measurementData );
 
     freeSVGhandles();
 
