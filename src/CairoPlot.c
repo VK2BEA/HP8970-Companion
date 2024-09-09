@@ -359,7 +359,7 @@ setPlotBoundaries( tGlobal *pGlobal ) {
             minNoise = MIN( minNoise, pMeasurementBuffer->minNoise );
             maxNoise = MAX( maxNoise, pMeasurementBuffer->maxNoise );
         }
-        if( !pGlobal->plot.flags.bSpotFrequencyPlot &&
+        if( !pGlobal->plot.flags.bCalibrationPlot && !pGlobal->plot.flags.bSpotFrequencyPlot &&
                 pGlobal->flags.bShowMemory && pMemoryBuffer->flags.bValidNoiseData) {
             minNoise = MIN( minNoise, pMemoryBuffer->minNoise );
             maxNoise = MAX( maxNoise, pMemoryBuffer->maxNoise );
@@ -370,7 +370,8 @@ setPlotBoundaries( tGlobal *pGlobal ) {
             minGain = MIN( minGain, pMeasurementBuffer->minGain );
             maxGain = MAX( maxGain, pMeasurementBuffer->maxGain );
         }
-        if( !pGlobal->plot.flags.bSpotFrequencyPlot && pGlobal->flags.bShowMemory && pMemoryBuffer->flags.bValidGainData) {
+        if( !pGlobal->plot.flags.bCalibrationPlot && !pGlobal->plot.flags.bSpotFrequencyPlot
+                && pGlobal->flags.bShowMemory && pMemoryBuffer->flags.bValidGainData) {
             minGain = MIN( minGain, pMemoryBuffer->minGain );
             maxGain = MAX( maxGain, pMemoryBuffer->maxGain );
         }
@@ -1180,8 +1181,8 @@ plotNoiseTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
         cairo_translate(cr, pGrid->leftGridPosn, pGrid->bottomGridPosn);
         cairo_set_line_width (cr, pGrid->areaWidth / 1000.0 );
 
-        if( pGlobal->flags.bShowMemory && !pGlobal->plot.flags.bSpotFrequencyPlot &&
-                pGlobal->plot.memoryBuffer.flags.bValidNoiseData ) {
+        if( !pGlobal->plot.flags.bCalibrationPlot && !pGlobal->plot.flags.bSpotFrequencyPlot
+                && pGlobal->flags.bShowMemory && pGlobal->plot.memoryBuffer.flags.bValidNoiseData ) {
             gdouble dash[] = { pGrid->gridHeight / 400.0, pGrid->gridHeight / 400.0 };
         // Draw the memory Noise trace
             gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorNoiseMem   ] );
@@ -1325,7 +1326,8 @@ plotNoiseFigureAndGain (cairo_t *cr, gint areaWidth, gint areaHeight, tGlobal *p
 
         if( pGlobal->plot.measurementBuffer.flags.bValidNoiseData || pGlobal->plot.memoryBuffer.flags.bValidNoiseData )
             plotNoiseTrace( cr, &grid, pGlobal );
-        if( pGlobal->plot.measurementBuffer.flags.bValidGainData || pGlobal->plot.memoryBuffer.flags.bValidGainData )
+        if( !pGlobal->plot.flags.bCalibrationPlot &&
+                (pGlobal->plot.measurementBuffer.flags.bValidGainData || pGlobal->plot.memoryBuffer.flags.bValidGainData))
             plotGainTrace( cr, &grid, pGlobal );
 
     } else {
