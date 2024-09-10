@@ -320,7 +320,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
     GString *pstCommands;
     gchar HP8970status, LOstatus;;
     gboolean completionStatus = FALSE, bInitialSweep;
-    gdouble LOfreq = 0.0;
+    gdouble LOfreq = 0.0, expectedMeasurementTime = pGlobal->HP8970settings.smoothingFactor * APPROX_MEASUREMENT_TIME;
     gboolean bLOerror = FALSE;
     tMode mode =  pGlobal->HP8970settings.mode;
 
@@ -424,7 +424,7 @@ sweepHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gint *
                 bContinue = FALSE;
 
             if( GPIBtriggerMeasurement (descGPIB_HP8970, &measurement,
-                                        pGPIBstatus, &HP8970error, 30 * TIMEOUT_RW_1SEC) != eRDWT_OK )
+                                        pGPIBstatus, &HP8970error, expectedMeasurementTime) != eRDWT_OK )
                 break;  // this will exit the for loop if error
 
             if( freqMHz + freqStepMHz > freqStopMHz ) {
@@ -550,6 +550,7 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
     gboolean completionStatus = FALSE;
     tGPIBReadWriteStatus rtn;
     gdouble freqSpotMHz, LOfreq;
+    gdouble expectedMeasurementTime = pGlobal->HP8970settings.smoothingFactor * APPROX_MEASUREMENT_TIME;
     gboolean bExtLO, bLOerror = FALSE;
     tMode mode;
 
@@ -646,7 +647,7 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
             measurement.flags.all = 0;
 
             rtn = GPIBtriggerMeasurement (descGPIB_HP8970, &measurement,
-                                          pGPIBstatus, &HP8970error, 30 * TIMEOUT_RW_1SEC);
+                                          pGPIBstatus, &HP8970error, expectedMeasurementTime);
             if( rtn == eRDWT_ABORT )
                 break;
             else if( rtn != eRDWT_OK ) {
@@ -750,6 +751,7 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
     gdouble LOfreq;
     gdouble freqStartMHz, freqStopMHz, freqStepMHz, freqRF_MHz;
+    gdouble expectedMeasurementTime = pGlobal->HP8970settings.smoothingFactor * APPROX_MEASUREMENT_TIME;
     tNoiseAndGain measurement;
 
     pstCommands = g_string_new ( NULL );
@@ -879,7 +881,7 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
             tNoiseAndGain calDataPoint;
 
             rtn = GPIBtriggerMeasurement (descGPIB_HP8970, &calDataPoint,
-                                                    pGPIBstatus, &HP8970error, 30 * TIMEOUT_RW_1SEC);
+                                                    pGPIBstatus, &HP8970error, expectedMeasurementTime);
 
             if( bRestartSweep ) {
                 initCircularBuffer( pCircularBuffer, (freqStopMHz - freqStartMHz) / freqStepMHz + 2, eFreqAbscissa );

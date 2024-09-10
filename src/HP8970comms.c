@@ -182,7 +182,7 @@ enableSRQonDataReady (gint descGPIB_HP8970, gint *pGPIBstatus) {
  */
 
 tGPIBReadWriteStatus
-GPIBtriggerMeasurement (gint descGPIB_HP8970, tNoiseAndGain *pResult, gint *pGPIBstatus, gint *pHP8970error, gdouble timeoutSecs) {
+GPIBtriggerMeasurement (gint descGPIB_HP8970, tNoiseAndGain *pResult, gint *pGPIBstatus, gint *pHP8970error, gdouble estimatedTimeOfMeasurement) {
 
 #define SRQ_EVENT       1
 #define TIMEOUT_EVENT   0
@@ -229,7 +229,7 @@ GPIBtriggerMeasurement (gint descGPIB_HP8970, tNoiseAndGain *pResult, gint *pGPI
                     rtn = eRDWT_ERROR;
                 } else if( status & ST_INST_ERR ) {
                     // Read the error
-                    HP8790rtn = HP8970getFreqNoiseGain ( descGPIB_HP8970, timeoutSecs, pGPIBstatus, pResult, pHP8970error);
+                    HP8790rtn = HP8970getFreqNoiseGain ( descGPIB_HP8970, 2.0 * TIMEOUT_RW_1SEC, pGPIBstatus, pResult, pHP8970error);
                     if( HP8790rtn == ABORT )
                         rtn = eRDWT_ABORT;
                     else if( HP8790rtn != ERROR ) {
@@ -243,7 +243,7 @@ GPIBtriggerMeasurement (gint descGPIB_HP8970, tNoiseAndGain *pResult, gint *pGPI
                     else
                         rtn = eRDWT_ERROR;
                 } else if( status & ST_DATA_READY ) {
-                    HP8790rtn = HP8970getFreqNoiseGain ( descGPIB_HP8970, timeoutSecs, pGPIBstatus, pResult, pHP8970error);
+                    HP8790rtn = HP8970getFreqNoiseGain ( descGPIB_HP8970, 2.0 * TIMEOUT_RW_1SEC, pGPIBstatus, pResult, pHP8970error);
                     if( HP8790rtn == ABORT )
                         rtn = eRDWT_ABORT;
                     else if( HP8790rtn != ERROR ) {
@@ -273,9 +273,9 @@ GPIBtriggerMeasurement (gint descGPIB_HP8970, tNoiseAndGain *pResult, gint *pGPI
         waitTime += THIRTY_MS;
         if (waitTime > FIVE_SECONDS && fmod (waitTime, 1.0) < THIRTY_MS) {
             gchar *sMessage;
-            if (timeoutSecs > 15) {    // this means we have a "WAIT;" message .. so show the estimated time
+            if (estimatedTimeOfMeasurement > 15) {    // this means we have a "WAIT;" message .. so show the estimated time
                 sMessage = g_strdup_printf ("✳️ Waiting for HP8970 : %ds / %.0lfs", (gint) (waitTime),
-                                            (double) timeoutSecs / TIMEOUT_SAFETY_FACTOR);
+                                            (double) estimatedTimeOfMeasurement);
             } else {
                 sMessage = g_strdup_printf ("✳️ Waiting for HP8970 : %ds", (gint) (waitTime));
             }
@@ -283,7 +283,7 @@ GPIBtriggerMeasurement (gint descGPIB_HP8970, tNoiseAndGain *pResult, gint *pGPI
             g_free (sMessage);
         }
     }
-    while (rtn == eRDWT_CONTINUE && (globalData.flags.bNoGPIBtimeout || waitTime < timeoutSecs));
+    while (rtn == eRDWT_CONTINUE && (globalData.flags.bNoGPIBtimeout || waitTime < ( 5.0 + estimatedTimeOfMeasurement * 1.2) )); // add safety of 20% + 1 second
 
     if (rtn == eRDWT_OK) {
         DBG(eDEBUG_EXTENSIVE, "SRQ asserted and acknowledged");

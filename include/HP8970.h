@@ -22,7 +22,7 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.03-1"
+   #define VERSION "1.03-2"
 #endif
 
 
@@ -550,6 +550,8 @@ void        warnFrequencyRangeOutOfBounds   (tGlobal *);
 #define LABEL_FONT "Noto Sans"
 #define MODE_DIAGRAM_FONT "Noto Sans"
 #define MODE_DIAGRAM_FONT_CONDENSED "Noto Sans Condensed"
+
+#define APPROX_MEASUREMENT_TIME (55.5/512.0)
 
 #define GSETTINGS_SCHEMA    "us.heterodyne.hp8970"
 
