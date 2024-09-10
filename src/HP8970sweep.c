@@ -911,10 +911,8 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
                     freqRF_MHz += freqStepMHz;
                 }
 
-                if( nCalPoint >= (pGlobal->flags.bbHP8970Bmodel == e8970A ? CAL_POINTS_8970A:CAL_POINTS_8970B)) {
+                if( nCalPoint >= (pGlobal->flags.bbHP8970Bmodel == e8970A ? CAL_POINTS_8970A:CAL_POINTS_8970B))
                     freqRF_MHz = freqStopMHz;
-                    nCalPoint = 0;
-                }
 
                 if( ( LOfreq = LOfrequency( pGlobal, freqRF_MHz ) ) != 0.0 ) {
                     g_string_printf( pstCommands, pGlobal->HP8970settings.sExtLOsetFreq, LOfreq );
@@ -948,6 +946,9 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
                 pGlobal->plot.measurementBuffer.flags.bValidGainData = TRUE;
 
             gboolean bOverflow = (addItemToCircularBuffer( pCircularBuffer, &calDataPoint, FALSE ) == FALSE);
+
+            if( nCalPoint >= (pGlobal->flags.bbHP8970Bmodel == e8970A ? CAL_POINTS_8970A:CAL_POINTS_8970B))
+                    nCalPoint = 0;
 
             if( HP8970error ) {
                 sMessage = g_strdup_printf( "Calibration point %d: %.0lf MHz ☠️  %s", nCalPoint,
