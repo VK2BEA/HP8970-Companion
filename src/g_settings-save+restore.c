@@ -397,7 +397,7 @@ recoverConfigurations( tGlobal *pGlobal ) {
 
     g_variant_iter_init (&iter, configurationsGV);
 
-    g_list_free_full ( pGlobal->configurationList, freeConfigationItemContent );
+    g_list_free_full ( pGlobal->configurationList, freeConfigurationItemContent );
 
     while (g_variant_iter_loop (&iter, "{sv}", &sConfigurationName, &tuple))  {
         if( g_strcmp0( sConfigurationName, "" ) == 0 )

@@ -132,7 +132,7 @@ CB_chk_Variants(GtkCheckButton *wVariant, gpointer identifier) {
  *
  * \param  data             pointer to tHP8970settings structure
  */
-void freeConfigationItemContent ( gpointer data ) {
+void freeConfigurationItemContent ( gpointer data ) {
     tHP8970settings *pHP8970settings = (tHP8970settings *)data;
     g_free( pHP8970settings->sConfigurationName );
     g_free( pHP8970settings->sExtLOsetFreq );
@@ -153,7 +153,7 @@ snapshotConfiguration( tGlobal *pGlobal, tHP8970settings *pSettings, gchar *sNam
     if( pSettings == NULL )
       pSettings = g_malloc0( sizeof( tHP8970settings ) );
 
-    freeConfigationItemContent( pSettings );
+    freeConfigurationItemContent( pSettings );
 
     *pSettings = pGlobal->HP8970settings;
 
@@ -253,7 +253,7 @@ CB_btn_DeleteRestoreSaveConfiguration ( GtkButton *wBtn, gpointer eOperation ) {
         case eRestoreConfig:
             if ( configurationItem == NULL )
                 break;
-            freeConfigationItemContent( (gpointer)&pGlobal->HP8970settings );
+            freeConfigurationItemContent( (gpointer)&pGlobal->HP8970settings );
 
             // This just copies the references to the strings, so we need to create new string copies
             pGlobal->HP8970settings = *(tHP8970settings *)( configurationItem->data );
@@ -271,7 +271,6 @@ CB_btn_DeleteRestoreSaveConfiguration ( GtkButton *wBtn, gpointer eOperation ) {
             g_mutex_unlock ( &pGlobal->mUpdate );
             postDataToGPIBThread (TG_SEND_SETTINGS_to_HP8970, NULL);
             gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
-
             break;
 
         case eSaveConfig:
@@ -306,7 +305,7 @@ CB_btn_DeleteRestoreSaveConfiguration ( GtkButton *wBtn, gpointer eOperation ) {
             posn = g_list_position( pGlobal->configurationList, configurationItem );
             gtk_combo_box_text_remove( wComboConfiguration, posn );
 
-            freeConfigationItemContent( configurationItem->data );
+            freeConfigurationItemContent( configurationItem->data );
             pGlobal->configurationList = g_list_delete_link( pGlobal->configurationList, configurationItem );
             gtk_entry_buffer_set_text( gtk_entry_get_buffer(wEntry), "", -1);
             sensitizeConfigurationButtons( pGlobal, "" );

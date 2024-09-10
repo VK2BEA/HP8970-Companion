@@ -416,7 +416,7 @@ on_shutdown (GApplication *app, gpointer userData) {
 
     g_mutex_clear( &pGlobal->mUpdate );
 
-    g_list_free_full ( pGlobal->configurationList, freeConfigationItemContent );
+    g_list_free_full ( pGlobal->configurationList, freeConfigurationItemContent );
 
     g_free( pGlobal->plot.measurementBuffer.measurementData );
     g_free( pGlobal->plot.memoryBuffer.measurementData );

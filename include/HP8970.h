@@ -118,7 +118,7 @@ typedef union {
 } tUpdateFlags;
 
 typedef enum {
-    ePage8970 = 0, ePageNotes = 1, ePagePlot = 2, ePageExtLO = 3, ePageNoiseSource = 4, ePageOptions = 5, ePageGPIB = 6
+    ePage8970 = 0, ePageNotes = 1, ePagePlot = 2, ePageExtLO = 3, ePageOptions = 4, ePageNoiseSource = 5, ePageGPIB = 6
 } tNoteBookPage;
 
 typedef enum {
@@ -420,7 +420,7 @@ void        drawHPlogo 					    (cairo_t *, gdouble, gdouble, gdouble, gboolean 
 void        drawModeDiagram                 (cairo_t *, tMode, gint, gdouble, gdouble, gdouble);
 void        enablePageExtLOwidgets          (tGlobal *, tMode);
 gint        findTimeDeltaInCircularBuffer   (tCircularBuffer *, gdouble);
-void        freeConfigationItemContent      (gpointer);
+void        freeConfigurationItemContent      (gpointer);
 void        freeSVGhandles                  (void);
 tNoiseAndGain *
             getItemFromCircularBuffer       (tCircularBuffer *, guint);
