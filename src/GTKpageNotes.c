@@ -57,7 +57,7 @@ void
 initializePageNotes( tGlobal *pGlobal ) {
     GtkTextView *wNotes = pGlobal->widgets[ eW_textView_Notes ];
     GtkTextBuffer *wNoteBuffer = gtk_text_view_get_buffer( wNotes );
-
+    gtk_text_buffer_set_text( wNoteBuffer, pGlobal->plot.sNotes ? pGlobal->plot.sNotes : "", -1 );
     gtk_text_view_set_input_hints( wNotes, 0 );
     g_signal_connect( wNoteBuffer, "changed", G_CALLBACK( CB_notes_changed ), pGlobal);
 }

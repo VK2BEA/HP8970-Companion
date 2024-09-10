@@ -207,62 +207,73 @@ gint
 quantizePlotRange( tGlobal *pGlobal, gdouble min, gdouble max, tGridAxes gridType ) {
     gdouble gridRange, division, quantizedMin, quantizedMax, border;
     gdouble logDecade, logFraction, log10diff, minRange = 0.1;
+    gdouble expansionFactor = 1.0;
     gint rtnStatus = 0;
     gdouble quantum, headroom;
+    gboolean bOverflow = TRUE;
     int i;
 
     const static gdouble logRanges[ N_RANGES ] = { LOG10, LOG5, LOG2, LOG1 };
     const static gdouble minNoiseRange[eMAX_NOISE_UNITS]
                              = { MIN_RANGE_NOISE_FdB, MIN_RANGE_NOISE_F, MIN_RANGE_NOISE_YdB, MIN_RANGE_NOISE_Y, MIN_RANGE_NOISE_Y };
 
+    do {
+        // The range may extend from the top of the lowest grid to the top of the highest
+        // or visa versa. We therefore need to allow enough space for the range with an iterative expansion
+        log10diff = log10((max-min) * expansionFactor );
 
-    log10diff = log10(max-min);
-    logFraction = modf( log10diff, &logDecade );
+        logFraction = modf( log10diff, &logDecade );
 
-    // If the log difference is less than one (difference is fractional),
-    // divide the decade by 10 (subtract 1 from log) and add one to fraction to make positive
-    if( log10diff < 0.0 ) {
-        logDecade -= 1.0;
-        logFraction += 1.0;
-    }
-
-    for( i = 1, quantum  = logRanges[0], headroom = logRanges[0] - logFraction; i < N_RANGES; i++ ) {
-        if((logRanges[ i ] - logFraction) > 0.0 && headroom > (logRanges[ i ] - logFraction)) {
-            headroom = (logRanges[ i ] - logFraction);
-            quantum = logRanges[ i ];
+        // If the log difference is less than one (difference is fractional),
+        // divide the decade by 10 (subtract 1 from log) and add one to fraction to make positive
+        if( log10diff < 0.0 ) {
+            logDecade -= 1.0;
+            logFraction += 1.0;
         }
-    }
 
-    // create the range
-    gridRange = pow( 10.0, logDecade + quantum );
+        for( i = 1, quantum  = logRanges[0], headroom = logRanges[0] - logFraction; i < N_RANGES; i++ ) {
+            if((logRanges[ i ] - logFraction) > 0.0 && headroom > (logRanges[ i ] - logFraction)) {
+                headroom = (logRanges[ i ] - logFraction);
+                quantum = logRanges[ i ];
+            }
+        }
 
-    if( gridType == eNoise ) {
-        if( pGlobal->plot.flags.bCalibrationPlot )
-            minRange = NOISE_MIN_RANGE_CALIBRATION;
+        // create the range
+        gridRange = pow( 10.0, logDecade + quantum );
+
+        if( gridType == eNoise ) {
+            if( pGlobal->plot.flags.bCalibrationPlot )
+                minRange = NOISE_MIN_RANGE_CALIBRATION;
+            else
+                minRange = minNoiseRange[ pGlobal->plot.noiseUnits ];
+        } else {
+            minRange = MIN_RANGE_GAINdB;
+        }
+
+        if( gridRange < minRange )
+            gridRange = minRange;
+
+        // ten divisions per grid
+        division = gridRange/10.0;
+
+        // The data fits between grids
+        quantizedMin = floor( min / division ) * division;
+        quantizedMax = ceil( max / division )  * division;
+
+        // half the remaining grid squares (may be zero)
+        if( (border = floor((gridRange - (quantizedMax-quantizedMin)) / division / 2.0) * division) < 0.0 )
+            border = 0.0;
+
+        pGlobal->plot.axis[ gridType ].min = quantizedMin - border;
+        pGlobal->plot.axis[ gridType ].max = pGlobal->plot.axis[ gridType ].min + gridRange;
+        pGlobal->plot.axis[ gridType ].offset = 0.0;
+        pGlobal->plot.axis[ gridType ].perDiv = division;
+
+        if( pGlobal->plot.axis[ gridType ].min > min || pGlobal->plot.axis[ gridType ].max < max )
+            expansionFactor *= 1.05;
         else
-            minRange = minNoiseRange[ pGlobal->plot.noiseUnits ];
-    } else {
-        minRange = MIN_RANGE_GAINdB;
-    }
-
-    if( gridRange < minRange )
-        gridRange = minRange;
-
-    // ten divisions per grid
-    division = gridRange/10.0;
-
-    // The data fits between grids
-    quantizedMin = floor( min / division ) * division;
-    quantizedMax = ceil( max / division )  * division;
-
-    // half the remaining grid squares (may be zero)
-    if( (border = floor((gridRange - (quantizedMax-quantizedMin)) / division / 2.0) * division) < 0.0 )
-        border = 0.0;
-
-    pGlobal->plot.axis[ gridType ].min = quantizedMin - border;
-    pGlobal->plot.axis[ gridType ].max = pGlobal->plot.axis[ gridType ].min + gridRange;
-    pGlobal->plot.axis[ gridType ].offset = 0.0;
-    pGlobal->plot.axis[ gridType ].perDiv = division;
+            bOverflow = FALSE;
+    } while ( bOverflow );
 
     return  rtnStatus;
 }
@@ -474,7 +485,7 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
                                                 || pNoiseAxis->offset > VERY_SMALL
                                                 || pGlobal->plot.axis[ eGain  ].offset > VERY_SMALL;
     cairo_save(cr);
-    {
+    do {
         setCairoFontSize(cr, pGrid->fontSize);
 
         // box containing grid
@@ -668,6 +679,9 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
         setCairoFontSize(cr, pGrid->fontSize);
         cairo_set_matrix ( cr, &matrix );
 
+        // no gain plot if performing calibration
+        if( pGlobal->plot.flags.bCalibrationPlot )
+            break;
 
 // Y (right) gain grid
 
@@ -747,7 +761,7 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
             cairo_set_matrix ( cr, &matrix );
         }
 
-    }
+    } while FALSE;
     cairo_restore( cr );
 
     return 0;
@@ -755,7 +769,7 @@ plotGrid( cairo_t *cr, tGridParameters *pGrid, tGlobal *pGlobal ) {
 
 /*!     \brief  Mirror the Cairo text vertically
  *
- * The drawing space is fliped to move 0,0 to the bottom left. This has the
+ * The drawing space is flipped to move 0,0 to the bottom left. This has the
  * side effect of also flipping the way text is rendered.
  * This routine flips the text back to normal.
  *
@@ -1069,7 +1083,7 @@ plotGainTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
     gboolean bSpotFrequency = pGlobal->plot.flags.bSpotFrequencyPlot;
 
     cairo_save(cr);
-    {
+    do {
         setCairoFontSize(cr, pGrid->fontSize);
 
         // box containing grid
@@ -1092,10 +1106,9 @@ plotGainTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
         }
 
         // Draw the gain trace .. but not if it is invalid
-        if( !pGlobal->plot.measurementBuffer.flags.bValidGainData ) {
-            cairo_restore(cr);
-            return;
-        }
+        if( !pGlobal->plot.measurementBuffer.flags.bValidGainData )
+            break;
+
         gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorGain   ] );
         drawTrace( cr, pGlobal, &pGlobal->plot.measurementBuffer,
                    pGrid->gridWidth, pGrid->gridHeight,
@@ -1146,7 +1159,7 @@ plotGainTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
 				}
             }
         }
-    }
+    } while FALSE ;
     cairo_restore(cr);
 }
 
@@ -1170,7 +1183,7 @@ plotNoiseTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
     gboolean bSpotFreqency = pGlobal->plot.flags.bSpotFrequencyPlot;
 
     cairo_save(cr);
-    {
+    do {
         setCairoFontSize(cr, pGrid->fontSize);
 
         // box containing grid
@@ -1194,10 +1207,8 @@ plotNoiseTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
         }
 
         // Draw the Noise trace .. but not if it is invalid
-        if( !pGlobal->plot.measurementBuffer.flags.bValidNoiseData ){
-            cairo_restore(cr);
-            return;
-        }
+        if( !pGlobal->plot.measurementBuffer.flags.bValidNoiseData )
+            break;
 
         gdk_cairo_set_source_rgba (cr, &plotElementColors[ eColorNoise   ] );
         drawTrace( cr, pGlobal, &pGlobal->plot.measurementBuffer,
@@ -1284,7 +1295,7 @@ plotNoiseTrace( cairo_t *cr, tGridParameters  *pGrid, gpointer gpGlobal ) {
                 }
             }
         }
-    }
+    } while FALSE;
     cairo_restore(cr);
 
 }

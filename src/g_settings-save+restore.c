@@ -129,6 +129,8 @@ saveSettings( tGlobal *pGlobal ) {
     g_variant_builder_unref (builder);
     g_settings_set_value( gs, "trace-colors", gvPenColors ); // this consumes the GVariant
 
+    g_settings_set_string ( gs, "plot-title", pGlobal->plot.sTitle ? pGlobal->plot.sTitle : "");
+    g_settings_set_string ( gs, "plot-notes", pGlobal->plot.sNotes ? pGlobal->plot.sNotes : "");
 //    g_variant_unref (gvPenColors);
 
     g_object_unref( gs );
@@ -186,6 +188,9 @@ recoverSettings( tGlobal *pGlobal ) {
     pGlobal->sGPIBextLOdeviceName = g_settings_get_string( gs, "gpib-extlo-device-name" );
     pGlobal->GPIB_extLO_PID = g_settings_get_int( gs, "gpib-extlo-device-pid" );
     pGlobal->flags.bGPIB_extLO_usePID = g_settings_get_boolean( gs, "gpib-extlo-use-device-pid" );
+
+    pGlobal->plot.sTitle = g_settings_get_string ( gs, "plot-title" );
+    pGlobal->plot.sNotes = g_settings_get_string ( gs, "plot-notes" );
 
     // GUI notebook page source
     // Noise Source tables

@@ -122,6 +122,18 @@
       <summary>trace colors</summary>
       <description>Trace &amp; grid pen colors (RGBA)</description>
     </key>
+    
+    <key name="plot-title" type="s">
+      <default>''</default>
+      <summary>Plot Title</summary>
+      <description>Title of plot</description>
+    </key>
+    
+    <key name="plot-notes" type="s">
+      <default>''</default>
+      <summary>Plot notes</summary>
+      <description>Notes</description>
+    </key>
 
 	<!--  Named and unnamed configurations. Unnamed is the default loaded upon restart -->
     <key name="configurations" type="a{sv}">

@@ -55,6 +55,10 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
                     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
                     break;
                 case GDK_SUPER_MASK:
+                    pGlobal->plot.measurementBuffer.flags.bValidNoiseData = FALSE;
+                    pGlobal->plot.measurementBuffer.flags.bValidGainData  = FALSE;
+                    initCircularBuffer( &pGlobal->plot.measurementBuffer, 0, eTimeAbscissa );
+                    gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
                     break;
                 case 0:
                     postDataToGPIBThread (TG_ABORT, NULL);
@@ -794,6 +798,11 @@ refreshMainDialog( tGlobal *pGlobal )
 //  g_signal_handlers_block_by_func( G_OBJECT( wFrStepCal ), CB_spin_FrStep_Cal, NULL );
     g_signal_handlers_block_by_func( G_OBJECT( wFrStepSweep ), CB_spin_FrStep_Sweep, NULL );
     g_signal_handlers_block_by_func( G_OBJECT( wFrequency ), CB_spin_Frequency, NULL );
+
+    GtkEditable *wTitle = gtk_editable_get_delegate(GTK_EDITABLE( pGlobal->widgets[ eW_entry_Title ] ));
+    g_signal_handlers_block_by_func( G_OBJECT( wTitle ),    CB_edit_Title,    NULL );
+    gtk_editable_set_text( wTitle, pGlobal->plot.sTitle == 0 ? "" : pGlobal->plot.sTitle );
+    g_signal_handlers_block_by_func( G_OBJECT( wTitle ),    CB_edit_Title,    NULL );
 
     gtk_combo_box_set_active( GTK_COMBO_BOX( wMode ), pGlobal->HP8970settings.mode );
 
