@@ -376,6 +376,9 @@ on_startup (GApplication *app, gpointer udata) {
     // Initialize the settings update mutex
     g_mutex_init( &pGlobal->mUpdate );
 
+    g_mutex_init( &pGlobal->plot.measurementBuffer.mBuffer );
+    g_mutex_init( &pGlobal->plot.memoryBuffer.mBuffer );
+
 //    pGlobal->flags.bValidGainData = FALSE;
 //    pGlobal->flags.bValidNoiseData = TRUE;
 
@@ -415,6 +418,8 @@ on_shutdown (GApplication *app, gpointer userData) {
     g_source_unref (pGlobal->messageEventSource);
 
     g_mutex_clear( &pGlobal->mUpdate );
+    g_mutex_clear( &pGlobal->plot.measurementBuffer.mBuffer );
+    g_mutex_clear( &pGlobal->plot.memoryBuffer.mBuffer );
 
     g_list_free_full ( pGlobal->configurationList, freeConfigurationItemContent );
 

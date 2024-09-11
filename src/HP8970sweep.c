@@ -78,7 +78,7 @@ LOfrequency( tGlobal *pGlobal, gdouble freqRF ) {
  */
 void
 initCircularBuffer( tCircularBuffer *pCircBuffer, guint size, tAbscissa abscissa ) {
-
+    g_mutex_lock ( &pCircBuffer->mBuffer );
 	size = size+1;	// add one so that tail != head when size items in buffer
     pCircBuffer->measurementData = g_realloc( pCircBuffer->measurementData, size * sizeof( tNoiseAndGain ) );
     pCircBuffer->head = 0;
@@ -98,6 +98,7 @@ initCircularBuffer( tCircularBuffer *pCircBuffer, guint size, tAbscissa abscissa
         pCircBuffer->minAbscissa.time  = 0;
         pCircBuffer->maxAbscissa.time  = 0;
     }
+    g_mutex_unlock ( &pCircBuffer->mBuffer );
 }
 
 /*!     \brief  get the number of items stored in a circular buffer
@@ -128,6 +129,7 @@ recalculateBoundaries( tCircularBuffer *pCircBuffer ) {
 
     gint i, n, ptr;
 
+    g_mutex_lock ( &pCircBuffer->mBuffer );
     pCircBuffer->minNoise = UNINITIALIZED_DOUBLE;
     pCircBuffer->maxNoise = UNINITIALIZED_DOUBLE;
     pCircBuffer->minGain  = UNINITIALIZED_DOUBLE;
@@ -137,7 +139,7 @@ recalculateBoundaries( tCircularBuffer *pCircBuffer ) {
         updateBoundaries( pCircBuffer->measurementData[ ptr ].noise, &pCircBuffer->minNoise, &pCircBuffer->maxNoise );
         updateBoundaries( pCircBuffer->measurementData[ ptr ].gain,  &pCircBuffer->minGain,  &pCircBuffer->maxGain );
     }
-
+    g_mutex_unlock ( &pCircBuffer->mBuffer );
 }
 
 /*!     \brief  add item to a circular buffer
@@ -155,10 +157,11 @@ addItemToCircularBuffer( tCircularBuffer *pCircBuffer, tNoiseAndGain *pItem, gbo
     // or move the head, discarding the first item
 
     gboolean bNeedRecalc = FALSE;
+    g_mutex_lock ( &pCircBuffer->mBuffer );
 
     if( (pCircBuffer->tail + 1) % pCircBuffer->size  == pCircBuffer->head ) {
         if( !bCircular )
-            return FALSE;
+            goto error;
         else
             pCircBuffer->head = (pCircBuffer->head + 1)  % pCircBuffer->size;
         bNeedRecalc = TRUE;
@@ -173,7 +176,12 @@ addItemToCircularBuffer( tCircularBuffer *pCircBuffer, tNoiseAndGain *pItem, gbo
         updateBoundaries( pItem->noise, &pCircBuffer->minNoise, &pCircBuffer->maxNoise );
         updateBoundaries( pItem->gain,  &pCircBuffer->minGain,  &pCircBuffer->maxGain );
     }
+    g_mutex_unlock ( &pCircBuffer->mBuffer );
     return TRUE;
+
+error:
+    g_mutex_unlock ( &pCircBuffer->mBuffer );
+    return FALSE;
 }
 
 /*!     \brief  rewrite over populated circular buffer

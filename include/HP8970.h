@@ -164,6 +164,9 @@ typedef struct {
         guint32 bValidGainData          :1;
         guint32 bTime :1;
     } flags;
+
+    GMutex mBuffer;
+
 } tCircularBuffer;
 
 #define MAX_NOISE_SOURCE_NAME_LENGTH       50

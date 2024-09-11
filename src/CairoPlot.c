@@ -1331,6 +1331,8 @@ plotNoiseFigureAndGain (cairo_t *cr, gint areaWidth, gint areaHeight, tGlobal *p
             ) ) {
         cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 1.0 );
         cairo_paint( cr );
+        // The memory buffer is not touched by the thread, so no need to protect it
+        g_mutex_lock ( &pGlobal->plot.measurementBuffer.mBuffer );
 
         flipVertical( cr, &grid );
         plotGrid( cr, &grid, pGlobal );
@@ -1341,6 +1343,7 @@ plotNoiseFigureAndGain (cairo_t *cr, gint areaWidth, gint areaHeight, tGlobal *p
                 (pGlobal->plot.measurementBuffer.flags.bValidGainData || pGlobal->plot.memoryBuffer.flags.bValidGainData))
             plotGainTrace( cr, &grid, pGlobal );
 
+        g_mutex_unlock ( &pGlobal->plot.measurementBuffer.mBuffer );
     } else {
         drawHPlogo ( cr, areaWidth / 2.0, areaHeight * 0.90, areaWidth / 1000.0, pGlobal->flags.bbHP8970Bmodel );
         drawModeDiagram( cr, pGlobal->HP8970settings.mode, pGlobal->flags.bbHP8970Bmodel, areaWidth, areaHeight, 0.70 );
