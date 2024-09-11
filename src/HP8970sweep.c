@@ -757,7 +757,7 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
     pstCommands = g_string_new ( NULL );
     gboolean bExtLO, bContinue, bRestartSweep, completionStatus = FALSE, bLOerror = FALSE;
     gchar *sMessage;
-    gint nCalPoint;
+    gint nCalPoint, nCalPass;
 
     mode = pGlobal->HP8970settings.mode;
     bExtLO = !(mode == eMode1_0 || mode == eMode1_4);
@@ -871,7 +871,7 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
         getTimeStamp(&pGlobal->plot.sDateTime);
 
-        for( nCalPoint = 1, bContinue = TRUE, bRestartSweep = TRUE, freqRF_MHz = pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz;
+        for( nCalPoint = 1, nCalPass = 0, bContinue = TRUE, bRestartSweep = TRUE, freqRF_MHz = pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz;
                 GPIBsucceeded( *pGPIBstatus ) && bContinue
                 		&& checkMessageQueue(NULL) != SEVER_DIPLOMATIC_RELATIONS
 						&& HP8970error == 0; nCalPoint++ ) {
@@ -902,17 +902,13 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
             // Changing the LO only in mode 1.1 (1.2 has a fixed LO)
             if( pGlobal->flags.bNoLOcontrol == FALSE && mode == eMode1_1 ) {
                 if( freqRF_MHz >= freqStopMHz ) {   // If we have sent the stop freq, then go back to the beginning
-                    freqRF_MHz = freqStartMHz;
-                    nCalPoint = 0;
-                } else if( freqRF_MHz + freqStepMHz > freqStopMHz
-                		|| (rtn & CAL_COMPLETE) ) {
+                    if( !(nCalPass == 2 || (rtn & CAL_COMPLETE)) )  // reset on pass 0 and 1 but leave at the stop frequency for the last (to match the HP8970)
+                        freqRF_MHz = freqStartMHz;
+                } else if( (freqRF_MHz + freqStepMHz > freqStopMHz) || (rtn & CAL_COMPLETE) ) {
                     freqRF_MHz = freqStopMHz;
                 } else {
                     freqRF_MHz += freqStepMHz;
                 }
-
-                if( nCalPoint >= (pGlobal->flags.bbHP8970Bmodel == e8970A ? CAL_POINTS_8970A:CAL_POINTS_8970B))
-                    freqRF_MHz = freqStopMHz;
 
                 if( ( LOfreq = LOfrequency( pGlobal, freqRF_MHz ) ) != 0.0 ) {
                     g_string_printf( pstCommands, pGlobal->HP8970settings.sExtLOsetFreq, LOfreq );
@@ -947,9 +943,6 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
 
             gboolean bOverflow = (addItemToCircularBuffer( pCircularBuffer, &calDataPoint, FALSE ) == FALSE);
 
-            if( nCalPoint >= (pGlobal->flags.bbHP8970Bmodel == e8970A ? CAL_POINTS_8970A:CAL_POINTS_8970B))
-                    nCalPoint = 0;
-
             if( HP8970error ) {
                 sMessage = g_strdup_printf( "Calibration point %d: %.0lf MHz ☠️  %s", nCalPoint,
                                             calDataPoint.abscissa.freq / MHz( 1.0 ),
@@ -965,6 +958,8 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
                 // Calibration runs three times
                 if( bOverflow || calDataPoint.abscissa.freq >= pCircularBuffer->maxAbscissa.freq ) {
                     bRestartSweep = TRUE;
+                    nCalPoint = 0;
+                    nCalPass++;
                 }
                 postMessageToMainLoop(TM_REFRESH_PLOT, NULL);
             }

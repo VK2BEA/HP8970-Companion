@@ -1098,88 +1098,6 @@ bottomBorderOnly</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkBox" id="WID_page_Source">
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkScrolledWindow" id="WID_scroll_NoiseSource">
-                            <property name="vexpand">True</property>
-                            <child>
-                              <object class="GtkColumnView" id="WID_CV_NoiseSource">
-                                <property name="css-classes">table</property>
-                                <property name="hexpand">True</property>
-                                <property name="margin-bottom">2</property>
-                                <property name="show-column-separators">True</property>
-                                <property name="show-row-separators">True</property>
-                                <property name="tab-behavior">item</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <property name="halign">end</property>
-                            <property name="homogeneous">True</property>
-                            <property name="valign">center</property>
-                            <child>
-                              <object class="GtkButton" id="WID_NS_btn_Delete">
-                                <property name="label">Delete</property>
-                                <property name="margin-bottom">4</property>
-                                <property name="margin-end">4</property>
-                                <property name="margin-start">4</property>
-                                <property name="margin-top">4</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="WID_NS_btn_Add">
-                                <property name="label">Add</property>
-                                <property name="margin-bottom">4</property>
-                                <property name="margin-end">4</property>
-                                <property name="margin-start">4</property>
-                                <property name="margin-top">4</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="WID_NS_btn_Save">
-                                <property name="label">Save</property>
-                                <property name="margin-bottom">4</property>
-                                <property name="margin-end">4</property>
-                                <property name="margin-start">4</property>
-                                <property name="margin-top">4</property>
-                                <property name="sensitive">False</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <child>
-                              <object class="GtkComboBoxText" id="WID_NS_combo_Source">
-                                <property name="has-entry">True</property>
-                                <property name="margin-bottom">4</property>
-                                <property name="margin-end">4</property>
-                                <property name="margin-start">4</property>
-                                <property name="margin-top">4</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="WID_NS_btn_Upload">
-                                <property name="label">Upload</property>
-                                <property name="margin-bottom">4</property>
-                                <property name="margin-end">4</property>
-                                <property name="margin-start">4</property>
-                                <property name="margin-top">4</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="tab">
-                      <object class="GtkLabel">
-                        <property name="label">Source</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkScrolledWindow" id="WID_page_Settings">
                         <child>
                           <object class="GtkBox">
@@ -1364,6 +1282,88 @@ noSideBorder</property>
                     <child type="tab">
                       <object class="GtkLabel">
                         <property name="label">Options</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="WID_page_Source">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkScrolledWindow" id="WID_scroll_NoiseSource">
+                            <property name="vexpand">True</property>
+                            <child>
+                              <object class="GtkColumnView" id="WID_CV_NoiseSource">
+                                <property name="css-classes">table</property>
+                                <property name="hexpand">True</property>
+                                <property name="margin-bottom">2</property>
+                                <property name="show-column-separators">True</property>
+                                <property name="show-row-separators">True</property>
+                                <property name="tab-behavior">item</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="halign">end</property>
+                            <property name="homogeneous">True</property>
+                            <property name="valign">center</property>
+                            <child>
+                              <object class="GtkButton" id="WID_NS_btn_Delete">
+                                <property name="label">Delete</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="WID_NS_btn_Add">
+                                <property name="label">Add</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="WID_NS_btn_Save">
+                                <property name="label">Save</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                                <property name="sensitive">False</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkComboBoxText" id="WID_NS_combo_Source">
+                                <property name="has-entry">True</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="WID_NS_btn_Upload">
+                                <property name="label">Upload</property>
+                                <property name="margin-bottom">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-top">4</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel">
+                        <property name="label">Source</property>
                       </object>
                     </child>
                     <child>

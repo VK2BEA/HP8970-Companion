@@ -947,6 +947,7 @@ initializeMainDialog( tGlobal *pGlobal )
     gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_Settings ], ePageOptions );
     gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_Source ], ePageNoiseSource );
     gtk_notebook_reorder_child  ( noteBook, pGlobal->widgets[ eW_page_GPIB ], ePageGPIB );
+//  gtk_notebook_set_tab_reorderable ( noteBook, pGlobal->widgets[ eW_page_Settings ], TRUE );
 
     // Setup callbacks for **some** widgets first so that we send the initial settings
     g_signal_connect( pGlobal->widgets[ eW_chk_Correction ],  "toggled", G_CALLBACK( CB_chk_Correction ), NULL);
