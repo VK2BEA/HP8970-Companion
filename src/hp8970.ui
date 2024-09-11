@@ -187,24 +187,24 @@
                         <property name="label">Smoothing</property>
                         <property name="margin-start">2</property>
                         <child>
-                          <object class="GtkComboBoxText" id="WID_combo_Smoothing">
+                          <object class="GtkDropDown" id="WID_drop_Smoothing">
                             <property name="margin-bottom">4</property>
                             <property name="margin-end">4</property>
                             <property name="margin-start">4</property>
-                            <property name="valign">start</property>
-                            <signal name="changed" handler="CB_combo_Smoothing"/>
-                            <items>
-                              <item id="0">1</item>
-                              <item id="1">2</item>
-                              <item id="2">4</item>
-                              <item id="3">8</item>
-                              <item id="4">16</item>
-                              <item id="5">32</item>
-                              <item id="6">64</item>
-                              <item id="7">128</item>
-                              <item id="8">256</item>
-                              <item id="9">512</item>
-                            </items>
+                            <property name="model">
+                              <object class="GtkStringList">
+                                <property name="strings">1
+2
+4
+8
+16
+32
+64
+128
+256
+512</property>
+                              </object>
+                            </property>
                           </object>
                         </child>
                       </object>
@@ -342,11 +342,9 @@ If you choose a step too small to cover the range from start to stop the color w
                     <property name="label">Mode</property>
                     <child>
                       <object class="GtkComboBoxText" id="WID_combo_Mode">
-                        <property name="active">0</property>
                         <property name="margin-bottom">4</property>
                         <property name="margin-end">4</property>
                         <property name="margin-start">4</property>
-                        <property name="valign">start</property>
                         <items>
                           <item id="0">1.0 ⇨ 1 to 1500 MHz</item>
                           <item id="1">1.1  ⇨ ⚓ IF / ↻ ext. LO (DUT ▷)</item>
@@ -370,67 +368,42 @@ If you choose a step too small to cover the range from start to stop the color w
                         <child>
                           <object class="GtkFrame">
                             <property name="css-classes">square
-bottomBorderOnly
-
-</property>
-                            <property name="label">Noise Units</property>
-                            <property name="tooltip-text">Noise units for newly acquired data</property>
+bottomBorderOnly</property>
+                            <property name="label">Configurations</property>
+                            <property name="margin-bottom">4</property>
                             <child>
                               <object class="GtkBox">
-                                <property name="homogeneous">True</property>
-                                <property name="margin-bottom">4</property>
                                 <property name="margin-end">4</property>
                                 <property name="margin-start">4</property>
                                 <property name="orientation">vertical</property>
-                                <property name="valign">center</property>
                                 <child>
-                                  <object class="GtkBox">
-                                    <property name="homogeneous">True</property>
-                                    <child>
-                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_FdB">
-                                        <property name="group">
-                                          <object class="GtkCheckButton" id="WID_grp_NoiseUnit"/>
-                                        </property>
-                                        <property name="label">F dB</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_F">
-                                        <property name="group">WID_grp_NoiseUnit</property>
-                                        <property name="label">F</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_YdB">
-                                        <property name="group">WID_grp_NoiseUnit</property>
-                                        <property name="label">Y dB</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_Y">
-                                        <property name="group">WID_grp_NoiseUnit</property>
-                                        <property name="label">Y</property>
-                                      </object>
-                                    </child>
+                                  <object class="GtkComboBoxText" id="WID_combo_SettingsConfigurations">
+                                    <property name="has-entry">True</property>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="GtkBox">
                                     <property name="homogeneous">True</property>
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-top">4</property>
+                                    <property name="spacing">8</property>
                                     <child>
-                                      <object class="GtkCheckButton" id="WID_chk_NoiseUnit_TeK">
-                                        <property name="group">WID_chk_NoiseUnit_FdB</property>
-                                        <property name="label">Tₑ K</property>
+                                      <object class="GtkButton" id="WID_btn_SettingsRestore">
+                                        <property name="label">Restore</property>
+                                        <property name="valign">center</property>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel"/>
+                                      <object class="GtkButton" id="WID_btn_SettingsSave">
+                                        <property name="label">Save</property>
+                                        <property name="valign">center</property>
+                                      </object>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel"/>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel"/>
+                                      <object class="GtkButton" id="WID_btn_SettingsDelete">
+                                        <property name="label">Delete</property>
+                                        <property name="valign">center</property>
+                                      </object>
                                     </child>
                                   </object>
                                 </child>
@@ -441,6 +414,29 @@ bottomBorderOnly
                         <child>
                           <object class="GtkBox">
                             <property name="homogeneous">True</property>
+                            <child>
+                              <object class="GtkFrame">
+                                <property name="css-classes">noborder
+</property>
+                                <property name="label">Noise Units</property>
+                                <child>
+                                  <object class="GtkDropDown" id="WID_drop_NoiseUnits">
+                                    <property name="margin-bottom">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="model">
+                                      <object class="GtkStringList">
+                                        <property name="strings">F dB
+F
+Y dB
+Y
+Tₑ K</property>
+                                      </object>
+                                    </property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
                             <child>
                               <object class="GtkFrame">
                                 <property name="css-classes">noborder
@@ -468,9 +464,6 @@ bottomBorderOnly
                                   </object>
                                 </child>
                               </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel"/>
                             </child>
                           </object>
                         </child>
@@ -1061,11 +1054,9 @@ bottomBorderOnly</property>
                                 <property name="valign">start</property>
                                 <child>
                                   <object class="GtkComboBoxText" id="WID_LO_combo_sideband">
-                                    <property name="active">0</property>
                                     <property name="margin-bottom">4</property>
                                     <property name="margin-end">4</property>
                                     <property name="margin-start">4</property>
-                                    <property name="tooltip-text">Sideband for converted noise</property>
                                     <items>
                                       <item id="0">DSB (no offset)</item>
                                       <item id="1">LSB (F.S &lt; F.LO)</item>
@@ -1102,52 +1093,6 @@ bottomBorderOnly</property>
                         <child>
                           <object class="GtkBox">
                             <property name="orientation">vertical</property>
-                            <child>
-                              <object class="GtkFrame">
-                                <property name="css-classes">square
-bottomBorderOnly</property>
-                                <property name="label">Configurations</property>
-                                <property name="margin-bottom">4</property>
-                                <child>
-                                  <object class="GtkBox">
-                                    <property name="margin-end">4</property>
-                                    <property name="margin-start">4</property>
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                      <object class="GtkComboBoxText" id="WID_combo_SettingsConfigurations">
-                                        <property name="has-entry">True</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <property name="homogeneous">True</property>
-                                        <property name="margin-bottom">4</property>
-                                        <property name="margin-top">4</property>
-                                        <property name="spacing">8</property>
-                                        <child>
-                                          <object class="GtkButton" id="WID_btn_SettingsRestore">
-                                            <property name="label">Restore</property>
-                                            <property name="valign">center</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkButton" id="WID_btn_SettingsSave">
-                                            <property name="label">Save</property>
-                                            <property name="valign">center</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkButton" id="WID_btn_SettingsDelete">
-                                            <property name="label">Delete</property>
-                                            <property name="valign">center</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
                             <child>
                               <object class="GtkFrame">
                                 <property name="css-classes">square

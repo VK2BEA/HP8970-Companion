@@ -13,6 +13,19 @@
 #include <ctype.h>
 #include <HP8970.h>
 
+/*
+ *          ESC:    abort - stop reading / writing to HP8970
+ *    Shift ESC:    abort, then reinitialize the GPIB devices
+ *     Ctrl ESC:    abort & send a GPIB clear to the HP8970
+ *      Alt ESC:    clear measurement plot
+ *
+ *           F1:    show help scrren
+ *
+ *           F2:    send all settings to the HP8970 (useful if HP8970 has been preset or re-powered)
+ *
+ *           F12:   enlarge to max screen height
+ *     Shift F12: make default size
+ */
 static gboolean
 CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType state, GtkEventControllerKey *event_controller) {
 
@@ -31,6 +44,12 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
      *        F1: show help screen
      *
      *        F2: send all settings to HP8970 (useful if HP8970 has been reset)
+     *
+     *        F9: show memory trace(s) if saved
+     *  shift F9: hide memory trace(s) if saved
+     *   ctrl F9: save measurement to memory and activate 'show' memory checkbox
+     *    alt F9: clear memory traces and deactivate 'show' memory checkbox
+     *  super F9: clear measurement trace(s) but not the title or notes
      *
      *       F12: enlarge to max screen height
      * shift F12: make default size
@@ -603,23 +622,21 @@ CB_combo_Mode ( GtkComboBox* wComboMode, gpointer udata ) {
     gtk_widget_queue_draw ( pGlobal->widgets[ eW_drawing_Plot ] );
 }
 
-/*!     \brief  Callback for smoothing GtkComboBoxText
+/*!     \brief  Callback for smoothing GtkDropDown
  *
  * Change the smoothing factor
  *
- * \param  wComboSmoothing  pointer to GtkComboBoxText
+ * \param  wDropSmoothing   pointer to GtkComboBoxText
  * \param  udata            user data
  */
 static void
-CB_combo_Smoothing ( GtkComboBox* wComboSmoothing, gpointer udata ) {
-    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wComboSmoothing), "data");
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    const gchar *sID = gtk_combo_box_get_active_id ( GTK_COMBO_BOX( wComboSmoothing ) );
-#pragma GCC diagnostic pop
+CB_drop_Smoothing ( GtkDropDown* wDropSmoothing, gpointer udata ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wDropSmoothing), "data");
 
-    if( sID != NULL )
-        pGlobal->HP8970settings.smoothingFactor = (gint)pow( 2.0, atoi( sID ));
+    guint ID = gtk_drop_down_get_selected ( GTK_DROP_DOWN( wDropSmoothing ) );
+
+    if( ID != GTK_INVALID_LIST_POSITION )
+        pGlobal->HP8970settings.smoothingFactor = (gint)pow( 2.0, ID );
 
     UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bSmoothing );
 }
@@ -806,7 +823,7 @@ refreshMainDialog( tGlobal *pGlobal )
 
     gtk_combo_box_set_active( GTK_COMBO_BOX( wMode ), pGlobal->HP8970settings.mode );
 
-    gtk_combo_box_set_active( GTK_COMBO_BOX( pGlobal->widgets[ eW_combo_Smoothing ]),
+    gtk_drop_down_set_selected( GTK_DROP_DOWN( pGlobal->widgets[ eW_drop_Smoothing ]),
                               pGlobal->HP8970settings.smoothingFactor ? (gint)log2(pGlobal->HP8970settings.smoothingFactor) : 1 );
 #pragma GCC diagnostic pop
 
@@ -873,7 +890,6 @@ void on_ModeCombo_MouseEnterLeave ( GtkEventControllerMotion* eventGesture, gdou
 
     gboolean value;
     g_object_get (G_OBJECT (wModeCombo), "popup-shown", &value, NULL);
-
 
     gboolean bFocused = gtk_widget_has_focus(
             gtk_widget_get_first_child( gtk_widget_get_first_child( GTK_WIDGET( wModeCombo ) ) ) );
@@ -957,7 +973,7 @@ initializeMainDialog( tGlobal *pGlobal )
     g_signal_connect( pGlobal->widgets[ eW_spin_FrStop ],    "value-changed", G_CALLBACK( CB_spin_FrStop ),    NULL);
     g_signal_connect( pGlobal->widgets[ eW_spin_FrStep_Cal ],    "value-changed", G_CALLBACK( CB_spin_FrStep_Cal ),    NULL);
     g_signal_connect( pGlobal->widgets[ eW_spin_FrStep_Sweep ],    "value-changed", G_CALLBACK( CB_spin_FrStep_Sweep ),    NULL);
-    g_signal_connect( pGlobal->widgets[ eW_combo_Smoothing ],  "changed", G_CALLBACK( CB_combo_Smoothing ), NULL);
+    g_signal_connect( pGlobal->widgets[ eW_drop_Smoothing ],  "notify::selected", G_CALLBACK( CB_drop_Smoothing ), NULL);
     // Connect callbacks
     g_signal_connect( pGlobal->widgets[ eW_tgl_Sweep ],  "toggled", G_CALLBACK( CB_tgl_Sweep ), NULL);
     // Right mouse button press

@@ -22,7 +22,7 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.03-2"
+   #define VERSION "1.03-3"
 #endif
 
 

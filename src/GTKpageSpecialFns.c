@@ -39,15 +39,11 @@
  * \param  udata          user data
  */
 static void
-CB_chk_NoiseUnits (GtkCheckButton *wNoiseUnit, gpointer identifier)
-{
-    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wNoiseUnit), "data");
-    gboolean bActive = gtk_check_button_get_active (wNoiseUnit);
+CB_drop_NoiseUnits( GtkDropDown * wNoiseUnits, gpointer udata ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT( wNoiseUnits ), "data");
 
-    if( bActive ) {
-        pGlobal->HP8970settings.noiseUnits = (tNoiseType)GPOINTER_TO_INT( identifier );
-        UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bNoiseUnits);
-    }
+    pGlobal->HP8970settings.noiseUnits = gtk_drop_down_get_selected( wNoiseUnits );
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bNoiseUnits);
 }
 
 /*!     \brief  Callback for Cold Temperature spin button
@@ -142,21 +138,14 @@ void CB_chk_LossCompensationEnable ( GtkCheckButton *wChkEnableLossCompensation,
  */
 void
 refreshPageHP8970( tGlobal *pGlobal ) {
-    static widgetIDs noiseUnitWidgetIDs[] = {
-            [eFdB]  = eW_chk_NoiseUnit_FdB,
-            [eF]    = eW_chk_NoiseUnit_F,
-            [eYdB]  = eW_chk_NoiseUnit_YdB,
-            [eY]    = eW_chk_NoiseUnit_Y,
-            [eTeK ] = eW_chk_NoiseUnit_TeK
-    };
-
+    gpointer wDropNoiseUnits = pGlobal->widgets[ eW_drop_NoiseUnits ];
     gpointer wSpinColdTemp = pGlobal->widgets[ eW_spin_ColdT ];
     gpointer wSpinLossTemp = pGlobal->widgets[ eW_spin_LossT ];
     gpointer wSpinLossBeforeDUT = pGlobal->widgets[ eW_spin_LossBefore ];
     gpointer wSpinLossAfterDUT = pGlobal->widgets[ eW_spin_LossAfter ];
     gpointer wSpinLossCompenstaionEnable = pGlobal->widgets[ eW_chk_LossOn ];
 
-    gtk_check_button_set_active ( pGlobal->widgets[ noiseUnitWidgetIDs[ pGlobal->HP8970settings.noiseUnits ] ], TRUE );
+    gtk_drop_down_set_selected ( wDropNoiseUnits, pGlobal->HP8970settings.noiseUnits );
     gtk_check_button_set_active ( wSpinLossCompenstaionEnable, pGlobal->HP8970settings.switches.bLossCompensation );
 
     gtk_spin_button_set_value( wSpinColdTemp, pGlobal->HP8970settings.coldTemp );
@@ -177,11 +166,7 @@ initializePageHP8970( tGlobal *pGlobal ) {
 
     refreshPageHP8970( pGlobal );
 
-    g_signal_connect(pGlobal->widgets[ eW_chk_NoiseUnit_FdB ], "toggled", G_CALLBACK( CB_chk_NoiseUnits ), (gpointer) eFdB);
-    g_signal_connect(pGlobal->widgets[ eW_chk_NoiseUnit_F ],   "toggled", G_CALLBACK( CB_chk_NoiseUnits ), (gpointer) eF);
-    g_signal_connect(pGlobal->widgets[ eW_chk_NoiseUnit_YdB ], "toggled", G_CALLBACK( CB_chk_NoiseUnits ), (gpointer) eYdB);
-    g_signal_connect(pGlobal->widgets[ eW_chk_NoiseUnit_Y ],   "toggled", G_CALLBACK( CB_chk_NoiseUnits ), (gpointer) eY);
-    g_signal_connect(pGlobal->widgets[ eW_chk_NoiseUnit_TeK ], "toggled", G_CALLBACK( CB_chk_NoiseUnits ), (gpointer) eTeK);
+    g_signal_connect_after( pGlobal->widgets[ eW_drop_NoiseUnits ], "notify::selected", G_CALLBACK( CB_drop_NoiseUnits ), NULL);
     g_signal_connect( pGlobal->widgets[ eW_spin_ColdT ], "value-changed", G_CALLBACK( CB_spin_ColdTemp ), NULL);
     g_signal_connect( pGlobal->widgets[ eW_spin_LossT ], "value-changed", G_CALLBACK( CB_spin_LossTemp ), NULL);
     g_signal_connect( pGlobal->widgets[ eW_spin_LossBefore ], "value-changed", G_CALLBACK( CB_spin_LossBeforeDUT ), NULL);

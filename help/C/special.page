@@ -1,0 +1,49 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic" style="guide"
+      id="special">
+
+  <info>
+    <link type="guide" xref="index#setup"/>
+    <revision pkgversion="1.00.1" date="2024-07-25" status="candidate" />
+
+    <credit type="author">
+      <name>Michael Katzmann</name>
+      <email>michaelk@IEEE.org</email>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Special Functions &amp; Configuration Save/Recall</desc>
+  </info>
+  
+  <title>Special Functions &amp; Configuration Save/Recall</title>
+  <p>Many settings in the HP8970 are defined as <em>Special Functions</em> and are entered using the <key>Special Function</key> button.</p>
+  <p>Some of these settings may be changed from this notebook page. Additionally, all the settings may be saved to a named configuration. In this way, the settings for particular measurements may be saved and quickly recalled at a later time.</p>
+  <section>
+    <title>Configuration Memory</title>
+    <media type="image" style="floatright"  mime="image/png" src="media/specialPage.png" />
+    <p>All the settings may be saved and restored in a named configuration.</p>
+    <p>Type the name of the configuration and press the <key>Save</key> button to save a new configuration or to overwrite an existing one.</p>
+    <p>To recall the configuration select the named configuration from the drop down list, or type the name into the entry widget, and press the <key>Restore</key> button.</p>
+    <p>To delete a previously created configuration, select it and press the <key>Delete</key> button.</p>
+    <note style="tip">
+     <p>The title and notes are not saved and recalled with the configuration. They are specific to the plot and are consequently saved and restored with the plot.</p>
+    </note>
+  </section>
+  <section>
+    <title>Noise Units and Cold Temperature</title>
+    <p>The HP8970 can return the noise measurement if either Noise Figure in dB or as a ratio, Y in dB or a ratio, or in Noise Temperature K.</p>
+    <p>Use the <gui>Noise Units</gui> drop down to select the units of noise.</p>
+    <note style="tip">
+      <p>This will set the noise units for subsequent measurements. It will not change the units shown on a previously retrieved measurement.</p>
+    </note>
+    <p>The temperature used in calculating the noise of the cold source can be set here. The default is 296.5K</p>
+  </section>
+  <section>
+    <title>Loss Compensation</title>
+    <p>If there are cable or other losses before or after the DUT, the HP8970 can compensate for these. Enter the losses and the temperature of the loss elements here and enable loss compensation.</p><p>If there are no losses to compensate, uncheck the box.</p>
+  </section>
+
+
+
+</page>
