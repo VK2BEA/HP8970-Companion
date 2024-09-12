@@ -819,7 +819,7 @@ refreshMainDialog( tGlobal *pGlobal )
     GtkEditable *wTitle = gtk_editable_get_delegate(GTK_EDITABLE( pGlobal->widgets[ eW_entry_Title ] ));
     g_signal_handlers_block_by_func( G_OBJECT( wTitle ),    CB_edit_Title,    NULL );
     gtk_editable_set_text( wTitle, pGlobal->plot.sTitle == 0 ? "" : pGlobal->plot.sTitle );
-    g_signal_handlers_block_by_func( G_OBJECT( wTitle ),    CB_edit_Title,    NULL );
+    g_signal_handlers_unblock_by_func( G_OBJECT( wTitle ),    CB_edit_Title,    NULL );
 
     gtk_combo_box_set_active( GTK_COMBO_BOX( wMode ), pGlobal->HP8970settings.mode );
 
