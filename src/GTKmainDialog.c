@@ -26,10 +26,23 @@
  *           F12:   enlarge to max screen height
  *     Shift F12: make default size
  */
-static gboolean
-CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType state, GtkEventControllerKey *event_controller) {
 
-    tGlobal *pGlobal = (tGlobal*) g_object_get_data (dataObject, "data");
+/*!     \brief  Callback button press
+ *
+ * Callback button press
+ *
+ * \param  self        pointer to GtkEventControllerKey widget
+ * \param  keyval      The released key
+ * \param  keycode     The raw code of the released key.
+ * \param  state       The bitmask, representing the state of modifier keys and pointer buttons
+ * \param  udata       user data (unused)
+ * \return             FALSE if we want other routines to handle
+ */
+static gboolean
+CB_KeyPressed (GtkEventControllerKey *self, guint keyval, guint keycode,
+               GdkModifierType state, gpointer udata) {
+
+    tGlobal *pGlobal = (tGlobal*) g_object_get_data ( G_OBJECT(self), "data");
     tCircularBuffer *pMemory = &pGlobal->plot.memoryBuffer;
     tCircularBuffer *pMeasurement = &pGlobal->plot.measurementBuffer;
 
@@ -203,11 +216,20 @@ CB_KeyPressed (GObject *dataObject, guint keyval, guint keycode, GdkModifierType
     return FALSE;
 }
 
-static gboolean
-CB_KeyReleased (GtkWidget *drawing_area) {
-    return FALSE;
+/*!     \brief  Callback button Release
+ *
+ * Callback button Release
+ *
+ * \param  self        pointer to GtkEventControllerKey widget
+ * \param  keyval      The released key
+ * \param  keycode     The raw code of the released key.
+ * \param  state       The bitmask, representing the state of modifier keys and pointer buttons
+ * \param  udata       user data (unused
+ */
+static void
+CB_KeyReleased (GtkEventControllerKey *self, guint keyval, guint keycode,
+                              GdkModifierType state, gpointer udata) {
 }
-
 
 // insert-text signal
 void
@@ -949,6 +971,7 @@ initializeMainDialog( tGlobal *pGlobal )
 {
     GtkWidget *wDrawingArea, *wApplication, *wModeCombo, *wSaveJSON;
     GtkGesture *gesture;
+    GtkEventController *eventFocus;
 
     wDrawingArea = pGlobal->widgets[ eW_drawing_Plot ];
     wApplication = pGlobal->widgets[ eW_HP8970_application ];
@@ -973,6 +996,7 @@ initializeMainDialog( tGlobal *pGlobal )
     g_signal_connect( pGlobal->widgets[ eW_spin_FrStop ],    "value-changed", G_CALLBACK( CB_spin_FrStop ),    NULL);
     g_signal_connect( pGlobal->widgets[ eW_spin_FrStep_Cal ],    "value-changed", G_CALLBACK( CB_spin_FrStep_Cal ),    NULL);
     g_signal_connect( pGlobal->widgets[ eW_spin_FrStep_Sweep ],    "value-changed", G_CALLBACK( CB_spin_FrStep_Sweep ),    NULL);
+
     g_signal_connect( pGlobal->widgets[ eW_drop_Smoothing ],  "notify::selected", G_CALLBACK( CB_drop_Smoothing ), NULL);
     // Connect callbacks
     g_signal_connect( pGlobal->widgets[ eW_tgl_Sweep ],  "toggled", G_CALLBACK( CB_tgl_Sweep ), NULL);
@@ -1077,7 +1101,8 @@ initializeMainDialog( tGlobal *pGlobal )
     gtk_widget_add_controller (wModeCombo, GTK_EVENT_CONTROLLER (eventMouseMotion));
 
     // call back when mouse enters and leaves the mode combo box (to show mode diagram)
-    GtkEventController *eventFocus = gtk_event_controller_focus_new ();
+
+    eventFocus = gtk_event_controller_focus_new ();
     gtk_widget_add_controller( wModeCombo, eventFocus);
     g_signal_connect( eventFocus, "leave", G_CALLBACK( CB_combo_ModeOutOfFocus), NULL);
 
