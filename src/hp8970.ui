@@ -412,66 +412,8 @@ bottomBorderOnly</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkBox">
-                            <property name="homogeneous">True</property>
-                            <child>
-                              <object class="GtkFrame">
-                                <property name="css-classes">noborder
-</property>
-                                <property name="label">Noise Units</property>
-                                <child>
-                                  <object class="GtkDropDown" id="WID_drop_NoiseUnits">
-                                    <property name="margin-bottom">4</property>
-                                    <property name="margin-end">4</property>
-                                    <property name="margin-start">4</property>
-                                    <property name="model">
-                                      <object class="GtkStringList">
-                                        <property name="strings">F dB
-F
-Y dB
-Y
-Tₑ K</property>
-                                      </object>
-                                    </property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkFrame">
-                                <property name="css-classes">noborder
-
-</property>
-                                <property name="label">T Cold (K)</property>
-                                <property name="margin-end">2</property>
-                                <child>
-                                  <object class="GtkSpinButton" id="WID_spin_ColdT">
-                                    <property name="adjustment">
-                                      <object class="GtkAdjustment">
-                                        <property name="page-increment">10.0</property>
-                                        <property name="step-increment">1.0</property>
-                                        <property name="upper">10000.0</property>
-                                        <property name="value">296.5</property>
-                                      </object>
-                                    </property>
-                                    <property name="digits">1</property>
-                                    <property name="margin-bottom">4</property>
-                                    <property name="margin-end">4</property>
-                                    <property name="margin-start">4</property>
-                                    <property name="numeric">True</property>
-                                    <property name="valign">start</property>
-                                    <property name="xalign">1.0</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkFrame">
-                            <property name="css-classes">square
-noSideBorder</property>
-                            <property name="label">Loss Compensation</property>
+                          <object class="GtkScrolledWindow">
+                            <property name="vexpand">True</property>
                             <child>
                               <object class="GtkBox">
                                 <property name="orientation">vertical</property>
@@ -479,23 +421,43 @@ noSideBorder</property>
                                   <object class="GtkBox">
                                     <property name="homogeneous">True</property>
                                     <child>
-                                      <object class="GtkCheckButton" id="WID_chk_LossOn">
-                                        <property name="label">On</property>
-                                        <property name="valign">start</property>
+                                      <object class="GtkFrame">
+                                        <property name="css-classes">noborder
+</property>
+                                        <property name="label">Noise Units</property>
+                                        <child>
+                                          <object class="GtkDropDown" id="WID_drop_NoiseUnits">
+                                            <property name="margin-bottom">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-start">4</property>
+                                            <property name="model">
+                                              <object class="GtkStringList">
+                                                <property name="strings">F dB
+F
+Y dB
+Y
+Tₑ K</property>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                     <child>
                                       <object class="GtkFrame">
-                                        <property name="css-classes">noborder</property>
-                                        <property name="label">T of losses (K)</property>
+                                        <property name="css-classes">noborder
+
+</property>
+                                        <property name="label">T Cold (K)</property>
+                                        <property name="margin-end">2</property>
                                         <child>
-                                          <object class="GtkSpinButton" id="WID_spin_LossT">
+                                          <object class="GtkSpinButton" id="WID_spin_ColdT">
                                             <property name="adjustment">
                                               <object class="GtkAdjustment">
                                                 <property name="page-increment">10.0</property>
                                                 <property name="step-increment">1.0</property>
-                                                <property name="upper">9999.0</property>
-                                                <property name="value">273.0</property>
+                                                <property name="upper">10000.0</property>
+                                                <property name="value">296.5</property>
                                               </object>
                                             </property>
                                             <property name="digits">1</property>
@@ -512,56 +474,127 @@ noSideBorder</property>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkBox">
-                                    <property name="homogeneous">True</property>
+                                  <object class="GtkFrame">
+                                    <property name="css-classes">square
+noSideBorder</property>
+                                    <property name="label">Loss Compensation</property>
                                     <child>
-                                      <object class="GtkFrame">
-                                        <property name="css-classes">noborder</property>
-                                        <property name="label">Loss before DUT (dB)</property>
+                                      <object class="GtkBox">
+                                        <property name="orientation">vertical</property>
                                         <child>
-                                          <object class="GtkSpinButton" id="WID_spin_LossBefore">
-                                            <property name="adjustment">
-                                              <object class="GtkAdjustment">
-                                                <property name="lower">-100.0</property>
-                                                <property name="page-increment">10.0</property>
-                                                <property name="step-increment">1.0</property>
-                                                <property name="upper">100.0</property>
+                                          <object class="GtkBox">
+                                            <property name="homogeneous">True</property>
+                                            <child>
+                                              <object class="GtkCheckButton" id="WID_chk_LossOn">
+                                                <property name="label">On</property>
+                                                <property name="valign">start</property>
                                               </object>
-                                            </property>
-                                            <property name="digits">2</property>
-                                            <property name="margin-bottom">4</property>
-                                            <property name="margin-end">4</property>
-                                            <property name="margin-start">4</property>
-                                            <property name="numeric">True</property>
-                                            <property name="valign">start</property>
-                                            <property name="xalign">1.0</property>
+                                            </child>
+                                            <child>
+                                              <object class="GtkFrame">
+                                                <property name="css-classes">noborder</property>
+                                                <property name="label">T of losses (K)</property>
+                                                <child>
+                                                  <object class="GtkSpinButton" id="WID_spin_LossT">
+                                                    <property name="adjustment">
+                                                      <object class="GtkAdjustment">
+                                                        <property name="page-increment">10.0</property>
+                                                        <property name="step-increment">1.0</property>
+                                                        <property name="upper">9999.0</property>
+                                                        <property name="value">273.0</property>
+                                                      </object>
+                                                    </property>
+                                                    <property name="digits">1</property>
+                                                    <property name="margin-bottom">4</property>
+                                                    <property name="margin-end">4</property>
+                                                    <property name="margin-start">4</property>
+                                                    <property name="numeric">True</property>
+                                                    <property name="valign">start</property>
+                                                    <property name="xalign">1.0</property>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="homogeneous">True</property>
+                                            <child>
+                                              <object class="GtkFrame">
+                                                <property name="css-classes">noborder</property>
+                                                <property name="label">Loss before DUT (dB)</property>
+                                                <child>
+                                                  <object class="GtkSpinButton" id="WID_spin_LossBefore">
+                                                    <property name="adjustment">
+                                                      <object class="GtkAdjustment">
+                                                        <property name="lower">-100.0</property>
+                                                        <property name="page-increment">10.0</property>
+                                                        <property name="step-increment">1.0</property>
+                                                        <property name="upper">100.0</property>
+                                                      </object>
+                                                    </property>
+                                                    <property name="digits">2</property>
+                                                    <property name="margin-bottom">4</property>
+                                                    <property name="margin-end">4</property>
+                                                    <property name="margin-start">4</property>
+                                                    <property name="numeric">True</property>
+                                                    <property name="valign">start</property>
+                                                    <property name="xalign">1.0</property>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkFrame">
+                                                <property name="css-classes">noborder</property>
+                                                <property name="label">Loss after DUT (dB)</property>
+                                                <child>
+                                                  <object class="GtkSpinButton" id="WID_spin_LossAfter">
+                                                    <property name="adjustment">
+                                                      <object class="GtkAdjustment">
+                                                        <property name="lower">-100.0</property>
+                                                        <property name="page-increment">10.0</property>
+                                                        <property name="step-increment">1.0</property>
+                                                        <property name="upper">100.0</property>
+                                                      </object>
+                                                    </property>
+                                                    <property name="digits">2</property>
+                                                    <property name="margin-bottom">4</property>
+                                                    <property name="margin-end">4</property>
+                                                    <property name="margin-start">4</property>
+                                                    <property name="numeric">True</property>
+                                                    <property name="valign">start</property>
+                                                    <property name="xalign">1.0</property>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                       </object>
                                     </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkFrame">
+                                    <property name="css-classes">square
+bottomBorderOnly
+</property>
+                                    <property name="label">Input Gain Calibration Levels</property>
                                     <child>
-                                      <object class="GtkFrame">
-                                        <property name="css-classes">noborder</property>
-                                        <property name="label">Loss after DUT (dB)</property>
-                                        <child>
-                                          <object class="GtkSpinButton" id="WID_spin_LossAfter">
-                                            <property name="adjustment">
-                                              <object class="GtkAdjustment">
-                                                <property name="lower">-100.0</property>
-                                                <property name="page-increment">10.0</property>
-                                                <property name="step-increment">1.0</property>
-                                                <property name="upper">100.0</property>
-                                              </object>
-                                            </property>
-                                            <property name="digits">2</property>
-                                            <property name="margin-bottom">4</property>
-                                            <property name="margin-end">4</property>
-                                            <property name="margin-start">4</property>
-                                            <property name="numeric">True</property>
-                                            <property name="valign">start</property>
-                                            <property name="xalign">1.0</property>
+                                      <object class="GtkDropDown" id="WID_drop_InputGainCalibration">
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-end">4</property>
+                                        <property name="margin-start">4</property>
+                                        <property name="model">
+                                          <object class="GtkStringList">
+                                            <property name="strings">+20, +10 and 0 dB
++10,  0 and -10 dB
+0, -10 and -20 dB
+-10, -20 and -30 dB</property>
                                           </object>
-                                        </child>
+                                        </property>
                                       </object>
                                     </child>
                                   </object>

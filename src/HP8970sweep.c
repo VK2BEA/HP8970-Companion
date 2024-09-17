@@ -821,13 +821,14 @@ calibrateHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO, gi
         // LA??.???EN - Loss before DUT
         // LB??.???EN - Loss after DUT
         // LT??.??EN  - Loss temperature
-        g_string_printf( pstCommands, "H1"         "T1"         "E%1d"       "IF%dMZ"    "LF%dMZ"    "B%1d"
+        g_string_printf( pstCommands, "H1"         "T1"         "E%1d"       "IF%dMZ"    "LF%dMZ"    "B%1d"    "C%1d"
         		                      "FA%dMZ"     "FB%dMZ"     "SS%dMZ"     "F%1d"      "N%1d"      "D0"
         		                      "TC%.2lfEN"  "L%1d"       "LA%.3lfEN"  "LB%.3lfEN" "LT%.2lfEN",
                       pGlobal->HP8970settings.mode,
                       (gint)pGlobal->HP8970settings.extLOfreqIF,
                       (gint) pGlobal->HP8970settings.extLOfreqLO,
                       pGlobal->HP8970settings.extLOsideband,
+                      pGlobal->HP8970settings.inputGainCal,
 
                       (gint)freqStartMHz,
                       (gint)freqStopMHz,

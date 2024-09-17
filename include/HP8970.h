@@ -22,7 +22,7 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.03-3"
+   #define VERSION "1.04-1"
 #endif
 
 
@@ -137,6 +137,10 @@ typedef enum {
     eDSB = 0, eLSB = 1, eUSB = 2, eMAX_SIDEBAND_TYPES = 3
 } tSideband;
 
+typedef enum {
+    ePlus20 = 0, ePlus10 = 1, eZero = 2, eMinus10 = 3
+} tInputGainCal;
+
 typedef struct {
     gdouble x, y;
 } tCoordinate;
@@ -200,6 +204,7 @@ typedef struct {
     } switches;
 
     gint smoothingFactor;
+    tInputGainCal   inputGainCal;
 
     tNoiseType noiseUnits;
 
@@ -558,3 +563,7 @@ void        warnFrequencyRangeOutOfBounds   (tGlobal *);
 
 #define GSETTINGS_SCHEMA    "us.heterodyne.hp8970"
 
+/*
+ * AMPL:SOUR 10DBM;STAT ON;:FREQ:MODE CW;:FM:STAT OFF;:AM:STAT OFF;
+ *
+ */

@@ -46,6 +46,7 @@ typedef enum {
     eW_Controls,
     eW_CV_NoiseSource,
     eW_drawing_Plot,
+    eW_drop_InputGainCalibration,
     eW_drop_NoiseUnits,
     eW_drop_Smoothing,
     eW_entry_opt_GPIB_name,

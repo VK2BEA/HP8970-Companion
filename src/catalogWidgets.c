@@ -98,6 +98,7 @@ buildWidgetList( tGlobal *pGlobal,  GtkBuilder *builder ) {
             [ eW_Controls ]                     = "WID_Controls",
             [ eW_CV_NoiseSource ]               = "WID_CV_NoiseSource",
             [ eW_drawing_Plot ]                 = "WID_drawing_Plot",
+            [ eW_drop_InputGainCalibration ]    = "WID_drop_InputGainCalibration",
             [ eW_drop_NoiseUnits ]              = "WID_drop_NoiseUnits",
             [ eW_drop_Smoothing ]               = "WID_drop_Smoothing",
             [ eW_entry_opt_GPIB_name ]          = "WID_entry_opt_GPIB_name",

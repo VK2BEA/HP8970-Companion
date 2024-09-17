@@ -221,39 +221,42 @@ recoverSettings( tGlobal *pGlobal ) {
     return TRUE;
 }
 
-
-
-/* a(ddddd) -   0:freqSpotMHz       // mode 1.0 & 1.1 etc
+/*
+ * GVariant https://docs.gtk.org/glib/gvariant-format-strings.html
+ *
+ *
+ * a(ddddd) -   0:freqSpotMHz       // mode 1.0 & 1.1 etc
  *               :freqStartMHz
  *               :freqStopMHz
  *               :freqStepCalMHz
  *               :freqStepSweepMHz
- * bb       -   1:bCorrectedNFAndGain
+ * (bb)     -   1:bCorrectedNFAndGain
  *              2:bLossCompensation
  *              3:bSpotFrequency
- * qyy      -   4:smoothingFactor
+ * qyyy     -   4:smoothingFactor
  *              5:noiseUnits
- *              6:mode
- * qqq      -   7:extLOfreqIF
- *              8:extLOfreqLO
- *              9:settlingTime_ms
- * ss       -   10:sExtLOsetup
- *              11:sExtLOsetFreq
- * y        -   12:extLOsideband
- * dddd     -   13:lossBeforeDUT,
- *              14:lossAfterDUT,
- *              15:lossTemp,
- *              16:coldTemp;
+ *              6:inputGainCal
+ *              7:mode
+ * (qqq     -   8:extLOfreqIF
+ *              9:extLOfreqLO
+ *              10:settlingTime_ms
+ * ss           11:sExtLOsetup
+ *              12:sExtLOsetFreq
+ * y)           13:extLOsideband
+ * (dddd)   -   14:lossBeforeDUT,
+ *              15:lossAfterDUT,
+ *              16:lossTemp,
+ *              17:coldTemp;
  *
- * b        -   17:bAutoScaling
- * a(dd)    -   18:fixedGridNoise (min)
+ * b        -   18:bAutoScaling
+ * a(dd)    -   19:fixedGridNoise (min)
  *                :fixedGridNoise (max)
- * (dd)     -   19:fixedGridGain (min)
- *              37:fixedGridGain (max)
+ * (dd)     -   20:fixedGridGain (min)
+ *              21:fixedGridGain (max)
  *
  */
 
-#define CONFIG_TUPPLE "(a(ddddd)(bb)qyy(qqqssy)(dddd)ba(dd)(dd))"
+#define CONFIG_TUPPLE "(a(ddddd)(bb)qyyy(qqqssy)(dddd)ba(dd)(dd))"
 
 
 GVariant *
@@ -284,10 +287,11 @@ configurationBuilder( tHP8970settings *configuration ){
     g_variant_builder_add(configBuilder, "(bb)",
             configuration->switches.bCorrectedNFAndGain, configuration->switches.bLossCompensation );
 
-    // qyy
+    // qyyy
 
     g_variant_builder_add(configBuilder, "q", configuration->smoothingFactor );
     g_variant_builder_add(configBuilder, "y", configuration->noiseUnits );
+    g_variant_builder_add(configBuilder, "y", configuration->inputGainCal );
     g_variant_builder_add(configBuilder, "y", configuration->mode );
 
     // (qqqssy)
@@ -416,6 +420,7 @@ recoverConfigurations( tGlobal *pGlobal ) {
 
                 &pHP8970settings->smoothingFactor,
                 &pHP8970settings->noiseUnits,
+                &pHP8970settings->inputGainCal,
                 &pHP8970settings->mode,
 
                 // qqq

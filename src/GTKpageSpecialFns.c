@@ -35,7 +35,7 @@
  *
  * Callback for selection of noise units
  *
- * \param  wNoiseUnit     pointer to GtkSpinButton
+ * \param  wNoiseUnit     pointer to GtkDropDown
  * \param  udata          user data
  */
 static void
@@ -45,6 +45,22 @@ CB_drop_NoiseUnits( GtkDropDown * wNoiseUnits, gpointer udata ) {
     pGlobal->HP8970settings.noiseUnits = gtk_drop_down_get_selected( wNoiseUnits );
     UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bNoiseUnits);
 }
+
+
+/*!     \brief  Callback for changing the input gain for calibration
+ *
+ * Callback for changing the input gain for calibration
+ *
+ * \param  wInputGainCal     pointer to GtkDropDown
+ * \param  udata             user data
+ */
+static void
+CB_drop_InputGainCalibration( GtkDropDown * wInputGainCal, gpointer udata ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT( wInputGainCal ), "data");
+
+    pGlobal->HP8970settings.inputGainCal = gtk_drop_down_get_selected( wInputGainCal );
+}
+
 
 /*!     \brief  Callback for Cold Temperature spin button
  *
@@ -144,6 +160,7 @@ refreshPageHP8970( tGlobal *pGlobal ) {
     gpointer wSpinLossBeforeDUT = pGlobal->widgets[ eW_spin_LossBefore ];
     gpointer wSpinLossAfterDUT = pGlobal->widgets[ eW_spin_LossAfter ];
     gpointer wSpinLossCompenstaionEnable = pGlobal->widgets[ eW_chk_LossOn ];
+    gpointer wDropInputGainCalibration = pGlobal->widgets[ eW_drop_InputGainCalibration ];
 
     gtk_drop_down_set_selected ( wDropNoiseUnits, pGlobal->HP8970settings.noiseUnits );
     gtk_check_button_set_active ( wSpinLossCompenstaionEnable, pGlobal->HP8970settings.switches.bLossCompensation );
@@ -152,6 +169,7 @@ refreshPageHP8970( tGlobal *pGlobal ) {
     gtk_spin_button_set_value( wSpinLossTemp, pGlobal->HP8970settings.lossTemp );
     gtk_spin_button_set_value( wSpinLossBeforeDUT, pGlobal->HP8970settings.lossBeforeDUT );
     gtk_spin_button_set_value( wSpinLossAfterDUT, pGlobal->HP8970settings.lossAfterDUT );
+    gtk_drop_down_set_selected ( wDropInputGainCalibration, pGlobal->HP8970settings.inputGainCal );
 
 }
 
@@ -172,4 +190,5 @@ initializePageHP8970( tGlobal *pGlobal ) {
     g_signal_connect( pGlobal->widgets[ eW_spin_LossBefore ], "value-changed", G_CALLBACK( CB_spin_LossBeforeDUT ), NULL);
     g_signal_connect( pGlobal->widgets[ eW_spin_LossAfter ], "value-changed", G_CALLBACK( CB_spin_LossAfterDUT ), NULL);
     g_signal_connect( pGlobal->widgets[ eW_chk_LossOn ], "toggled", G_CALLBACK( CB_chk_LossCompensationEnable ), NULL);
+    g_signal_connect_after( pGlobal->widgets[ eW_drop_InputGainCalibration ], "notify::selected", G_CALLBACK( CB_drop_InputGainCalibration ), NULL);
 }
