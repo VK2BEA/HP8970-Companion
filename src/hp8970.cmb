@@ -232,7 +232,7 @@
 	(1,464,"GtkFrame",None,460,None,None,None,1,None,None),
 	(1,465,"GtkSpinButton","WID_spin_LossAfter",464,None,None,None,0,None,None),
 	(1,466,"GtkAdjustment",None,465,None,None,None,0,None,None),
-	(1,467,"GtkFrame",None,445,None,None,None,2,None,None),
+	(1,467,"GtkFrame","WID_frm_InputGainCal",445,None,None,None,2,None,None),
 	(1,468,"GtkDropDown","WID_drop_InputGainCalibration",467,None,None,None,0,None,None),
 	(1,469,"GtkStringList",None,468,None,None,None,0,None,None)
   </object>

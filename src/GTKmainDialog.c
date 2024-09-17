@@ -132,6 +132,23 @@ CB_KeyPressed (GtkEventControllerKey *self, guint keyval, guint keycode,
                     break;
                 }
             break;
+            case GDK_KEY_F3:
+                switch (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK | GDK_SUPER_MASK))
+                    {
+                    case GDK_SHIFT_MASK:
+                        break;
+                    case GDK_CONTROL_MASK:
+                        break;
+                    case GDK_ALT_MASK:
+                        break;
+                    case GDK_SUPER_MASK:
+                        break;
+                    case 0:
+                        pGlobal->flags.bShowAdditionalSP = !pGlobal->flags.bShowAdditionalSP;
+                        gtk_widget_set_visible( pGlobal->widgets[ eW_frm_InputGainCal ], pGlobal->flags.bShowAdditionalSP );
+                        break;
+                    }
+                break;
             case GDK_KEY_F9:
                 switch (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK | GDK_SUPER_MASK))
                     {

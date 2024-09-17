@@ -301,6 +301,7 @@ typedef struct {
         guint32 bPreviewModeDiagram     :1;
         guint32 bNoLOcontrol            :1;
         guint32 bCalibrationNotPossible :1;
+        guint32 bShowAdditionalSP       :1;
 #define N_VARIANTS 3
         guint32 bbHP8970Bmodel          :2;
     } flags;

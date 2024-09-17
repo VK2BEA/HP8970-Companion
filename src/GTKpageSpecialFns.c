@@ -171,6 +171,8 @@ refreshPageHP8970( tGlobal *pGlobal ) {
     gtk_spin_button_set_value( wSpinLossAfterDUT, pGlobal->HP8970settings.lossAfterDUT );
     gtk_drop_down_set_selected ( wDropInputGainCalibration, pGlobal->HP8970settings.inputGainCal );
 
+    gtk_widget_set_visible( pGlobal->widgets[ eW_frm_InputGainCal ], pGlobal->flags.bShowAdditionalSP );
+
 }
 
 /*!     \brief  Initialize the widgets on the HP8970 page

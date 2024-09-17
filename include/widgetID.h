@@ -53,6 +53,7 @@ typedef enum {
     eW_entry_opt_LO_GPIB_name,
     eW_entry_Title,
     eW_frame_NoiseRange,
+    eW_frm_InputGainCal,
     eW_frm_Mode,
     eW_frm_Sweep,
     eW_HP8970_application,

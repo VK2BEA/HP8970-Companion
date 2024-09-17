@@ -577,7 +577,7 @@ noSideBorder</property>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkFrame">
+                                  <object class="GtkFrame" id="WID_frm_InputGainCal">
                                     <property name="css-classes">square
 bottomBorderOnly
 </property>

@@ -104,6 +104,7 @@ buildWidgetList( tGlobal *pGlobal,  GtkBuilder *builder ) {
             [ eW_entry_opt_GPIB_name ]          = "WID_entry_opt_GPIB_name",
             [ eW_entry_opt_LO_GPIB_name ]       = "WID_entry_opt_LO_GPIB_name",
             [ eW_entry_Title ]                  = "WID_entry_Title",
+            [ eW_frm_InputGainCal ]             = "WID_frm_InputGainCal",
             [ eW_frame_NoiseRange ]             = "WID_frame_NoiseRange",
             [ eW_frm_Mode ]                     = "WID_frm_Mode",
             [ eW_frm_Sweep ]                    = "WID_frm_Sweep",
