@@ -62,7 +62,7 @@ CB_spin_GPIB_ControllerIndex(   GtkSpinButton* wControllerIndex,
                    gpointer udata ) {
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wControllerIndex), "data");
 
-    pGlobal->GPIBdevicePID = gtk_spin_button_get_value( wControllerIndex );
+    pGlobal->GPIBcontrollerIndex = gtk_spin_button_get_value( wControllerIndex );
     if( pGlobal->flags.bGPIB_UseCardNoAndPID ){
         postDataToGPIBThread (TG_ABORT, NULL);
         postDataToGPIBThread (TG_REINITIALIZE_GPIB, NULL);
