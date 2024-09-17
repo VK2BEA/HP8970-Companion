@@ -23,8 +23,8 @@ A Fedora RPM package is available, install the program and GPIB driver, GPIB uti
 To build & install using Linux autotools, install the following required packages & tools:
 ------------------------------------------------------------------------------------------
 * `automake`, `autoconf` and `libtool`  
-* To build on Raspberri Pi / Debian: 	`libgs-dev, libglib2.0-dev, libgtk-4-dev, librsvg2-dev, libjson-c-dev, libjson-glib-dev, yelp-tools,`  
-                `https://linux-gpib.sourceforge.io/`  
+* To build on Raspberri Pi / Debian: 	`libgs-dev, libglib2.0-dev, libgtk-4-dev, librsvg2-dev, libjson-c-dev, `  
+                `libjson-glib-dev, yelp-tools, https://linux-gpib.sourceforge.io/`  
 * To run on Raspberry Pi / Debian :	`libglib-2, libgtk-4, librsvg2-2, libgpib, json-c, libjson-c-dev, libjson-glib-dev, json-glib`
 
 Install the GPIB driver: 
