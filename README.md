@@ -27,6 +27,8 @@ To build & install using Linux autotools, install the following required package
                 `libjson-glib-dev, yelp-tools, https://linux-gpib.sourceforge.io/`  
 * To run on Raspberry Pi / Debian :	`libglib-2, libgtk-4, librsvg2-2, libgpib, json-c, libjson-c-dev, libjson-glib-dev, json-glib`
 
+** Important: You need GTK4 Version 4.12 or higher to compile and run this program
+
 Install the GPIB driver: 
 Visit https://linux-gpib.sourceforge.io/ for installation instructions.
 
