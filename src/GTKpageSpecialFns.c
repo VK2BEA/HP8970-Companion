@@ -61,6 +61,52 @@ CB_drop_InputGainCalibration( GtkDropDown * wInputGainCal, gpointer udata ) {
     pGlobal->HP8970settings.inputGainCal = gtk_drop_down_get_selected( wInputGainCal );
 }
 
+#define ATTN_HOLD 1
+/*!     \brief  Callback for changing the RF attenuation
+ *
+ * Callback for changing the RF attenuation
+ *
+ * \param  wRFattenuation    pointer to GtkDropDown
+ * \param  udata             user data
+ */
+static void
+CB_drop_RFattenuation( GtkDropDown * wRFattenuation, gpointer udata ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT( wRFattenuation ), "data");
+
+    guint attn = gtk_drop_down_get_selected( wRFattenuation );
+    if( attn == ATTN_HOLD ) {
+        UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bHoldRFattenuator );
+    } else {
+        pGlobal->HP8970settings.RFattenuation = ((attn == eRFattn_Auto) ? eRFattn_Auto : attn - 1 );
+        UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bRFattenuation );
+    }
+}
+
+
+
+/*!     \brief  Callback for changing the IF attenuation
+ *
+ * Callback for changing the IF attenuation
+ *
+ * \param  wIFattenuation    pointer to GtkDropDown
+ * \param  udata             user data
+ */
+static void
+CB_drop_IFattenuation( GtkDropDown * wIFattenuation, gpointer udata ) {
+    tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT( wIFattenuation ), "data");
+
+    pGlobal->HP8970settings.IFattenuation = gtk_drop_down_get_selected( wIFattenuation );
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bIFattenuation );
+
+    guint attn = gtk_drop_down_get_selected( wIFattenuation );
+    if( attn == ATTN_HOLD ) {
+        UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bHoldIFattenuator );
+    } else {
+        pGlobal->HP8970settings.IFattenuation = ((attn == eIFattn_Auto) ? eIFattn_Auto : attn - 1 );
+        UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bIFattenuation );
+    }
+}
+
 
 /*!     \brief  Callback for Cold Temperature spin button
  *
@@ -76,7 +122,7 @@ CB_spin_ColdTemp(  GtkSpinButton* wSpinColdT, gpointer udata ) {
 
     pGlobal->HP8970settings.coldTemp = gtk_spin_button_get_value( wSpinColdT );
 
-    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bLossCompenstaion);
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bColdTemperature );
 }
 
 /*!     \brief  Callback for Cold Temperature spin button
@@ -93,7 +139,7 @@ CB_spin_LossTemp(  GtkSpinButton* wSpinLossT, gpointer udata ) {
 
     pGlobal->HP8970settings.lossTemp = gtk_spin_button_get_value( wSpinLossT );
 
-    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bLossCompenstaion);
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bLossCompenstaion );
 }
 
 /*!     \brief  Callback for loss before DUT spin button
@@ -110,7 +156,7 @@ CB_spin_LossBeforeDUT(  GtkSpinButton* wSpinLossBeforeDUT, gpointer udata ) {
 
     pGlobal->HP8970settings.lossBeforeDUT = gtk_spin_button_get_value( wSpinLossBeforeDUT );
 
-    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bLossCompenstaion);
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bLossCompenstaion );
 }
 
 /*!     \brief  Callback for loss before DUT spin button
@@ -127,7 +173,7 @@ CB_spin_LossAfterDUT(  GtkSpinButton* wSpinLossAfterDUT, gpointer udata ) {
 
     pGlobal->HP8970settings.lossAfterDUT = gtk_spin_button_get_value( wSpinLossAfterDUT );
 
-    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bLossCompenstaion);
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bLossCompenstaion );
 }
 
 /*!     \brief  Change enable loss compensation setting
@@ -142,7 +188,7 @@ void CB_chk_LossCompensationEnable ( GtkCheckButton *wChkEnableLossCompensation,
     tGlobal *pGlobal = (tGlobal *)g_object_get_data(G_OBJECT(wChkEnableLossCompensation), "data");
     pGlobal->HP8970settings.switches.bLossCompensation = gtk_check_button_get_active( wChkEnableLossCompensation );
 
-    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bLossCompenstaion);
+    UPDATE_8970_SETTING( pGlobal, pGlobal->HP8970settings.updateFlags.each.bLossCompenstaion );
 }
 
 
@@ -159,11 +205,16 @@ refreshPageHP8970( tGlobal *pGlobal ) {
     gpointer wSpinLossTemp = pGlobal->widgets[ eW_spin_LossT ];
     gpointer wSpinLossBeforeDUT = pGlobal->widgets[ eW_spin_LossBefore ];
     gpointer wSpinLossAfterDUT = pGlobal->widgets[ eW_spin_LossAfter ];
-    gpointer wSpinLossCompenstaionEnable = pGlobal->widgets[ eW_chk_LossOn ];
+    gpointer wCheckLossCompenstaionEnable = pGlobal->widgets[ eW_chk_LossOn ];
     gpointer wDropInputGainCalibration = pGlobal->widgets[ eW_drop_InputGainCalibration ];
+    gpointer wDropRFattenuation = pGlobal->widgets[ eW_drop_IF_Attenuation ];
+    gpointer wDropIFattenuation = pGlobal->widgets[ eW_drop_RF_Attenuation ];
 
     gtk_drop_down_set_selected ( wDropNoiseUnits, pGlobal->HP8970settings.noiseUnits );
-    gtk_check_button_set_active ( wSpinLossCompenstaionEnable, pGlobal->HP8970settings.switches.bLossCompensation );
+    gtk_check_button_set_active ( wCheckLossCompenstaionEnable, pGlobal->HP8970settings.switches.bLossCompensation );
+
+    gtk_drop_down_set_selected ( wDropRFattenuation, pGlobal->HP8970settings.RFattenuation );
+    gtk_drop_down_set_selected ( wDropIFattenuation, pGlobal->HP8970settings.IFattenuation );
 
     gtk_spin_button_set_value( wSpinColdTemp, pGlobal->HP8970settings.coldTemp );
     gtk_spin_button_set_value( wSpinLossTemp, pGlobal->HP8970settings.lossTemp );
@@ -172,6 +223,8 @@ refreshPageHP8970( tGlobal *pGlobal ) {
     gtk_drop_down_set_selected ( wDropInputGainCalibration, pGlobal->HP8970settings.inputGainCal );
 
     gtk_widget_set_visible( pGlobal->widgets[ eW_frm_InputGainCal ], pGlobal->flags.bShowAdditionalSP );
+    gtk_widget_set_visible( pGlobal->widgets[ eW_frm_IF_Attenuation ], pGlobal->flags.bShowAdditionalSP );
+    gtk_widget_set_visible( pGlobal->widgets[ eW_frm_RF_Attenuation ], pGlobal->flags.bShowAdditionalSP );
 
 }
 
@@ -193,4 +246,7 @@ initializePageHP8970( tGlobal *pGlobal ) {
     g_signal_connect( pGlobal->widgets[ eW_spin_LossAfter ], "value-changed", G_CALLBACK( CB_spin_LossAfterDUT ), NULL);
     g_signal_connect( pGlobal->widgets[ eW_chk_LossOn ], "toggled", G_CALLBACK( CB_chk_LossCompensationEnable ), NULL);
     g_signal_connect_after( pGlobal->widgets[ eW_drop_InputGainCalibration ], "notify::selected", G_CALLBACK( CB_drop_InputGainCalibration ), NULL);
+
+    g_signal_connect_after( pGlobal->widgets[ eW_drop_RF_Attenuation ], "notify::selected", G_CALLBACK( CB_drop_RFattenuation ), NULL);
+    g_signal_connect_after( pGlobal->widgets[ eW_drop_IF_Attenuation ], "notify::selected", G_CALLBACK( CB_drop_IFattenuation ), NULL);
 }

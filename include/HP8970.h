@@ -22,7 +22,7 @@
 
 
 #ifndef VERSION
-   #define VERSION "1.04-2"
+   #define VERSION "1.05-1"
 #endif
 
 
@@ -112,8 +112,13 @@ typedef union {
         guint32 bLossCompenstaion   :1;
         guint32 bCorrection         :1;
         guint32 bExternalLO         :1;
+
+        guint32 bRFattenuation      :1;
+        guint32 bIFattenuation      :1;
+        guint32 bHoldRFattenuator   :1;
+        guint32 bHoldIFattenuator   :1;
     } each;
-#define ALL_FUNCTIONS    0b11111111111
+#define ALL_FUNCTIONS    0b1111111111111
     guint32 all;
 } tUpdateFlags;
 
@@ -140,6 +145,16 @@ typedef enum {
 typedef enum {
     ePlus20 = 0, ePlus10 = 1, eZero = 2, eMinus10 = 3
 } tInputGainCal;
+
+typedef enum {
+    eIFattn_Auto = 0, eIFattn_0dB = 1, eIFattn_5dB = 2, eIFattn_10dB = 3,
+    eIFattn_15dB =4, eIFattn_20dB =5, eIFattn_25dB =6, eIFattn_30dB =7, eIFattn_35dB
+} tIFattenuation;
+
+typedef enum {
+    eRFattn_Auto = 0, eRFattn_plu20dB = 1, eRFattn_plus10dB = 2, eRFattn_0dB = 3,
+    eRFattn_10dB =4, eRFattn_20dB =5, eRFattn_30dB =6
+} tRFattenuation;
 
 typedef struct {
     gdouble x, y;
@@ -205,6 +220,8 @@ typedef struct {
 
     gint smoothingFactor;
     tInputGainCal   inputGainCal;
+    tIFattenuation  IFattenuation;
+    tRFattenuation  RFattenuation;
 
     tNoiseType noiseUnits;
 

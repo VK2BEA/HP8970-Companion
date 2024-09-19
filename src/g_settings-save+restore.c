@@ -256,7 +256,7 @@ recoverSettings( tGlobal *pGlobal ) {
  *
  */
 
-#define CONFIG_TUPPLE "(a(ddddd)(bb)qyyy(qqqssy)(dddd)ba(dd)(dd))"
+#define CONFIG_TUPPLE "(a(ddddd)(bbbbbbbb)qqqqqyyyyy(qqqssy)(dddd)ba(dd)(dd))"
 
 
 GVariant *
@@ -284,15 +284,21 @@ configurationBuilder( tHP8970settings *configuration ){
 
     // bb
 
-    g_variant_builder_add(configBuilder, "(bb)",
-            configuration->switches.bCorrectedNFAndGain, configuration->switches.bLossCompensation );
+    g_variant_builder_add(configBuilder, "(bbbbbbbb)",
+            configuration->switches.bCorrectedNFAndGain, configuration->switches.bLossCompensation, 0, 0, 0, 0, 0, 0 );
 
     // qyyy
 
     g_variant_builder_add(configBuilder, "q", configuration->smoothingFactor );
+    g_variant_builder_add(configBuilder, "q", 0 );
+    g_variant_builder_add(configBuilder, "q", 0 );
+    g_variant_builder_add(configBuilder, "q", 0 );
+    g_variant_builder_add(configBuilder, "q", 0 );
     g_variant_builder_add(configBuilder, "y", configuration->noiseUnits );
     g_variant_builder_add(configBuilder, "y", configuration->inputGainCal );
     g_variant_builder_add(configBuilder, "y", configuration->mode );
+    g_variant_builder_add(configBuilder, "y", 0 );
+    g_variant_builder_add(configBuilder, "y", 0 );
 
     // (qqqssy)
     g_variant_builder_add(configBuilder, "(qqqssy)",
@@ -412,36 +418,49 @@ recoverConfigurations( tGlobal *pGlobal ) {
         // g_print ("%s - type '%s'\n", sConfigurationName, g_variant_get_type_string (tuple));
 
         gboolean bCorrectedNFAndGain, bLossCompensation, bAutoScaling;
+        gboolean bPlaceholder;
+        guint16  iPlaceholder;
+        guchar   cPlaceholder;
         g_variant_get( tuple, CONFIG_TUPPLE,
+                // a(ddddd)(bbbbb)qyyy(qqqssy)(dddd)ba(dd)(dd)
+                // a(ddddd)
                 &freqIter,
 
+                // (bbbbb)
                 &bCorrectedNFAndGain,
                 &bLossCompensation,
+                &bPlaceholder, &bPlaceholder, &bPlaceholder,
+                &bPlaceholder, &bPlaceholder, &bPlaceholder,
 
+                // qqqqqyyyyy
                 &pHP8970settings->smoothingFactor,
+                &iPlaceholder, &iPlaceholder, &iPlaceholder, &iPlaceholder,
                 &pHP8970settings->noiseUnits,
                 &pHP8970settings->inputGainCal,
                 &pHP8970settings->mode,
+                &cPlaceholder, &cPlaceholder,
 
-                // qqq
+                // (qqqssy)
                 &pHP8970settings->extLOfreqIF,
                 &pHP8970settings->extLOfreqLO,
                 &pHP8970settings->settlingTime_ms,
-
-                // ssy
                 &pHP8970settings->sExtLOsetup,
                 &pHP8970settings->sExtLOsetFreq,
                 &pHP8970settings->extLOsideband,
-                // dddd
+
+                // (dddd)
                 &pHP8970settings->lossBeforeDUT,
                 &pHP8970settings->lossAfterDUT,
                 &pHP8970settings->lossTemp,
                 &pHP8970settings->coldTemp,
 
+                // b
                 &bAutoScaling,
 
+                // a(dd)
                 &noiseGridLimitsIter,
 
+                // (dd)
                 &pHP8970settings->fixedGridGain[0],
                 &pHP8970settings->fixedGridGain[1]
         );

@@ -807,6 +807,15 @@ threadGPIB (gpointer _pGlobal) {
                         if( updateFlags.each.bColdTemperature )
                             g_string_append_printf( pstCommands, "TC%.2lfEN", pGlobal->HP8970settings.coldTemp );
 
+                        if( updateFlags.each.bRFattenuation )
+                            g_string_append_printf( pstCommands, "R%1d", pGlobal->HP8970settings.RFattenuation );
+                        if( updateFlags.each.bIFattenuation )
+                            g_string_append_printf( pstCommands, "I%1d", pGlobal->HP8970settings.IFattenuation );
+                        if( updateFlags.each.bHoldRFattenuator )
+                            g_string_append_printf( pstCommands, "RH" );
+                        if( updateFlags.each.bHoldIFattenuator )
+                            g_string_append_printf( pstCommands, "IH" );
+
                         if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, &GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
                             break;
                         g_string_free ( pstCommands, TRUE );

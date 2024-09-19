@@ -109,9 +109,11 @@ CB_KeyPressed (GtkEventControllerKey *self, guint keyval, guint keycode,
                 case GDK_SUPER_MASK:
                     break;
                 case 0:
+#if GTK_CHECK_VERSION(4,10,0)
                     GtkUriLauncher *launcher = gtk_uri_launcher_new ("help:hp8970");
                     gtk_uri_launcher_launch (launcher, GTK_WINDOW(gtk_widget_get_root( pGlobal->widgets[ eW_HP8970_application ] )), NULL, NULL, NULL);
                     g_object_unref (launcher);
+#endif
                     break;
                 }
             break;
@@ -146,6 +148,8 @@ CB_KeyPressed (GtkEventControllerKey *self, guint keyval, guint keycode,
                     case 0:
                         pGlobal->flags.bShowAdditionalSP = !pGlobal->flags.bShowAdditionalSP;
                         gtk_widget_set_visible( pGlobal->widgets[ eW_frm_InputGainCal ], pGlobal->flags.bShowAdditionalSP );
+                        gtk_widget_set_visible( pGlobal->widgets[ eW_frm_IF_Attenuation ], pGlobal->flags.bShowAdditionalSP );
+                        gtk_widget_set_visible( pGlobal->widgets[ eW_frm_RF_Attenuation ], pGlobal->flags.bShowAdditionalSP );
                         break;
                     }
                 break;

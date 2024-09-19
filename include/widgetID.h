@@ -8,6 +8,7 @@
 #ifndef WIDGETID_H_
 #define WIDGETID_H_
 
+
 typedef enum {
     eW_aspect_Plot,
     eW_box_Spot,
@@ -46,13 +47,17 @@ typedef enum {
     eW_Controls,
     eW_CV_NoiseSource,
     eW_drawing_Plot,
-    eW_drop_InputGainCalibration,
+    eW_drop_IF_Attenuation,
     eW_drop_NoiseUnits,
+    eW_drop_InputGainCalibration,
+    eW_drop_RF_Attenuation,
     eW_drop_Smoothing,
     eW_entry_opt_GPIB_name,
     eW_entry_opt_LO_GPIB_name,
     eW_entry_Title,
     eW_frame_NoiseRange,
+    eW_frm_IF_Attenuation,
+    eW_frm_RF_Attenuation,
     eW_frm_InputGainCal,
     eW_frm_Mode,
     eW_frm_Sweep,
