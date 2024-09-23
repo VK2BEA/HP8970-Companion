@@ -479,6 +479,7 @@ open_ExtLO_GPIBdevice (tGlobal *pGlobal, gint *pDescGPIB_ExtLO) {
         ibloc (*pDescGPIB_ExtLO);
         usleep ( LOCAL_DELAYms * 1000);
     }
+
     return 0;
 }
 
@@ -606,13 +607,15 @@ threadGPIB (gpointer _pGlobal) {
     gint GPIBstatus, LO_GPIBstatus;
     gint timeoutHP8970;   				// previous timeout
 
-    gint descGPIB_HP8970 = ERROR;
-    gint descGPIB_extLO = ERROR;
+    gint descGPIB_HP8970 = INVALID;
+    gint descGPIB_extLO = INVALID;
     messageEventData *message;
     gboolean bRunning = TRUE;
+    gint statusGPIB_HP8970 = INVALID;
+    gint  __attribute__((unused)) statusGPIB_extLO = INVALID;
     gboolean bSimulatedCommand;
     gulong __attribute__((unused)) datum = 0;
-    GString *pstCommands;
+    GString *pstCommands  = g_string_new ( NULL );;
     gchar HP8970status;
 #define DEFAULT_MSG_TIMEOUT 2000
 #define MINIMAL_MSG_TIMEOUT 1
@@ -680,7 +683,9 @@ threadGPIB (gpointer _pGlobal) {
             {
             case TG_SETUP_GPIB:
             case TG_REINITIALIZE_GPIB:
-                if( open_8790_GPIBdevice (pGlobal, &descGPIB_HP8970) == OK ) {
+            	if( descGPIB_HP8970 != INVALID  )
+            		GPIBclose (&descGPIB_HP8970);
+                if( (statusGPIB_HP8970 = open_8790_GPIBdevice (pGlobal, &descGPIB_HP8970)) == OK ) {
                     pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
                     message->command = TG_SEND_SETTINGS_to_HP8970;
                 } else {
@@ -691,23 +696,28 @@ threadGPIB (gpointer _pGlobal) {
             case TG_END:
                 GPIBclose (&descGPIB_HP8970);
                 GPIBclose (&descGPIB_extLO);
+                statusGPIB_HP8970 = INVALID;
+                statusGPIB_extLO = INVALID;
                 freeMessage( message );
                 bRunning = FALSE;
                 continue;
             default:
                 if (descGPIB_HP8970 == INVALID) {
-                    open_8790_GPIBdevice (pGlobal, &descGPIB_HP8970);
+                	statusGPIB_HP8970 = open_8790_GPIBdevice (pGlobal, &descGPIB_HP8970);
                 }
+
                 if ( pGlobal->flags.bNoLOcontrol == FALSE
                         && pGlobal->HP8970settings.mode != eMode1_0
-                            &&  descGPIB_extLO == INVALID) {
-                    open_ExtLO_GPIBdevice (pGlobal, &descGPIB_extLO);
+                            && (descGPIB_extLO == INVALID || statusGPIB_HP8970 != OK )
+							&& (descGPIB_HP8970 != INVALID &&
+							             statusGPIB_HP8970 == OK) ) {
+                	statusGPIB_extLO = open_ExtLO_GPIBdevice (pGlobal, &descGPIB_extLO);
                 }
                 break;
             }
 #define IBLOC(x, y, z) { z = ibloc( x ); y = now_milliSeconds(); usleep( ms( LOCAL_DELAYms ) ); }
         // Most but not all commands require the GBIB
-        if (descGPIB_HP8970 == INVALID) {
+        if (descGPIB_HP8970 == INVALID || statusGPIB_HP8970 != OK ) {
             postError("Cannot obtain HP8970 descriptor");
         } else if (!pingGPIBdevice (descGPIB_HP8970, &GPIBstatus)) {
             postError("HP8970 is not responding");
@@ -729,7 +739,6 @@ threadGPIB (gpointer _pGlobal) {
                     bNewSettings = TRUE;
 
                     do {
-                        pstCommands = g_string_new ( NULL );
                         gboolean bExtLO;
 
                         // snapshot of the settings we need to send
@@ -816,17 +825,26 @@ threadGPIB (gpointer _pGlobal) {
                         if( updateFlags.each.bHoldIFattenuator )
                             g_string_append_printf( pstCommands, "IH" );
 
-                        if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, &GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
+                        if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, &GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
                             break;
-                        g_string_free ( pstCommands, TRUE );
-                        pstCommands = NULL;
+                        }
+
+                        if( updateFlags.each.bSpotFrequency
+                        		&& !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4) ) {
+                        	gdouble LOfreq;
+                            if( ( LOfreq = LOfrequency( pGlobal, pGlobal->HP8970settings.range[ bExtLO ].freqSpotMHz ) ) != 0.0 ) {
+                                g_string_printf( pstCommands, pGlobal->HP8970settings.sExtLOsetFreq, LOfreq );
+                                if( GPIBasyncWrite (descGPIB_extLO, pstCommands->str, &GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
+                                	break;
+                                }
+                            }
+                        }
+
                         g_mutex_lock ( &pGlobal->mUpdate );
                         bNewSettings = ( pGlobal->HP8970settings.updateFlags.all != 0 );
                         g_mutex_unlock ( &pGlobal->mUpdate );
                     } while ( bNewSettings );
 
-                    if( pstCommands )
-                    	g_string_free ( pstCommands, TRUE );
                     IBLOC(descGPIB_HP8970, datum, GPIBstatus);
                     break;
                 case TG_CALIBRATE:
@@ -880,8 +898,6 @@ threadGPIB (gpointer _pGlobal) {
                         if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, &GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
                             break;
                     } while FALSE;
-
-                    g_string_free ( pstCommands, TRUE );
 
                     if( GPIBsucceeded( GPIBstatus ) )
                     	postInfo( "ENR table uploaded to HP8970");
@@ -948,6 +964,8 @@ threadGPIB (gpointer _pGlobal) {
         freeMessage( message );
         pGlobal->flags.bGPIBcommsActive = FALSE;
     } while (bRunning);
+
+    g_string_free ( pstCommands, TRUE );
 
     return NULL;
 }
