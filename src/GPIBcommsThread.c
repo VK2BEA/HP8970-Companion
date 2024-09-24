@@ -345,7 +345,7 @@ pingGPIBdevice (gint descGPIBdevice, gint *pGPIBstatus) {
     if ((*pGPIBstatus = ibask (descGPIBboard, IbaTMO, &timeout)) & ERR)
         goto err;
     // set new timeout (for ping purpose only)
-    if ((*pGPIBstatus = ibtmo (descGPIBboard, T3s)) & ERR)
+    if ((*pGPIBstatus = ibtmo (descGPIBboard, T100ms)) & ERR)
         goto err;
 
     // Actually do the ping
@@ -417,7 +417,7 @@ open_8790_GPIBdevice (tGlobal *pGlobal, gint *pDescGPIB_HP8970) {
     } else {
         postInfo("Contact with HP8970 established");
         ibloc (*pDescGPIB_HP8970);
-        usleep ( LOCAL_DELAYms * 1000);
+        usleep ( LOCAL_DELAYms * 100);
     }
     return 0;
 }
@@ -611,9 +611,8 @@ threadGPIB (gpointer _pGlobal) {
     gint descGPIB_extLO = INVALID;
     messageEventData *message;
     gboolean bRunning = TRUE;
-    gint statusGPIB_HP8970 = INVALID;
-    gint  __attribute__((unused)) statusGPIB_extLO = INVALID;
     gboolean bSimulatedCommand;
+    gint statusGPIB_HP8970 = INVALID;
     gulong __attribute__((unused)) datum = 0;
     GString *pstCommands  = g_string_new ( NULL );;
     gchar HP8970status;
@@ -683,8 +682,6 @@ threadGPIB (gpointer _pGlobal) {
             {
             case TG_SETUP_GPIB:
             case TG_REINITIALIZE_GPIB:
-            	if( descGPIB_HP8970 != INVALID  )
-            		GPIBclose (&descGPIB_HP8970);
                 if( (statusGPIB_HP8970 = open_8790_GPIBdevice (pGlobal, &descGPIB_HP8970)) == OK ) {
                     pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
                     message->command = TG_SEND_SETTINGS_to_HP8970;
@@ -696,28 +693,26 @@ threadGPIB (gpointer _pGlobal) {
             case TG_END:
                 GPIBclose (&descGPIB_HP8970);
                 GPIBclose (&descGPIB_extLO);
-                statusGPIB_HP8970 = INVALID;
-                statusGPIB_extLO = INVALID;
                 freeMessage( message );
                 bRunning = FALSE;
                 continue;
             default:
-                if (descGPIB_HP8970 == INVALID) {
+                if( statusGPIB_HP8970 != OK )
+                	pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
+
+                if (descGPIB_HP8970 == INVALID )
                 	statusGPIB_HP8970 = open_8790_GPIBdevice (pGlobal, &descGPIB_HP8970);
-                }
 
                 if ( pGlobal->flags.bNoLOcontrol == FALSE
                         && pGlobal->HP8970settings.mode != eMode1_0
-                            && (descGPIB_extLO == INVALID || statusGPIB_HP8970 != OK )
-							&& (descGPIB_HP8970 != INVALID &&
-							             statusGPIB_HP8970 == OK) ) {
-                	statusGPIB_extLO = open_ExtLO_GPIBdevice (pGlobal, &descGPIB_extLO);
+                            && descGPIB_extLO == INVALID ) {
+                	open_ExtLO_GPIBdevice (pGlobal, &descGPIB_extLO);
                 }
                 break;
             }
 #define IBLOC(x, y, z) { z = ibloc( x ); y = now_milliSeconds(); usleep( ms( LOCAL_DELAYms ) ); }
         // Most but not all commands require the GBIB
-        if (descGPIB_HP8970 == INVALID || statusGPIB_HP8970 != OK ) {
+        if (descGPIB_HP8970 == INVALID ) {
             postError("Cannot obtain HP8970 descriptor");
         } else if (!pingGPIBdevice (descGPIB_HP8970, &GPIBstatus)) {
             postError("HP8970 is not responding");
@@ -726,6 +721,10 @@ threadGPIB (gpointer _pGlobal) {
             pGlobal->HP8970settings.updateFlags.all = ALL_FUNCTIONS;
             usleep (ms(250));
         } else {
+        	if( statusGPIB_HP8970 != OK ) {
+        		statusGPIB_HP8970 = OK;
+        		postInfo( "Contact with HP8970 belatedly established" );
+        	}
             pGlobal->flags.bGPIBcommsActive = TRUE;
             GPIBstatus = ibask (descGPIB_HP8970, IbaTMO, &timeoutHP8970); /* Remember old timeout */
             ibtmo (descGPIB_HP8970, T30s);
@@ -740,6 +739,8 @@ threadGPIB (gpointer _pGlobal) {
 
                     do {
                         gboolean bExtLO;
+                        gboolean bLOerror = FALSE;
+                        gboolean bErrror  = FALSE;
 
                         // snapshot of the settings we need to send
                         g_mutex_lock ( &pGlobal->mUpdate );
@@ -752,7 +753,6 @@ threadGPIB (gpointer _pGlobal) {
                         // Set the external signal generator (LO) for higher modes
                         if( (updateFlags.each.bSpotFrequency || updateFlags.each.bStartFrequency || updateFlags.each.bStopFrequency)
                                 &&  pGlobal->flags.bNoLOcontrol == FALSE && mode != eMode1_0 ) {
-                            gboolean bLOerror = TRUE;
                             gchar LOstatus;
                             gdouble signalFrequency = 0.0, LOfreq = 0.0;
 
@@ -763,23 +763,26 @@ threadGPIB (gpointer _pGlobal) {
                             else if( updateFlags.each.bStartFrequency )
                                 signalFrequency = pGlobal->HP8970settings.range[ bExtLO ].freqStartMHz;
 
-                            do {    //
-                                if( pGlobal->HP8970settings.sExtLOsetup )
-                                    if( GPIBasyncWrite (descGPIB_extLO, pGlobal->HP8970settings.sExtLOsetup, &LO_GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
-                                        break;
+                            do {
+                                if( pGlobal->HP8970settings.sExtLOsetup ) {
+                                    if( GPIBasyncWrite (descGPIB_extLO, pGlobal->HP8970settings.sExtLOsetup, &LO_GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
+                                    	bLOerror = TRUE;
+                                    	break;
+                                    }
+                                }
 
-                                if( ( LOfreq = LOfrequency( pGlobal, signalFrequency ) ) != 0.0 ) {
+                                if( !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4)
+                                		&& ( LOfreq = LOfrequency( pGlobal, signalFrequency ) ) != 0.0 ) {
                                     g_string_printf( pstCommands, pGlobal->HP8970settings.sExtLOsetFreq, LOfreq );
                                     if( GPIBasyncWrite (descGPIB_extLO, pstCommands->str, &LO_GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
-                                        break;
+                                    	bLOerror = TRUE;
+                                    	break;
                                     }
-                                    bLOerror = FALSE;
                                     LO_GPIBstatus = ibrsp (descGPIB_extLO, &LOstatus); // get the status byte from the LO
                                     gchar *sMessage = g_strdup_printf( "Signal Generator (LO): %.0lf MHz", LOfreq );
                                     postInfoLO( sMessage );
                                     g_free( sMessage );
                                 }
-
                             } while FALSE;  // do loop one time so we can break on problem
 
                             if( bLOerror )
@@ -826,23 +829,18 @@ threadGPIB (gpointer _pGlobal) {
                             g_string_append_printf( pstCommands, "IH" );
 
                         if( GPIBasyncWrite (descGPIB_HP8970, pstCommands->str, &GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
-                            break;
-                        }
-
-                        if( updateFlags.each.bSpotFrequency
-                        		&& !(pGlobal->HP8970settings.mode == eMode1_0 || pGlobal->HP8970settings.mode == eMode1_4) ) {
-                        	gdouble LOfreq;
-                            if( ( LOfreq = LOfrequency( pGlobal, pGlobal->HP8970settings.range[ bExtLO ].freqSpotMHz ) ) != 0.0 ) {
-                                g_string_printf( pstCommands, pGlobal->HP8970settings.sExtLOsetFreq, LOfreq );
-                                if( GPIBasyncWrite (descGPIB_extLO, pstCommands->str, &GPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
-                                	break;
-                                }
-                            }
+                        	bErrror = TRUE;
+                        	break;
                         }
 
                         g_mutex_lock ( &pGlobal->mUpdate );
                         bNewSettings = ( pGlobal->HP8970settings.updateFlags.all != 0 );
                         g_mutex_unlock ( &pGlobal->mUpdate );
+
+                        if( bErrror ) {
+                        	postError( "8970 setting failure" );
+                        }
+
                     } while ( bNewSettings );
 
                     IBLOC(descGPIB_HP8970, datum, GPIBstatus);
