@@ -315,9 +315,14 @@ warnFrequencyRangeOutOfBounds( tGlobal *pGlobal ) {
             if( downcvtStartF < 10.0 || downcvtStartF > max8970freq || downcvtStopF < 10.0 || downcvtStopF > max8970freq
                     || downcvtSpotF < 10.0 || downcvtSpotF > max8970freq ) {
                 gtk_widget_add_css_class( wNotice, "warning" );
-                sWarning = g_strdup_printf( "⚠️\tDownconversion to %g MHz ➡ %g MHz\n\tis beyond the range of the %s\n"
+                sWarning = g_strdup_printf( "⚠️\tConverted sweep\t%g MHz ➡ %g MHz\n"
+                        "\tor spot frequency\t%g MHz\n"
+                        "\t\t\tis beyond the range of the %s\n"
                         "👉\tFstart, Fstop and Fspot must be\n\t\t\t> %g MHz and < %g MHz",
-                        downcvtStartF, downcvtStopF, sHP89709models[pGlobal->flags.bbHP8970Bmodel], minF, maxF);
+                        downcvtStartF, downcvtStopF,
+                        downcvtSpotF,
+                        sHP89709models[pGlobal->flags.bbHP8970Bmodel],
+                        minF, maxF);
             } else {
                 gtk_widget_add_css_class( wNotice, "info" );
                 sWarning = g_strdup_printf( "🛈\tDownconversion to:\t%g MHz ➡ %g MHz\n"
