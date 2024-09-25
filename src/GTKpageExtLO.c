@@ -315,10 +315,10 @@ warnFrequencyRangeOutOfBounds( tGlobal *pGlobal ) {
             if( downcvtStartF < 10.0 || downcvtStartF > max8970freq || downcvtStopF < 10.0 || downcvtStopF > max8970freq
                     || downcvtSpotF < 10.0 || downcvtSpotF > max8970freq ) {
                 gtk_widget_add_css_class( wNotice, "warning" );
-                sWarning = g_strdup_printf( "Downconverted sweep or spot frequency:\n\t\t\t%g MHz ➡ %g MHz /"
+                sWarning = g_strdup_printf( "📍Downconverted sweep or spot frequency:\n\t\t\t%g MHz ➡ %g MHz /"
                         " %g MHz\n"
                         "\tis beyond the range of the %s\n"
-                        "👉\tWith this LO, Fstart, Fstop and Fspot must be\n\t\t\t> %g MHz and < %g MHz",
+                        "📎\tWith this LO, Fstart, Fstop and Fspot must be\n\t\t\t> %g MHz and < %g MHz",
                         downcvtStartF, downcvtStopF,
                         downcvtSpotF,
                         sHP89709models[pGlobal->flags.bbHP8970Bmodel],
