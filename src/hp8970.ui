@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.91.3 -->
+<!-- Created with Cambalache 0.97.2 -->
 <interface>
   <!-- interface-name hp8970.ui -->
   <requires lib="gtk" version="4.12"/>
@@ -1631,7 +1631,7 @@ noSideBorder</property>
       </object>
     </child>
   </object>
-  <object class="GtkWindow" id="WID_Splash">
+  <object class="GtkApplicationWindow" id="WID_Splash">
     <property name="decorated">False</property>
     <property name="transient-for">WID_HP8970_application</property>
     <child>
@@ -1650,13 +1650,13 @@ noSideBorder</property>
         </child>
         <child>
           <object class="GtkLabel" id="WID_lbl_version">
-            <property name="label">June 2024</property>
+            <property name="label">August 2025</property>
           </object>
         </child>
         <child>
           <object class="GtkLabel">
             <property name="css-classes">license</property>
-            <property name="label">Copyright © 2024  Michael G. Katzmann
+            <property name="label">Copyright © 2024 / 2025  Michael G. Katzmann
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

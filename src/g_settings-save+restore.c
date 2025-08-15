@@ -172,6 +172,10 @@ recoverSettings( tGlobal *pGlobal ) {
     g_variant_unref (gvPageSetup);
 
     pGlobal->sLastDirectory = g_settings_get_string( gs, "last-directory" );
+    if( pGlobal->sLastDirectory[0] == 0 || pGlobal->sLastDirectory[0] == '~' ) {
+        g_free( pGlobal->sLastDirectory );
+        pGlobal->sLastDirectory = g_strdup( g_get_home_dir() );
+    }
 
     // GUI notebook page options
     pGlobal->flags.bShowTime = g_settings_get_boolean( gs, "show-time" );

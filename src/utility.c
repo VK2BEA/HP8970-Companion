@@ -81,6 +81,7 @@ splashCreate (tGlobal *pGlobal) {
         g_free (sVersion);
         // this is needed for Wayland to get rid of the warning notice about transient window not attached
         // to parent
+        gtk_window_set_titlebar( GTK_WINDOW(wSplash), NULL );
         gtk_window_set_transient_for (GTK_WINDOW(wSplash), GTK_WINDOW(wApplicationWidget));
         // gtk_window_set_position(GTK_WINDOW(wSplash), GTK_WIN_POS_CENTER_ALWAYS);
         gtk_window_present (GTK_WINDOW(wSplash)); // make sure we are on top

@@ -583,7 +583,7 @@ spotFrequencyHP8970( tGlobal *pGlobal, gint descGPIB_HP8970, gint descGPIB_extLO
             if( pGlobal->HP8970settings.sExtLOsetup )
                 if( GPIBasyncWrite (descGPIB_extLO, pGlobal->HP8970settings.sExtLOsetup, pGPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK )
                     break;
-            // We only have to set the LO frequency once for modes 1.2 and 1.4
+            // We only have to set the LO frequency once for a spot measurement
             if( ( LOfreq = LOfrequency( pGlobal, freqSpotMHz ) ) != 0.0 ) {
                 g_string_printf( pstCommands, pGlobal->HP8970settings.sExtLOsetFreq, LOfreq );
                 if( GPIBasyncWrite (descGPIB_extLO, pstCommands->str, pGPIBstatus, 10 * TIMEOUT_RW_1SEC) != eRDWT_OK ) {
